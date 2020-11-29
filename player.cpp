@@ -233,5 +233,5 @@ void MapUpdate(map *Map, player *Player, bool RightButton, bool LeftButton, bool
         Map->PosX = Map->PosX + dx * Map->Speed;
         Map->PosY = Map->PosY + dy * Map->Speed;
     }
-    printf("PosX Map = %f\n", Map->PosX);
+    //printf("PosX Map = %f\n", Map->PosX);
 }
