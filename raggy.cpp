@@ -39,6 +39,9 @@ int main(int argc, char **argv)
                 running = false;
             }
 
+
+            
+
             //cool shit:
             if (Event.type == SDL_KEYDOWN || Event.type == SDL_KEYUP)
             {
