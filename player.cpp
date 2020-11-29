@@ -211,7 +211,7 @@ void MapUpdate(map *Map, player *Player, bool RightButton, bool LeftButton, bool
     }
     if (LeftButton && LeftShift && Map->PosX <= 99 && Map->PosX >= 96)
     {
-        Map->PosX = 98;
+        Map->PosX = 97;
     }
 
     if (RightButton && Map->PosX == 2299)
