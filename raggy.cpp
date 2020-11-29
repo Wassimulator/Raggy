@@ -16,10 +16,20 @@ int main(int argc, char **argv)
     bool LeftButton = false;
     bool UpButton = false;
     bool DownButton = false;
+    bool LeftShift = false;
 
     player Player = LoadPlayer();
+    Player.PosX = 400 - 48;
+    Player.PosY = 320 - 48;
 
     bool running = true;
+
+    map Map = LoadMap();
+    Map.ActiveMap.h = Map.ActiveMap.h * 3;
+    Map.ActiveMap.w = Map.ActiveMap.w * 3;
+    //putting the map in the middle of the screen:
+    Map.PosX = -(Map.ActiveMap.w - 800) / 2;
+    Map.PosY = -(Map.ActiveMap.h - 640) / 2;
 
     //Game Loop-----------------------------------------------------------------
     while (running)
@@ -31,16 +41,13 @@ int main(int argc, char **argv)
         //---------------------------------------------------------
 
         SDL_Event Event;
-        while (SDL_PollEvent(&Event)) //if pPollEvent returns 1 then we enter the while loop this 
-                                    //means thatif we have more than one event, it gathers them all before running 
+        while (SDL_PollEvent(&Event)) //if pPollEvent returns 1 then we enter the while loop this
+                                      //means thatif we have more than one event, it gathers them all before running
         {
             if (Event.type == SDL_QUIT)
             {
                 running = false;
             }
-
-
-            
 
             //cool shit:
             if (Event.type == SDL_KEYDOWN || Event.type == SDL_KEYUP)
@@ -64,16 +71,17 @@ int main(int argc, char **argv)
                 case SDLK_RIGHT:
                     RightButton = KeyState;
                     break;
+                case SDLK_LSHIFT:
+                    LeftShift = KeyState;
                 default:
                     break;
                 }
             }
-            
         }
 
         //GameUpdate------------------------------------------------------
 
-        PlayerUpdate(&Player, RightButton, LeftButton, UpButton, DownButton);
+        PlayerUpdate(&Player, RightButton, LeftButton, UpButton, DownButton, LeftShift);
 
         //----------------------------------------------------------------
         int R = 100;
@@ -84,10 +92,12 @@ int main(int argc, char **argv)
         // WINDOWS USES BGRA (that does not stand for bulgaria)
         // Todo; map it so that it works on multiple systems
 
+        // TODO: Move the SDL_Rect clutter into somehting organized
         SDL_FillRect(WindowSurface, 0, (A << 24) | (R << 16) | (G << 8) | (B));
         SDL_Rect Rect;
         Rect.x = Player.PosX;
         Rect.y = Player.PosY;
+        // TODO: Scaling is an inherent problem that needs fixing.
         Rect.w = 32 * 3;
         Rect.h = 32 * 3;
 
@@ -98,6 +108,7 @@ int main(int argc, char **argv)
         int p;
         int q;
 
+        // animation sequence ----------
         switch (Player.i)
         {
         case 1:
@@ -127,9 +138,21 @@ int main(int argc, char **argv)
             break;
         };
 
+        //Rendering------------------------------------------------------------------------
+
         ActiveRectangle.x = p * 32;
         ActiveRectangle.y = q * 32;
         ActiveRectangle.w = ActiveRectangle.h = 32;
+
+        //TODO: move the SDL_Rect clutter in a struct or something.
+
+        SDL_Rect MapRect;
+        MapRect.h = Map.ActiveMap.h;
+        MapRect.w = Map.ActiveMap.w;
+        MapRect.x = Map.PosX;
+        MapRect.y = Map.PosY;
+
+        SDL_BlitScaled(Map.ActiveMap.Surface, 0, WindowSurface, &MapRect);
 
         SDL_BlitScaled(Player.ActiveTexture->Surface, &ActiveRectangle, WindowSurface, &Rect);
 

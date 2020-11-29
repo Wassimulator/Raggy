@@ -1,0 +1,31 @@
+
+    memory content   [2 1 5 0 0 0 1 0 0 0 0 0 0 0]
+    memory index     [1 2 3 4 5 6 7 8 9          ]
+
+int MyData = 1;
+
+int * DataPointer = &MyData; // 6
+
+DataPointer + 1 // 7
+
+*DataPointer + 1 // 2
+
+*DataPointer == 1 // true
+
+&MyData + 1 //
+
+
+int MyData1 = 2
+int MyData2 = 1
+int MyData3 = 5
+
+int *ptr1 = &MyData1
+
+*ptr1 = &MyData1 == 1
+
+&ptr
+
+
+        2         1         5
+0000 0010 0000 0001 0000 0101 
+1111 1111 2222 2222 3333 3333 

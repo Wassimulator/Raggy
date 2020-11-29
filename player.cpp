@@ -1,5 +1,3 @@
-
-
 #include "raggy.hpp"
 
 struct sprite
@@ -18,48 +16,90 @@ sprite LoadSprite(char *filename)
         Result.w * Result.n, SDL_PIXELFORMAT_RGBA32);
     return Result;
 }
+enum direction{
+    RightDirection, LeftDirection
+};
+
+//-----------------PLAYER------------------------------------------------------
 
 struct player
 {
     sprite LeftAnimation;
+    sprite LeftRunAnimation;
     sprite RightAnimation;
-    sprite Idle;
+    sprite RightRunAnimation;
+    sprite IdleRight;
+    sprite IdleLeft;
     float PosX;
     float PosY;
     sprite *ActiveTexture;
     int i;
     int T;
     int Speed;
+    direction Direction;
 };
+
 
 player LoadPlayer()
 {
-    player Player = {};
-    Player.Idle = LoadSprite("textures/player.png");
+    player Player = {}; // it sets everything to zero, so Direction would be 0 which is RightDirection based on the enum
+    //to be sure we could set it :
+    Player.Direction = RightDirection;
+    Player.IdleRight = LoadSprite("textures/player_right.png");
+    Player.IdleLeft = LoadSprite("textures/player_left.png");
     Player.LeftAnimation = LoadSprite("textures/player_walk_left.png");
+    Player.LeftRunAnimation = LoadSprite("textures/player_run_left.png");
     Player.RightAnimation = LoadSprite("textures/player_walk_right.png");
+    Player.RightRunAnimation = LoadSprite("textures/player_run_right.png");
+
 
     return Player;
 };
 
-void PlayerUpdate(player *Player, bool RightButton, bool LeftButton, bool UpButton, bool DownButton)
+
+
+void PlayerUpdate(player *Player, bool RightButton, bool LeftButton, bool UpButton, bool DownButton, bool LeftShift)
 {
     Player->Speed = 1;
     float dx = 0;
     float dy = 0;
+    if (Player->Direction == RightDirection)
+    {
+        Player->ActiveTexture = &Player->IdleRight;
+    }
+    else if (Player->Direction == LeftDirection)
+    {
+        Player->ActiveTexture = &Player->IdleLeft;
+    }
 
-    Player->ActiveTexture = &Player->Idle;
+    //Player->ActiveTexture = &Player->Idle;
     //TODO: fix the idle guy in Pyxel
 
     if (RightButton)
     {
         Player->ActiveTexture = &Player->RightAnimation;
         dx++;
+        Player->Direction = RightDirection;
+    }
+    if (RightButton && LeftShift)
+    {
+        Player->ActiveTexture = &Player->RightRunAnimation;
+        dx++;
+        Player->Speed = 3.5;
+        Player->Direction = RightDirection;
     }
     if (LeftButton)
     {
         Player->ActiveTexture = &Player->LeftAnimation;
         dx--;
+        Player->Direction = LeftDirection;
+    }
+    if (LeftButton && LeftShift)
+    {
+        Player->ActiveTexture = &Player->LeftRunAnimation;
+        dx--;
+        Player->Speed = 3.5;
+        Player->Direction = RightDirection;
     }
     if (UpButton)
     {
@@ -83,7 +123,7 @@ void PlayerUpdate(player *Player, bool RightButton, bool LeftButton, bool UpButt
     }
     if (!RightButton && !LeftButton && !UpButton && !DownButton)
     {
-        Player->ActiveTexture = &Player->Idle;
+        //Player->ActiveTexture = &Player->Idle
         Player->i = 1;
     }
     else if (Player->T++ % 10 == 0)
@@ -97,4 +137,21 @@ void PlayerUpdate(player *Player, bool RightButton, bool LeftButton, bool UpButt
             Player->i = 1;
         }
     }
+}
+
+
+//-------------------------MAPS-------------------------
+struct map
+{
+    sprite ActiveMap;
+    float PosX;
+    float PosY;
+};
+
+map LoadMap()
+{
+    map LoadedMap = {};
+    LoadedMap.ActiveMap = LoadSprite("textures/map.png");
+
+    return LoadedMap;       
 }
