@@ -19,8 +19,8 @@ int main(int argc, char **argv)
     bool LeftShift = false;
 
     player Player = LoadPlayer();
-    Player.PosX = 400 - 48;
-    Player.PosY = 320 - 48;
+    //Player.PosX = 400 - 48;
+    //Player.PosY = 320 - 48;
 
     bool running = true;
 
@@ -82,6 +82,7 @@ int main(int argc, char **argv)
         //GameUpdate------------------------------------------------------
 
         PlayerUpdate(&Player, RightButton, LeftButton, UpButton, DownButton, LeftShift);
+        MapUpdate(&Map, &Player, RightButton, LeftButton, UpButton, DownButton, LeftShift);
 
         //----------------------------------------------------------------
         int R = 100;
