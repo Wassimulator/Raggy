@@ -96,15 +96,15 @@ int main(int argc, char **argv)
         float MapLimitR = -(InitialMapPosX - InitialPlayerPosX + 3); // value of the the map limit if starting at zero and going in a direction
         float MapLimitL = (InitialMapPosX - InitialPlayerPosX + 3);
 
-        PlayerUpdate(&Player, RightButton, LeftButton, UpButton, DownButton, Shift);
+        PlayerUpdate(&Player, RightButton, LeftButton, UpButton, DownButton, Shift, WindowWidth);
         MapUpdate(&Map, &Player, RightButton, LeftButton, UpButton, DownButton, Shift,
-                  CamPosX, MapLimitL, MapLimitR, InitialMapPosX, InitialPlayerPosX);
+                  CamPosX, MapLimitL, MapLimitR);
 
         printf("CamPosX = %.0f  ", CamPosX);
-        //printf("P-PosX = %.0f  ", Player.PosX);
-        printf("M-PosX = %.0f  ", Map.PosX);
-        printf("MapLimitL = %.0f  ", MapLimitL);
-        printf("MapLimitR = %0.f\n", MapLimitR);
+        printf("P-PosX = %.0f  ", Player.PosX);
+        printf("M-PosX = %.0f  \n", Map.PosX);
+        //printf("MapLimitL = %.0f  ", MapLimitL);
+        //printf("MapLimitR = %0.f\n", MapLimitR);
 
         //---------------------------------------------------------------------------------------------
         int R = 100;
@@ -113,7 +113,7 @@ int main(int argc, char **argv)
         int A = 255;
 
         // WINDOWS USES BGRA (that does not stand for bulgaria)
-        // Todo; map it so that it works on multiple systems
+        // TODO: map it so that it works on multiple systems
 
         // TODO: Move the SDL_Rect clutter into somehting organized
         SDL_FillRect(WindowSurface, 0, (A << 24) | (R << 16) | (G << 8) | (B));

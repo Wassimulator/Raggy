@@ -66,7 +66,7 @@ player LoadPlayer()
     return Player;
 };
 
-void PlayerUpdate(player *Player, bool RightButton, bool LeftButton, bool UpButton, bool DownButton, bool Shift)
+void PlayerUpdate(player *Player, bool RightButton, bool LeftButton, bool UpButton, bool DownButton, bool Shift, int WindowWidth)
 {
     Player->Speed = 1;
     float dx = 0;
@@ -83,32 +83,32 @@ void PlayerUpdate(player *Player, bool RightButton, bool LeftButton, bool UpButt
     //Player->ActiveTexture = &Player->Idle;
     //TODO: fix the idle guy in Pyxel
 
-    if (RightButton && Player->PosX < 600 && Player->PosX > 100)
+    if (RightButton && Player->PosX < (WindowWidth - 200) && Player->PosX > 100)
     {
         Player->ActiveTexture = &Player->RightAnimation;
         dx++;
         Player->Direction = RightDirection;
     }
-    if (RightButton && Player->PosX == 599)
+    if (RightButton && Player->PosX == (WindowWidth - 201))
     {
         Player->ActiveTexture = &Player->RightAnimation;
-        Player->PosX = 598;
+        Player->PosX = (WindowWidth - 202);
         Player->Direction = RightDirection;
     }
-    if (RightButton && Shift && Player->PosX < 597 && Player->PosX > 103)
+    if (RightButton && Shift && Player->PosX < (WindowWidth - 203) && Player->PosX > 103)
     {
         Player->ActiveTexture = &Player->RightRunAnimation;
         dx++;
         Player->Speed = 3.5;
         Player->Direction = RightDirection;
     }
-    if (RightButton && Shift && Player->PosX <= 599 && Player->PosX >= 597)
+    if (RightButton && Shift && Player->PosX <= (WindowWidth - 201) && Player->PosX >= (WindowWidth - 203))
     {
         Player->ActiveTexture = &Player->RightRunAnimation;
-        Player->PosX = 598;
+        Player->PosX = (WindowWidth - 202);
         Player->Direction = RightDirection;
     }
-    if (LeftButton && Player->PosX < 600 && Player->PosX > 100)
+    if (LeftButton && Player->PosX < (WindowWidth - 200) && Player->PosX > 100)
     {
         Player->ActiveTexture = &Player->LeftAnimation;
         dx--;
@@ -120,7 +120,7 @@ void PlayerUpdate(player *Player, bool RightButton, bool LeftButton, bool UpButt
         Player->PosX = 102;
         Player->Direction = LeftDirection;
     }
-    if (LeftButton && Shift && Player->PosX < 597 && Player->PosX > 103)
+    if (LeftButton && Shift && Player->PosX < (WindowWidth - 203) && Player->PosX > 103)
     {
         Player->ActiveTexture = &Player->LeftRunAnimation;
         dx--;
@@ -166,14 +166,13 @@ void PlayerUpdate(player *Player, bool RightButton, bool LeftButton, bool UpButt
 map LoadMap()
 {
     map LoadedMap = {};
-    LoadedMap.ActiveMap = LoadSprite("textures/map2.png");
+    LoadedMap.ActiveMap = LoadSprite("textures/map.png");
 
     return LoadedMap;
 }
 
 void MapUpdate(map *Map, player *Player, bool RightButton, bool LeftButton, bool UpButton,
-               bool DownButton, bool Shift, int CamPosX, int MapLimitL, int MapLimitR,
-               int InitialMapPosX, int InitialPlayerPosX)
+               bool DownButton, bool Shift, int CamPosX, int MapLimitL, int MapLimitR)
 {
     Map->Speed = 1;
     float dx = 0;
@@ -197,28 +196,31 @@ void MapUpdate(map *Map, player *Player, bool RightButton, bool LeftButton, bool
         dx++;
         Map->Speed = 3.5;
     }
+
     // below is an example of why you shouldn't overthink things. code works perfectly if I just cut this part out.
     /*
-    if (LeftButton && CamPosX < MapLimitL)
-    {
-        //Map->PosX = MapLimitL + (WindowWidth * 2) - 48;
-        Map->PosX = -CamPosX + Player->PosX - InitialMapPosX + InitialPlayerPosX;
-    }
-    if (LeftButton && Shift && CamPosX < MapLimitL)
-    {
-        Map->PosX = -CamPosX + Player->PosX - InitialMapPosX + InitialPlayerPosX;
-    }
+        if (LeftButton && CamPosX < MapLimitL)
+        {
+            //Map->PosX = MapLimitL + (WindowWidth * 2) - 48;
+            Map->PosX = -CamPosX + Player->PosX - InitialMapPosX + InitialPlayerPosX;
+        }
+        if (LeftButton && Shift && CamPosX < MapLimitL)
+        {
+            Map->PosX = -CamPosX + Player->PosX - InitialMapPosX + InitialPlayerPosX;
+        }
+    
+        if (RightButton && CamPosX > MapLimitR)
+        {
+            //Map->PosX = -(WindowWidth + MapLimitR) - 48;
+        }
+        if (RightButton && Shift && CamPosX > MapLimitR)
+        {
+        
+            //Map->PosX = -(WindowWidth + MapLimitR) - 48;
+        }*/
 
-    if (RightButton && CamPosX > MapLimitR)
-    {
-        //Map->PosX = -(WindowWidth + MapLimitR) - 48;
-    }
-    if (RightButton && Shift && CamPosX > MapLimitR)
-    {
 
-        //Map->PosX = -(WindowWidth + MapLimitR) - 48;
-    }*/
-
+    // not necessary, player moves only on the X axis. but left jsut in case.
     float dl = sqrtf(dx * dx + dy * dy);
     if (dl != 0)
     {
