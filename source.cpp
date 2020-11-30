@@ -22,7 +22,7 @@ enum direction
     LeftDirection
 };
 
-//-----------------PLAYER------------------------------------------------------
+//-----------------------------STRUCTS---------------------------------------------
 
 struct player
 {
@@ -40,6 +40,16 @@ struct player
     int Speed;
     direction Direction;
 };
+
+struct map
+{
+    sprite ActiveMap;
+    float PosX;
+    float PosY;
+    int Speed;
+};
+
+//-----------------PLAYER------------------------------------------------------------------------
 
 player LoadPlayer()
 {
@@ -163,14 +173,8 @@ void PlayerUpdate(player *Player, bool RightButton, bool LeftButton, bool UpButt
     }
 }
 
-//-------------------------MAPS-------------------------
-struct map
-{
-    sprite ActiveMap;
-    float PosX;
-    float PosY;
-    int Speed;
-};
+//-------------------------MAPS-------------------------------------------------------
+
 
 map LoadMap()
 {

@@ -1,5 +1,5 @@
 #include "raggy.hpp"
-#include "player.cpp"
+#include "source.cpp"
 
 int main(int argc, char **argv)
 {
