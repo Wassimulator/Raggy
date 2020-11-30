@@ -20,6 +20,7 @@ int main(int argc, char **argv)
     bool UpButton = false;
     bool DownButton = false;
     bool Shift = false;
+    bool F_Key = false;
 
     player Player = LoadPlayer();
     //putting the player in the center of the screen:
@@ -39,12 +40,13 @@ int main(int argc, char **argv)
     int InitialPlayerPosX = Player.PosX;
 
     int WalkSpeed = 2;
-    int RunSpeed = 4;           //They're now adjustable, I still don't see why you need them to be as such,
-                                // but here, 1,5 hours later, I present you ADJUSTABLE SPEEDS * Confetti *
+    int RunSpeed = 4; //They're now adjustable, I still don't see why you need them to be as such,
+                      // but here, 1,5 hours later, I present you ADJUSTABLE SPEEDS * Confetti *
 
     //Game Loop-----------------------------------------------------------------
     while (running)
     {
+
         //FPS------------------------------------------------------
         const int FPS = 60;
         const int frameDelay = 1000 / FPS;
@@ -88,6 +90,9 @@ int main(int argc, char **argv)
                 case SDLK_RSHIFT:
                     Shift = KeyState;
                     break;
+                case SDLK_f:
+                    F_Key = KeyState;
+                    break;
                 default:
                     break;
                 }
@@ -101,12 +106,13 @@ int main(int argc, char **argv)
         float MapLimitL = (InitialMapPosX - InitialPlayerPosX + 3);
 
         PlayerUpdate(&Player, RightButton, LeftButton, UpButton, DownButton, Shift, WindowWidth, WalkSpeed, RunSpeed);
+        PlayerSoundUpdate(F_Key);
         MapUpdate(&Map, &Player, RightButton, LeftButton, UpButton, DownButton, Shift,
                   CamPosX, MapLimitL, MapLimitR, WindowWidth, WalkSpeed, RunSpeed);
 
-        printf("CamPosX = %.0f  ", CamPosX);
-        printf("P-PosX = %.0f  ", Player.PosX);
-        printf("M-PosX = %.0f  \n", Map.PosX);
+        //printf("CamPosX = %.0f  ", CamPosX);
+        //printf("P-PosX = %.0f  ", Player.PosX);
+        //printf("M-PosX = %.0f  \n", Map.PosX);
         //printf("MapLimitL = %.0f  ", MapLimitL);
         //printf("MapLimitR = %0.f\n", MapLimitR);
 

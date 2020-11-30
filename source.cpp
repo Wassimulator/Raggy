@@ -49,6 +49,13 @@ struct map
     int Speed;
 };
 
+struct sound
+{
+    char* file;
+    SDL_AudioSpec wavSpec;
+    Uint32 wavLength;
+    Uint8 *wavBuffer;
+};
 //-----------------PLAYER------------------------------------------------------------------------
 
 player LoadPlayer()
@@ -67,7 +74,8 @@ player LoadPlayer()
 };
 
 void PlayerUpdate(player *Player, bool RightButton, bool LeftButton, bool UpButton,
-                  bool DownButton, bool Shift, int WindowWidth, int WalkSpeed, int RunSpeed)
+                  bool DownButton, bool Shift, int WindowWidth, int WalkSpeed, 
+                  int RunSpeed)
 {
     Player->Speed = 1;
     float dx = 0;
@@ -168,6 +176,25 @@ void PlayerUpdate(player *Player, bool RightButton, bool LeftButton, bool UpButt
         {
             Player->i = 1;
         }
+    }
+
+
+}
+
+void PlayerSoundUpdate(bool F_Key)
+{
+    //YO
+    sound Yo;
+    Yo.file = "sounds/yo.wav";
+    if (F_Key)
+    {
+    SDL_LoadWAV(Yo.file, &Yo.wavSpec, &Yo.wavBuffer, &Yo.wavLength);
+
+    SDL_AudioDeviceID deviceId = SDL_OpenAudioDevice(NULL, 0, &Yo.wavSpec, 0, 0);
+    SDL_QueueAudio(deviceId, Yo.wavBuffer, Yo.wavLength);
+    SDL_PauseAudioDevice(deviceId, 0);
+    //SDL_CloseAudioDevice(deviceId);
+    SDL_FreeWAV(Yo.wavBuffer);
     }
 }
 
