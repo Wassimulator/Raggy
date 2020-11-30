@@ -98,7 +98,7 @@ int main(int argc, char **argv)
 
         PlayerUpdate(&Player, RightButton, LeftButton, UpButton, DownButton, Shift, WindowWidth);
         MapUpdate(&Map, &Player, RightButton, LeftButton, UpButton, DownButton, Shift,
-                  CamPosX, MapLimitL, MapLimitR);
+                  CamPosX, MapLimitL, MapLimitR, WindowWidth);
 
         printf("CamPosX = %.0f  ", CamPosX);
         printf("P-PosX = %.0f  ", Player.PosX);
