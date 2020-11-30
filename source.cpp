@@ -166,13 +166,14 @@ void PlayerUpdate(player *Player, bool RightButton, bool LeftButton, bool UpButt
 map LoadMap()
 {
     map LoadedMap = {};
-    LoadedMap.ActiveMap = LoadSprite("textures/map.png");
+    LoadedMap.ActiveMap = LoadSprite("textures/map2.png");
 
     return LoadedMap;
 }
 
 void MapUpdate(map *Map, player *Player, bool RightButton, bool LeftButton, bool UpButton,
-               bool DownButton, bool Shift, int CamPosX, int MapLimitL, int MapLimitR, int WindowWidth)
+               bool DownButton, bool Shift, int CamPosX, int MapLimitL, int MapLimitR,
+               int InitialMapPosX, int InitialPlayerPosX)
 {
     Map->Speed = 1;
     float dx = 0;
@@ -196,25 +197,27 @@ void MapUpdate(map *Map, player *Player, bool RightButton, bool LeftButton, bool
         dx++;
         Map->Speed = 3.5;
     }
-
+    // below is an example of why you shouldn't overthink things. code works perfectly if I just cut this part out.
+    /*
     if (LeftButton && CamPosX < MapLimitL)
     {
-        Map->PosX =  MapLimitL + ( WindowWidth * 2) - 50;
+        //Map->PosX = MapLimitL + (WindowWidth * 2) - 48;
+        Map->PosX = -CamPosX + Player->PosX - InitialMapPosX + InitialPlayerPosX;
     }
     if (LeftButton && Shift && CamPosX < MapLimitL)
     {
-        Map->PosX =  MapLimitL + ( WindowWidth * 2) - 50;
+        Map->PosX = -CamPosX + Player->PosX - InitialMapPosX + InitialPlayerPosX;
     }
 
     if (RightButton && CamPosX > MapLimitR)
     {
-        Map->PosX = - (WindowWidth + MapLimitR) - 50;
+        //Map->PosX = -(WindowWidth + MapLimitR) - 48;
     }
     if (RightButton && Shift && CamPosX > MapLimitR)
     {
 
-       Map->PosX = - (WindowWidth + MapLimitR) - 50;
-    }
+        //Map->PosX = -(WindowWidth + MapLimitR) - 48;
+    }*/
 
     float dl = sqrtf(dx * dx + dy * dy);
     if (dl != 0)

@@ -22,6 +22,7 @@ int main(int argc, char **argv)
     bool Shift = false;
 
     player Player = LoadPlayer();
+    //putting the player in the center of the screen:
     Player.PosX = (WindowWidth / 2) - 48;
     Player.PosY = (WindowHight / 2) - 48;
 
@@ -30,8 +31,8 @@ int main(int argc, char **argv)
     map Map = LoadMap();
     Map.ActiveMap.h = Map.ActiveMap.h * 3;
     Map.ActiveMap.w = Map.ActiveMap.w * 3;
-    //putting the map in the middle of the screen:
-    Map.PosX = -(Map.ActiveMap.w - WindowWidth) / 2;
+    //putting the map in the center of the screen:
+    Map.PosX = -(Map.ActiveMap.w - WindowWidth) / 2; // -1000 + 800 / 2 = -100
     Map.PosY = -(Map.ActiveMap.h - WindowHight) / 2;
 
     int InitialMapPosX = Map.PosX;
@@ -96,7 +97,8 @@ int main(int argc, char **argv)
         float MapLimitL = (InitialMapPosX - InitialPlayerPosX + 3);
 
         PlayerUpdate(&Player, RightButton, LeftButton, UpButton, DownButton, Shift);
-        MapUpdate(&Map, &Player, RightButton, LeftButton, UpButton, DownButton, Shift, CamPosX, MapLimitL, MapLimitR, WindowWidth);
+        MapUpdate(&Map, &Player, RightButton, LeftButton, UpButton, DownButton, Shift,
+                  CamPosX, MapLimitL, MapLimitR, InitialMapPosX, InitialPlayerPosX);
 
         printf("CamPosX = %.0f  ", CamPosX);
         //printf("P-PosX = %.0f  ", Player.PosX);
