@@ -51,7 +51,7 @@ struct map
 
 struct sound
 {
-    char* file;
+    char *file;
     SDL_AudioSpec wavSpec;
     Uint32 wavLength;
     Uint8 *wavBuffer;
@@ -74,7 +74,7 @@ player LoadPlayer()
 };
 
 void PlayerUpdate(player *Player, bool RightButton, bool LeftButton, bool UpButton,
-                  bool DownButton, bool Shift, int WindowWidth, int WalkSpeed, 
+                  bool DownButton, bool Shift, int WindowWidth, int WalkSpeed,
                   int RunSpeed)
 {
     Player->Speed = 1;
@@ -92,7 +92,7 @@ void PlayerUpdate(player *Player, bool RightButton, bool LeftButton, bool UpButt
     //Player->ActiveTexture = &Player->Idle;
     //TODO: fix the idle guy in Pyxel
 
-     //RIGHT
+    //RIGHT
     if (RightButton && Player->PosX < (WindowWidth - 200 - WalkSpeed) && Player->PosX > (100 + WalkSpeed))
     {
         Player->ActiveTexture = &Player->RightAnimation;
@@ -100,25 +100,25 @@ void PlayerUpdate(player *Player, bool RightButton, bool LeftButton, bool UpButt
         Player->Speed = WalkSpeed;
         Player->Direction = RightDirection;
     }
-    if (RightButton && Player->PosX <= (WindowWidth - 200 - WalkSpeed) && Player->PosX >= (WindowWidth - 200 - 2*(WalkSpeed)))
+    if (RightButton && Player->PosX <= (WindowWidth - 200 - WalkSpeed) && Player->PosX >= (WindowWidth - 200 - 2 * (WalkSpeed)))
     {
         Player->ActiveTexture = &Player->RightAnimation;
-        Player->PosX = (WindowWidth - 200 - 3*(WalkSpeed));
+        Player->PosX = (WindowWidth - 200 - 3 * (WalkSpeed));
         Player->Direction = RightDirection;
     }
 
     //RIGHT SHIFT
-    if (RightButton && Shift && Player->PosX < (WindowWidth - 200 - 2*(RunSpeed)) && Player->PosX > (100 + 2*(RunSpeed)))
+    if (RightButton && Shift && Player->PosX < (WindowWidth - 200 - 2 * (RunSpeed)) && Player->PosX > (100 + 2 * (RunSpeed)))
     {
         Player->ActiveTexture = &Player->RightRunAnimation;
         dx++;
         Player->Speed = RunSpeed;
         Player->Direction = RightDirection;
     }
-    if (RightButton && Shift && Player->PosX <= (WindowWidth - 200 - RunSpeed) && Player->PosX >= (WindowWidth - 200 - 2*(RunSpeed)))
+    if (RightButton && Shift && Player->PosX <= (WindowWidth - 200 - RunSpeed) && Player->PosX >= (WindowWidth - 200 - 2 * (RunSpeed)))
     {
         Player->ActiveTexture = &Player->RightRunAnimation;
-        Player->PosX = (WindowWidth - 200 - 2*(RunSpeed));
+        Player->PosX = (WindowWidth - 200 - 2 * (RunSpeed));
         Player->Direction = RightDirection;
     }
 
@@ -130,25 +130,25 @@ void PlayerUpdate(player *Player, bool RightButton, bool LeftButton, bool UpButt
         Player->Speed = WalkSpeed;
         Player->Direction = LeftDirection;
     }
-    if (LeftButton && Player->PosX <= (100 + 2*(WalkSpeed)) && Player->PosX >= (100 + WalkSpeed))
+    if (LeftButton && Player->PosX <= (100 + 2 * (WalkSpeed)) && Player->PosX >= (100 + WalkSpeed))
     {
         Player->ActiveTexture = &Player->LeftAnimation;
-        Player->PosX = 100 + 3*(WalkSpeed);
+        Player->PosX = 100 + 3 * (WalkSpeed);
         Player->Direction = LeftDirection;
     }
 
     //LEFT SHIFT
-    if (LeftButton && Shift && Player->PosX < (WindowWidth - 200 - 2*(RunSpeed)) && Player->PosX > (100 + 2*(RunSpeed)))
+    if (LeftButton && Shift && Player->PosX < (WindowWidth - 200 - 2 * (RunSpeed)) && Player->PosX > (100 + 2 * (RunSpeed)))
     {
         Player->ActiveTexture = &Player->LeftRunAnimation;
         dx--;
         Player->Speed = RunSpeed;
         Player->Direction = LeftDirection;
     }
-    if (LeftButton && Shift && Player->PosX <= (100 + 2*(RunSpeed)) && Player->PosX >= (100 + RunSpeed))
+    if (LeftButton && Shift && Player->PosX <= (100 + 2 * (RunSpeed)) && Player->PosX >= (100 + RunSpeed))
     {
         Player->ActiveTexture = &Player->LeftRunAnimation;
-        Player->PosX = 100 + 2*(RunSpeed);
+        Player->PosX = 100 + 2 * (RunSpeed);
         Player->Direction = LeftDirection;
     }
     //sum mafs
@@ -177,24 +177,16 @@ void PlayerUpdate(player *Player, bool RightButton, bool LeftButton, bool UpButt
             Player->i = 1;
         }
     }
-
-
 }
 
-void PlayerSoundUpdate(bool F_Key)
+void PlayerSoundUpdate(Mix_Chunk *Sound, bool F_Key)
 {
-    //YO
-    sound Yo;
-    Yo.file = "sounds/yo.wav";
-    if (F_Key)
+    if(Mix_Playing(1) == 0)
     {
-    SDL_LoadWAV(Yo.file, &Yo.wavSpec, &Yo.wavBuffer, &Yo.wavLength);
-
-    SDL_AudioDeviceID deviceId = SDL_OpenAudioDevice(NULL, 0, &Yo.wavSpec, 0, 0);
-    SDL_QueueAudio(deviceId, Yo.wavBuffer, Yo.wavLength);
-    SDL_PauseAudioDevice(deviceId, 0);
-    //SDL_CloseAudioDevice(deviceId);
-    SDL_FreeWAV(Yo.wavBuffer);
+        if (F_Key)
+        {
+            Mix_PlayChannel(1, Sound, 0);
+        }
     }
 }
 
@@ -216,22 +208,22 @@ void MapUpdate(map *Map, player *Player, bool RightButton, bool LeftButton, bool
     float dx = 0;
     float dy = 0;
 
-    if (RightButton && Player->PosX <= (WindowWidth - 200 - WalkSpeed) && Player->PosX >= (WindowWidth - 200 - 2*(WalkSpeed)) && CamPosX > MapLimitL && CamPosX < MapLimitR)
+    if (RightButton && Player->PosX <= (WindowWidth - 200 - WalkSpeed) && Player->PosX >= (WindowWidth - 200 - 2 * (WalkSpeed)) && CamPosX > MapLimitL && CamPosX < MapLimitR)
     {
         dx--;
         Map->Speed = WalkSpeed;
     }
-    if (RightButton && Shift && Player->PosX <= (WindowWidth - 200 - RunSpeed) && Player->PosX >= (WindowWidth - 200 - 2*(RunSpeed)) && CamPosX > MapLimitL && CamPosX < MapLimitR)
+    if (RightButton && Shift && Player->PosX <= (WindowWidth - 200 - RunSpeed) && Player->PosX >= (WindowWidth - 200 - 2 * (RunSpeed)) && CamPosX > MapLimitL && CamPosX < MapLimitR)
     {
         dx--;
         Map->Speed = RunSpeed;
     }
-    if (LeftButton && Player->PosX <= (100 + 2*(WalkSpeed)) && Player->PosX >= (100 + WalkSpeed) && CamPosX > MapLimitL && CamPosX < MapLimitR)
+    if (LeftButton && Player->PosX <= (100 + 2 * (WalkSpeed)) && Player->PosX >= (100 + WalkSpeed) && CamPosX > MapLimitL && CamPosX < MapLimitR)
     {
         dx++;
         Map->Speed = WalkSpeed;
     }
-    if (LeftButton && Shift && Player->PosX <= (100 + 2*(RunSpeed)) && Player->PosX >= (100 + RunSpeed) && CamPosX > MapLimitL && CamPosX < MapLimitR)
+    if (LeftButton && Shift && Player->PosX <= (100 + 2 * (RunSpeed)) && Player->PosX >= (100 + RunSpeed) && CamPosX > MapLimitL && CamPosX < MapLimitR)
     {
         dx++;
         Map->Speed = RunSpeed;

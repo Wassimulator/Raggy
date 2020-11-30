@@ -21,6 +21,7 @@ int main(int argc, char **argv)
     bool DownButton = false;
     bool Shift = false;
     bool F_Key = false;
+    bool H_Key = false;
 
     player Player = LoadPlayer();
     //putting the player in the center of the screen:
@@ -42,6 +43,14 @@ int main(int argc, char **argv)
     int WalkSpeed = 2;
     int RunSpeed = 4; //They're now adjustable, I still don't see why you need them to be as such,
                       // but here, 1,5 hours later, I present you ADJUSTABLE SPEEDS * Confetti *
+
+    //------load sounds--------
+
+    Mix_OpenAudio(44800, MIX_DEFAULT_FORMAT, 2, 4096);
+    Mix_Chunk *S_Yo = Mix_LoadWAV("sounds/yo.wav");
+    Mix_Chunk *S_Fart = Mix_LoadWAV("sounds/fart.wav");
+
+    printf ("Press H to say hello\nPress F to pay respects\n");
 
     //Game Loop-----------------------------------------------------------------
     while (running)
@@ -93,6 +102,9 @@ int main(int argc, char **argv)
                 case SDLK_f:
                     F_Key = KeyState;
                     break;
+                case SDLK_h:
+                    H_Key = KeyState;
+                    break;
                 default:
                     break;
                 }
@@ -106,7 +118,8 @@ int main(int argc, char **argv)
         float MapLimitL = (InitialMapPosX - InitialPlayerPosX + 3);
 
         PlayerUpdate(&Player, RightButton, LeftButton, UpButton, DownButton, Shift, WindowWidth, WalkSpeed, RunSpeed);
-        PlayerSoundUpdate(F_Key);
+        PlayerSoundUpdate(S_Yo, H_Key);
+        PlayerSoundUpdate(S_Fart, F_Key);
         MapUpdate(&Map, &Player, RightButton, LeftButton, UpButton, DownButton, Shift,
                   CamPosX, MapLimitL, MapLimitR, WindowWidth, WalkSpeed, RunSpeed);
 
