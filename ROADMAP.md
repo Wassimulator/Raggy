@@ -1,5 +1,11 @@
-#Roadmap
+# Roadmap
 
-a list of stuff to add and make for the game in its current state
+### a list of stuff to add and make for the game in its current state
 
-- implement an easier and simpler system of PosX between the map and character
+DONE - implement an easier and simpler system of PosX between the map and character
+
+
+
+## Bugs
+- player can moonwalk
+- pressing left and right moves while static
