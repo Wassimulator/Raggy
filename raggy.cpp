@@ -7,8 +7,8 @@ int main(int argc, char **argv)
     SDL_Init(SDL_INIT_EVERYTHING);
     SDL_Window *Window;
 
-    int WindowWidth = 1024;
-    int WindowHight = 720;
+    int WindowWidth = 800;
+    int WindowHight = 640;
 
     Window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WindowWidth, WindowHight, 0);
     SDL_Surface *WindowSurface = SDL_GetWindowSurface(Window);
@@ -37,6 +37,10 @@ int main(int argc, char **argv)
 
     int InitialMapPosX = Map.PosX;
     int InitialPlayerPosX = Player.PosX;
+
+    int WalkSpeed = 2;
+    int RunSpeed = 4;           //They're now adjustable, I still don't see why you need them to be as such,
+                                // but here, 1,5 hours later, I present you ADJUSTABLE SPEEDS * Confetti *
 
     //Game Loop-----------------------------------------------------------------
     while (running)
@@ -96,9 +100,9 @@ int main(int argc, char **argv)
         float MapLimitR = -(InitialMapPosX - InitialPlayerPosX + 3); // value of the the map limit if starting at zero and going in a direction
         float MapLimitL = (InitialMapPosX - InitialPlayerPosX + 3);
 
-        PlayerUpdate(&Player, RightButton, LeftButton, UpButton, DownButton, Shift, WindowWidth);
+        PlayerUpdate(&Player, RightButton, LeftButton, UpButton, DownButton, Shift, WindowWidth, WalkSpeed, RunSpeed);
         MapUpdate(&Map, &Player, RightButton, LeftButton, UpButton, DownButton, Shift,
-                  CamPosX, MapLimitL, MapLimitR, WindowWidth);
+                  CamPosX, MapLimitL, MapLimitR, WindowWidth, WalkSpeed, RunSpeed);
 
         printf("CamPosX = %.0f  ", CamPosX);
         printf("P-PosX = %.0f  ", Player.PosX);

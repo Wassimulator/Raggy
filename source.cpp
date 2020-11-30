@@ -66,7 +66,8 @@ player LoadPlayer()
     return Player;
 };
 
-void PlayerUpdate(player *Player, bool RightButton, bool LeftButton, bool UpButton, bool DownButton, bool Shift, int WindowWidth)
+void PlayerUpdate(player *Player, bool RightButton, bool LeftButton, bool UpButton,
+                  bool DownButton, bool Shift, int WindowWidth, int WalkSpeed, int RunSpeed)
 {
     Player->Speed = 1;
     float dx = 0;
@@ -83,54 +84,63 @@ void PlayerUpdate(player *Player, bool RightButton, bool LeftButton, bool UpButt
     //Player->ActiveTexture = &Player->Idle;
     //TODO: fix the idle guy in Pyxel
 
-    if (RightButton && Player->PosX < (WindowWidth - 200) && Player->PosX > 100)
+     //RIGHT
+    if (RightButton && Player->PosX < (WindowWidth - 200 - WalkSpeed) && Player->PosX > (100 + WalkSpeed))
     {
         Player->ActiveTexture = &Player->RightAnimation;
         dx++;
+        Player->Speed = WalkSpeed;
         Player->Direction = RightDirection;
     }
-    if (RightButton && Player->PosX == (WindowWidth - 201))
+    if (RightButton && Player->PosX <= (WindowWidth - 200 - WalkSpeed) && Player->PosX >= (WindowWidth - 200 - 2*(WalkSpeed)))
     {
         Player->ActiveTexture = &Player->RightAnimation;
-        Player->PosX = (WindowWidth - 202);
+        Player->PosX = (WindowWidth - 200 - 3*(WalkSpeed));
         Player->Direction = RightDirection;
     }
-    if (RightButton && Shift && Player->PosX < (WindowWidth - 203) && Player->PosX > 103)
+
+    //RIGHT SHIFT
+    if (RightButton && Shift && Player->PosX < (WindowWidth - 200 - 2*(RunSpeed)) && Player->PosX > (100 + 2*(RunSpeed)))
     {
         Player->ActiveTexture = &Player->RightRunAnimation;
         dx++;
-        Player->Speed = 3.5;
+        Player->Speed = RunSpeed;
         Player->Direction = RightDirection;
     }
-    if (RightButton && Shift && Player->PosX <= (WindowWidth - 201) && Player->PosX >= (WindowWidth - 203))
+    if (RightButton && Shift && Player->PosX <= (WindowWidth - 200 - RunSpeed) && Player->PosX >= (WindowWidth - 200 - 2*(RunSpeed)))
     {
         Player->ActiveTexture = &Player->RightRunAnimation;
-        Player->PosX = (WindowWidth - 202);
+        Player->PosX = (WindowWidth - 200 - 2*(RunSpeed));
         Player->Direction = RightDirection;
     }
-    if (LeftButton && Player->PosX < (WindowWidth - 200) && Player->PosX > 100)
+
+    //LEFT
+    if (LeftButton && Player->PosX < (WindowWidth - 200 - WalkSpeed) && Player->PosX > (100 + WalkSpeed))
     {
         Player->ActiveTexture = &Player->LeftAnimation;
         dx--;
+        Player->Speed = WalkSpeed;
         Player->Direction = LeftDirection;
     }
-    if (LeftButton && Player->PosX == 101)
+    if (LeftButton && Player->PosX <= (100 + 2*(WalkSpeed)) && Player->PosX >= (100 + WalkSpeed))
     {
         Player->ActiveTexture = &Player->LeftAnimation;
-        Player->PosX = 102;
+        Player->PosX = 100 + 3*(WalkSpeed);
         Player->Direction = LeftDirection;
     }
-    if (LeftButton && Shift && Player->PosX < (WindowWidth - 203) && Player->PosX > 103)
+
+    //LEFT SHIFT
+    if (LeftButton && Shift && Player->PosX < (WindowWidth - 200 - 2*(RunSpeed)) && Player->PosX > (100 + 2*(RunSpeed)))
     {
         Player->ActiveTexture = &Player->LeftRunAnimation;
         dx--;
-        Player->Speed = 3.5;
+        Player->Speed = RunSpeed;
         Player->Direction = LeftDirection;
     }
-    if (LeftButton && Shift && Player->PosX <= 103 && Player->PosX >= 101)
+    if (LeftButton && Shift && Player->PosX <= (100 + 2*(RunSpeed)) && Player->PosX >= (100 + RunSpeed))
     {
         Player->ActiveTexture = &Player->LeftRunAnimation;
-        Player->PosX = 102;
+        Player->PosX = 100 + 2*(RunSpeed);
         Player->Direction = LeftDirection;
     }
     //sum mafs
@@ -172,29 +182,32 @@ map LoadMap()
 }
 
 void MapUpdate(map *Map, player *Player, bool RightButton, bool LeftButton, bool UpButton,
-               bool DownButton, bool Shift, int CamPosX, int MapLimitL, int MapLimitR, int WindowWidth)
+               bool DownButton, bool Shift, int CamPosX, int MapLimitL, int MapLimitR,
+               int WindowWidth, int WalkSpeed, int RunSpeed)
 {
     Map->Speed = 1;
     float dx = 0;
     float dy = 0;
 
-    if (RightButton && Player->PosX == (WindowWidth - 201) && CamPosX > MapLimitL && CamPosX < MapLimitR)
+    if (RightButton && Player->PosX <= (WindowWidth - 200 - WalkSpeed) && Player->PosX >= (WindowWidth - 200 - 2*(WalkSpeed)) && CamPosX > MapLimitL && CamPosX < MapLimitR)
     {
         dx--;
+        Map->Speed = WalkSpeed;
     }
-    if (RightButton && Shift && Player->PosX <= (WindowWidth - 201) && Player->PosX >= (WindowWidth - 203) && CamPosX > MapLimitL && CamPosX < MapLimitR)
+    if (RightButton && Shift && Player->PosX <= (WindowWidth - 200 - RunSpeed) && Player->PosX >= (WindowWidth - 200 - 2*(RunSpeed)) && CamPosX > MapLimitL && CamPosX < MapLimitR)
     {
         dx--;
-        Map->Speed = 3.5;
+        Map->Speed = RunSpeed;
     }
-    if (LeftButton && Player->PosX == 101 && CamPosX > MapLimitL && CamPosX < MapLimitR)
+    if (LeftButton && Player->PosX <= (100 + 2*(WalkSpeed)) && Player->PosX >= (100 + WalkSpeed) && CamPosX > MapLimitL && CamPosX < MapLimitR)
     {
         dx++;
+        Map->Speed = WalkSpeed;
     }
-    if (LeftButton && Shift && Player->PosX <= 103 && Player->PosX >= 101 && CamPosX > MapLimitL && CamPosX < MapLimitR)
+    if (LeftButton && Shift && Player->PosX <= (100 + 2*(RunSpeed)) && Player->PosX >= (100 + RunSpeed) && CamPosX > MapLimitL && CamPosX < MapLimitR)
     {
         dx++;
-        Map->Speed = 3.5;
+        Map->Speed = RunSpeed;
     }
 
     // below is an example of why you shouldn't overthink things. code works perfectly if I just cut this part out.
@@ -218,7 +231,6 @@ void MapUpdate(map *Map, player *Player, bool RightButton, bool LeftButton, bool
         
             //Map->PosX = -(WindowWidth + MapLimitR) - 48;
         }*/
-
 
     // not necessary, player moves only on the X axis. but left jsut in case.
     float dl = sqrtf(dx * dx + dy * dy);
