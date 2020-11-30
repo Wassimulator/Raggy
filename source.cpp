@@ -32,8 +32,8 @@ struct player
     sprite RightRunAnimation;
     sprite IdleRight;
     sprite IdleLeft;
-    float PosX = 400 - 48;
-    float PosY = 320 - 48;
+    float PosX;
+    float PosY;
     sprite *ActiveTexture;
     int i;
     int T;
@@ -66,7 +66,7 @@ player LoadPlayer()
     return Player;
 };
 
-void PlayerUpdate(player *Player, bool RightButton, bool LeftButton, bool UpButton, bool DownButton, bool LeftShift)
+void PlayerUpdate(player *Player, bool RightButton, bool LeftButton, bool UpButton, bool DownButton, bool Shift)
 {
     Player->Speed = 1;
     float dx = 0;
@@ -95,14 +95,14 @@ void PlayerUpdate(player *Player, bool RightButton, bool LeftButton, bool UpButt
         Player->PosX = 598;
         Player->Direction = RightDirection;
     }
-    if (RightButton && LeftShift && Player->PosX < 597 && Player->PosX > 103)
+    if (RightButton && Shift && Player->PosX < 597 && Player->PosX > 103)
     {
         Player->ActiveTexture = &Player->RightRunAnimation;
         dx++;
         Player->Speed = 3.5;
         Player->Direction = RightDirection;
     }
-    if (RightButton && LeftShift && Player->PosX <= 599 && Player->PosX >= 597)
+    if (RightButton && Shift && Player->PosX <= 599 && Player->PosX >= 597)
     {
         Player->ActiveTexture = &Player->RightRunAnimation;
         Player->PosX = 598;
@@ -120,30 +120,19 @@ void PlayerUpdate(player *Player, bool RightButton, bool LeftButton, bool UpButt
         Player->PosX = 102;
         Player->Direction = LeftDirection;
     }
-    if (LeftButton && LeftShift && Player->PosX < 597 && Player->PosX > 103)
+    if (LeftButton && Shift && Player->PosX < 597 && Player->PosX > 103)
     {
         Player->ActiveTexture = &Player->LeftRunAnimation;
         dx--;
         Player->Speed = 3.5;
         Player->Direction = LeftDirection;
     }
-    if (LeftButton && LeftShift && Player->PosX <= 103 && Player->PosX >= 101)
+    if (LeftButton && Shift && Player->PosX <= 103 && Player->PosX >= 101)
     {
         Player->ActiveTexture = &Player->LeftRunAnimation;
         Player->PosX = 102;
         Player->Direction = LeftDirection;
     }
-    /*if (UpButton)
-    {
-        //TODO: Draw them
-        dy--;
-    }
-    if (DownButton)
-    {
-        //TODO: Draw them, Asshole.
-        dy++;
-    }*/
-
     //sum mafs
     float dl = sqrtf(dx * dx + dy * dy);
     if (dl != 0)
@@ -157,7 +146,6 @@ void PlayerUpdate(player *Player, bool RightButton, bool LeftButton, bool UpButt
     }
     if (!RightButton && !LeftButton /*&& !UpButton && !DownButton*/)
     {
-        //Player->ActiveTexture = &Player->Idle
         Player->i = 1;
     }
     else if (Player->T++ % 10 == 0)
@@ -175,7 +163,6 @@ void PlayerUpdate(player *Player, bool RightButton, bool LeftButton, bool UpButt
 
 //-------------------------MAPS-------------------------------------------------------
 
-
 map LoadMap()
 {
     map LoadedMap = {};
@@ -184,48 +171,49 @@ map LoadMap()
     return LoadedMap;
 }
 
-void MapUpdate(map *Map, player *Player, bool RightButton, bool LeftButton, bool UpButton, bool DownButton, bool LeftShift)
+void MapUpdate(map *Map, player *Player, bool RightButton, bool LeftButton, bool UpButton,
+               bool DownButton, bool Shift, int CamPosX, int MapLimitL, int MapLimitR, int WindowWidth)
 {
     Map->Speed = 1;
     float dx = 0;
     float dy = 0;
 
-    if (RightButton && Player->PosX == 599)
+    if (RightButton && Player->PosX == 599 && CamPosX > MapLimitL && CamPosX < MapLimitR)
     {
         dx--;
     }
-    if (RightButton && LeftShift && Player->PosX <= 599 && Player->PosX >= 597 && Map->PosX != -2299 && Map->PosX != -2298 && Map->PosX != -2297)
+    if (RightButton && Shift && Player->PosX <= 599 && Player->PosX >= 597 && CamPosX > MapLimitL && CamPosX < MapLimitR)
     {
         dx--;
         Map->Speed = 3.5;
     }
-    if (LeftButton && Player->PosX == 101)
+    if (LeftButton && Player->PosX == 101 && CamPosX > MapLimitL && CamPosX < MapLimitR)
     {
         dx++;
     }
-    if (LeftButton && LeftShift && Player->PosX <= 103 && Player->PosX >= 101 && Map->PosX != 99 && Map->PosX != 98 && Map->PosX != 97)
+    if (LeftButton && Shift && Player->PosX <= 103 && Player->PosX >= 101 && CamPosX > MapLimitL && CamPosX < MapLimitR)
     {
         dx++;
         Map->Speed = 3.5;
     }
 
-    if (LeftButton && Map->PosX == 99)
+    if (LeftButton && CamPosX < MapLimitL)
     {
-        Map->PosX = 98;
+        Map->PosX =  MapLimitL + ( WindowWidth * 2) - 50;
     }
-    if (LeftButton && LeftShift && Map->PosX <= 99 && Map->PosX >= 96)
+    if (LeftButton && Shift && CamPosX < MapLimitL)
     {
-        Map->PosX = 97;
+        Map->PosX =  MapLimitL + ( WindowWidth * 2) - 50;
     }
 
-    if (RightButton && Map->PosX == 2299)
+    if (RightButton && CamPosX > MapLimitR)
     {
-        Map->PosX = -2297;
+        Map->PosX = - (WindowWidth + MapLimitR) - 50;
     }
-    if (RightButton && LeftShift && Map->PosX <= -2296 && Map->PosX >= -2300)
+    if (RightButton && Shift && CamPosX > MapLimitR)
     {
 
-        Map->PosX = -2297;
+       Map->PosX = - (WindowWidth + MapLimitR) - 50;
     }
 
     float dl = sqrtf(dx * dx + dy * dy);

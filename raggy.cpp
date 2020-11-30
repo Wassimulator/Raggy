@@ -7,7 +7,10 @@ int main(int argc, char **argv)
     SDL_Init(SDL_INIT_EVERYTHING);
     SDL_Window *Window;
 
-    Window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 640, 0);
+    int WindowWidth = 800;
+    int WindowHight = 640;
+
+    Window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WindowWidth, WindowHight, 0);
     SDL_Surface *WindowSurface = SDL_GetWindowSurface(Window);
 
     int frameIndex = 0;
@@ -16,11 +19,11 @@ int main(int argc, char **argv)
     bool LeftButton = false;
     bool UpButton = false;
     bool DownButton = false;
-    bool LeftShift = false;
+    bool Shift = false;
 
     player Player = LoadPlayer();
-    //Player.PosX = 400 - 48;
-    //Player.PosY = 320 - 48;
+    Player.PosX = (WindowWidth / 2) - 48;
+    Player.PosY = (WindowHight / 2) - 48;
 
     bool running = true;
 
@@ -28,8 +31,11 @@ int main(int argc, char **argv)
     Map.ActiveMap.h = Map.ActiveMap.h * 3;
     Map.ActiveMap.w = Map.ActiveMap.w * 3;
     //putting the map in the middle of the screen:
-    Map.PosX = -(Map.ActiveMap.w - 800) / 2;
-    Map.PosY = -(Map.ActiveMap.h - 640) / 2;
+    Map.PosX = -(Map.ActiveMap.w - WindowWidth) / 2;
+    Map.PosY = -(Map.ActiveMap.h - WindowHight) / 2;
+
+    int InitialMapPosX = Map.PosX;
+    int InitialPlayerPosX = Player.PosX;
 
     //Game Loop-----------------------------------------------------------------
     while (running)
@@ -72,19 +78,33 @@ int main(int argc, char **argv)
                     RightButton = KeyState;
                     break;
                 case SDLK_LSHIFT:
-                    LeftShift = KeyState;
+                    Shift = KeyState;
+                    break;
+                case SDLK_RSHIFT:
+                    Shift = KeyState;
+                    break;
                 default:
                     break;
                 }
             }
         }
 
-        //GameUpdate------------------------------------------------------
+        //GameUpdate----------------------------------------------------------------------------------
 
-        PlayerUpdate(&Player, RightButton, LeftButton, UpButton, DownButton, LeftShift);
-        MapUpdate(&Map, &Player, RightButton, LeftButton, UpButton, DownButton, LeftShift);
+        float CamPosX = -(Map.PosX - Player.PosX - (InitialMapPosX - InitialPlayerPosX));
+        float MapLimitR = -(InitialMapPosX - InitialPlayerPosX + 3); // value of the the map limit if starting at zero and going in a direction
+        float MapLimitL = (InitialMapPosX - InitialPlayerPosX + 3);
 
-        //----------------------------------------------------------------
+        PlayerUpdate(&Player, RightButton, LeftButton, UpButton, DownButton, Shift);
+        MapUpdate(&Map, &Player, RightButton, LeftButton, UpButton, DownButton, Shift, CamPosX, MapLimitL, MapLimitR, WindowWidth);
+
+        printf("CamPosX = %.0f  ", CamPosX);
+        //printf("P-PosX = %.0f  ", Player.PosX);
+        printf("M-PosX = %.0f  ", Map.PosX);
+        printf("MapLimitL = %.0f  ", MapLimitL);
+        printf("MapLimitR = %0.f\n", MapLimitR);
+
+        //---------------------------------------------------------------------------------------------
         int R = 100;
         int G = 100;
         int B = 100;
