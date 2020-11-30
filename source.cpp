@@ -172,17 +172,17 @@ map LoadMap()
 }
 
 void MapUpdate(map *Map, player *Player, bool RightButton, bool LeftButton, bool UpButton,
-               bool DownButton, bool Shift, int CamPosX, int MapLimitL, int MapLimitR)
+               bool DownButton, bool Shift, int CamPosX, int MapLimitL, int MapLimitR, int WindowWidth)
 {
     Map->Speed = 1;
     float dx = 0;
     float dy = 0;
 
-    if (RightButton && Player->PosX == 599 && CamPosX > MapLimitL && CamPosX < MapLimitR)
+    if (RightButton && Player->PosX == (WindowWidth - 201) && CamPosX > MapLimitL && CamPosX < MapLimitR)
     {
         dx--;
     }
-    if (RightButton && Shift && Player->PosX <= 599 && Player->PosX >= 597 && CamPosX > MapLimitL && CamPosX < MapLimitR)
+    if (RightButton && Shift && Player->PosX <= (WindowWidth - 201) && Player->PosX >= (WindowWidth - 203) && CamPosX > MapLimitL && CamPosX < MapLimitR)
     {
         dx--;
         Map->Speed = 3.5;

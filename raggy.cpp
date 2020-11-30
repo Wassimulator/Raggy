@@ -7,8 +7,8 @@ int main(int argc, char **argv)
     SDL_Init(SDL_INIT_EVERYTHING);
     SDL_Window *Window;
 
-    int WindowWidth = 800;
-    int WindowHight = 640;
+    int WindowWidth = 1024;
+    int WindowHight = 720;
 
     Window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WindowWidth, WindowHight, 0);
     SDL_Surface *WindowSurface = SDL_GetWindowSurface(Window);
