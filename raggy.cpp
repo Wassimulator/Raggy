@@ -26,7 +26,7 @@ int main(int argc, char **argv)
     player Player = LoadPlayer();
     //putting the player in the center of the screen:
     Player.PosX = 0;
-    Player.PosY = (WindowHight / 2) - 48;
+    Player.PosY = 0;
 
     bool running = true;
 
@@ -143,7 +143,7 @@ int main(int argc, char **argv)
         SDL_Rect Rect;
 
         Rect.x = (WindowWidth / 2) + (Player.PosX - CamPosX) - (3 * 16);
-        Rect.y = WindowHight / 2;
+        Rect.y = (WindowHight / 2) - 48;
 
         // TODO: Scaling is an inherent problem that needs fixing.
         Rect.w = 32 * 3;
