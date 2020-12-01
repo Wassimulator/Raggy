@@ -58,6 +58,8 @@ void RenderText(TTF_Font *Font, char* text, Uint8 R, Uint8 G, Uint8 B, SDL_Surfa
     TextRect1.x = ((WindowWidth - TextSurface->w) / 2);
     TextRect1.y = WindowHight/2 +150;
     SDL_BlitSurface(TextSurface, 0, WindowSurface, &TextRect1);
+
+    SDL_FreeSurface(TextSurface);
 }
 
 
