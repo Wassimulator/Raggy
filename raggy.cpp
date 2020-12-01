@@ -25,8 +25,8 @@ int main(int argc, char **argv)
 
     player Player = LoadPlayer();
     //putting the player in the center of the screen:
-    Player.PosX = (WindowWidth / 2) - 48;
-    Player.PosY = (WindowHight / 2) - 48;
+    Player.PosX = 0;
+    Player.PosY = 0;
 
     bool running = true;
 
@@ -51,6 +51,8 @@ int main(int argc, char **argv)
     Mix_Chunk *S_Fart = Mix_LoadWAV("sounds/fart.wav");
 
     printf ("Press H to say hello\nPress F to pay respects\n");
+
+    float CamPosX = 0;
 
     //Game Loop-----------------------------------------------------------------
     while (running)
@@ -113,15 +115,13 @@ int main(int argc, char **argv)
 
         //GameUpdate----------------------------------------------------------------------------------
 
-        float CamPosX = -(Map.PosX - Player.PosX - (InitialMapPosX - InitialPlayerPosX));
-        float MapLimitR = -(InitialMapPosX - InitialPlayerPosX + 3); // value of the the map limit if starting at zero and going in a direction
-        float MapLimitL = (InitialMapPosX - InitialPlayerPosX + 3);
+        float MapLimitR = Map.ActiveMap.w * 0.5f - 3 * 16;
+        float MapLimitL = -Map.ActiveMap.w * 0.5f + 3 * 16;
 
-        PlayerUpdate(&Player, RightButton, LeftButton, UpButton, DownButton, Shift, WindowWidth, WalkSpeed, RunSpeed);
+        PlayerUpdate(&Player, CamPosX, RightButton, LeftButton, UpButton, DownButton, Shift, MapLimitL, MapLimitR, WalkSpeed, RunSpeed);
         PlayerSoundUpdate(S_Yo, H_Key);
         PlayerSoundUpdate(S_Fart, F_Key);
-        MapUpdate(&Map, &Player, RightButton, LeftButton, UpButton, DownButton, Shift,
-                  CamPosX, MapLimitL, MapLimitR, WindowWidth, WalkSpeed, RunSpeed);
+        MapUpdate(&CamPosX, &Player);
 
         //printf("CamPosX = %.0f  ", CamPosX);
         //printf("P-PosX = %.0f  ", Player.PosX);
@@ -141,8 +141,10 @@ int main(int argc, char **argv)
         // TODO: Move the SDL_Rect clutter into somehting organized
         SDL_FillRect(WindowSurface, 0, (A << 24) | (R << 16) | (G << 8) | (B));
         SDL_Rect Rect;
-        Rect.x = Player.PosX;
-        Rect.y = Player.PosY;
+
+        Rect.x = (WindowWidth / 2) + (Player.PosX - CamPosX) - (3 * 16);
+        Rect.y = (WindowHight / 2) - 48;
+
         // TODO: Scaling is an inherent problem that needs fixing.
         Rect.w = 32 * 3;
         Rect.h = 32 * 3;
@@ -195,7 +197,7 @@ int main(int argc, char **argv)
         SDL_Rect MapRect;
         MapRect.h = Map.ActiveMap.h;
         MapRect.w = Map.ActiveMap.w;
-        MapRect.x = Map.PosX;
+        MapRect.x = ((WindowWidth - Map.ActiveMap.w) / 2) - CamPosX;
         MapRect.y = Map.PosY;
 
         SDL_BlitScaled(Map.ActiveMap.Surface, 0, WindowSurface, &MapRect);
