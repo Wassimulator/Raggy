@@ -203,7 +203,7 @@ int main(int argc, char **argv)
         PlayerUpdate(&Player, CamPosX, RightButton, LeftButton, UpButton, DownButton, Shift, MapLimitL, MapLimitR, WalkSpeed, RunSpeed);
         PlayerSoundUpdate(Sound, F_Key, H_Key);
         MapUpdate(&CamPosX, &Player);
-        DoorUpdate(&Door, PlayerRect, DoorRect, Regular, TextSurface, WindowSurface, WindowWidth, WindowHight, E_Key);
+        //          DoorUpdate(&Door, PlayerRect, DoorRect, Regular, TextSurface, WindowSurface, WindowWidth, WindowHight, E_Key);
 
             //printf("CamPosX = %.0f  ", CamPosX);
             //printf("P-PosX = %.0f  ", Player.PosX);
@@ -214,9 +214,9 @@ int main(int argc, char **argv)
             //-----------------------------Rendering-------------------------------------------------
             SDL_BlitScaled(Map.ActiveMap.Surface, 0, WindowSurface, &MapRect);
 
-        //RenderText(Regular, "Test, test, testicles.", 255, 255, 255, TextSurface, WindowSurface, WindowWidth, WindowHight);
+        RenderText(Regular, "Test, test, testicles.", 255, 255, 255, TextSurface, WindowSurface, WindowWidth, WindowHight);
 
-        SDL_BlitScaled(Door.ActiveTexture->Surface, 0, WindowSurface, &DoorRect);
+       //              SDL_BlitScaled(Door.ActiveTexture->Surface, 0, WindowSurface, &DoorRect);
 
         //IMPORTANT: make sure you render the character last and the map first.
         SDL_BlitScaled(Player.ActiveTexture->Surface, &ActiveRectangle, WindowSurface, &PlayerRect);

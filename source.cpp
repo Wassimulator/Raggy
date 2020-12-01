@@ -119,7 +119,7 @@ void DoorUpdate(door *Door, SDL_Rect PlayerRect, SDL_Rect DoorRect, TTF_Font *Fo
                 SDL_Surface *WindowSurface, int WindowWidth, int WindowHight, bool E_Key)
 {
 
-    if (&Door->StatusClosed)
+   /* if (&Door->StatusClosed)
     {
         Door->ActiveTexture = &Door->Closed;
     }
@@ -142,7 +142,7 @@ void DoorUpdate(door *Door, SDL_Rect PlayerRect, SDL_Rect DoorRect, TTF_Font *Fo
             Door->ActiveTexture = &Door->Closed;
             Door->StatusClosed = true;
         }
-    }
+    }*/
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     printf("PlayerX = %i   ", PlayerRect.x);
