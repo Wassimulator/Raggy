@@ -47,20 +47,17 @@ struct font
 };
 
 
-void RenderText(TTF_Font *Font, char* text, Uint8 R, Uint8 G, Uint8 B, SDL_Surface* WindowSurface, int WindowWidth, int WindowHight)
+void RenderText(TTF_Font *Font, char* text, Uint8 R, Uint8 G, Uint8 B, SDL_Surface *TextSurface, SDL_Surface* WindowSurface, int WindowWidth, int WindowHight)
 {
-    font ActiveFont = {};
-    ActiveFont.Font;
-    ActiveFont.TextColor = {R, G, B};
-    ActiveFont.TextSurface = TTF_RenderText_Solid(Font, text , ActiveFont.TextColor);
+    SDL_Color TextColor = {R, G, B};
+    TextSurface = TTF_RenderText_Solid(Font, text , TextColor);
 
     SDL_Rect TextRect1;
-    TextRect1.h = ActiveFont.TextSurface->h;
-    TextRect1.w = ActiveFont.TextSurface->w;
-    TextRect1.x = ((WindowWidth - ActiveFont.TextSurface->w) / 2);
+    TextRect1.h = TextSurface->h;
+    TextRect1.w = TextSurface->w;
+    TextRect1.x = ((WindowWidth - TextSurface->w) / 2);
     TextRect1.y = WindowHight/2 +150;
-    SDL_BlitSurface(ActiveFont.TextSurface, 0, WindowSurface, &TextRect1);
-    
+    SDL_BlitSurface(TextSurface, 0, WindowSurface, &TextRect1);
 }
 
 

@@ -57,6 +57,7 @@ int main(int argc, char **argv)
     //load fonts---
     TTF_Init();
     TTF_Font *Regular = TTF_OpenFont("data/fonts/PTSans-Regular.ttf", 20);
+    SDL_Surface *TextSurface;
 
     //Game Loop-----------------------------------------------------------------
     while (running)
@@ -207,7 +208,7 @@ int main(int argc, char **argv)
 
         SDL_BlitScaled(Player.ActiveTexture->Surface, &ActiveRectangle, WindowSurface, &Rect);
 
-        RenderText(Regular, "Test, test, testicles.", 255, 255, 255, WindowSurface, WindowWidth, WindowHight);
+        RenderText(Regular, "Test, test, testicles.", 255, 255, 255, TextSurface, WindowSurface, WindowWidth, WindowHight);
 
         /*font Message1 = LoadFont("this is a fixed Text in white", 20, 255, 255, 255);
         SDL_Rect TextRect1;
