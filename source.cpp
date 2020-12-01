@@ -39,20 +39,28 @@ struct font
     int r;
     int g;
     int b;
-    TTF_Font *SelectedFont;
+    TTF_Font *Font;
+    char* filename = "data/fonts/PTSans-Regular.ttf";
     
     SDL_Surface *TextSurface;
     SDL_Color TextColor;
 };
 
-font LoadFont(char* text, int size, Uint8 R, Uint8 G, Uint8 B)
-{
-    font Font = {};
-    Font.SelectedFont = TTF_OpenFont("data/fonts/PTSans-Regular.ttf", size);
-    Font.TextColor = {R, G, B};
-    Font.TextSurface = TTF_RenderText_Solid(Font.SelectedFont, text, Font.TextColor);
 
-    return Font;
+void RenderText(TTF_Font *Font, char* text, Uint8 R, Uint8 G, Uint8 B, SDL_Surface* WindowSurface, int WindowWidth, int WindowHight)
+{
+    font ActiveFont = {};
+    ActiveFont.Font;
+    ActiveFont.TextColor = {R, G, B};
+    ActiveFont.TextSurface = TTF_RenderText_Solid(Font, text , ActiveFont.TextColor);
+
+    SDL_Rect TextRect1;
+    TextRect1.h = ActiveFont.TextSurface->h;
+    TextRect1.w = ActiveFont.TextSurface->w;
+    TextRect1.x = ((WindowWidth - ActiveFont.TextSurface->w) / 2);
+    TextRect1.y = WindowHight/2 +150;
+    SDL_BlitSurface(ActiveFont.TextSurface, 0, WindowSurface, &TextRect1);
+    
 }
 
 
