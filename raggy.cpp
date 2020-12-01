@@ -22,6 +22,7 @@ int main(int argc, char **argv)
     bool Shift = false;
     bool F_Key = false;
     bool H_Key = false;
+    bool E_Key = false;
 
     player Player = LoadPlayer();
 
@@ -44,6 +45,8 @@ int main(int argc, char **argv)
     int WalkSpeed = 2;
     int RunSpeed = 4; //They're now adjustable, I still don't see why you need them to be as such,
                       // but here, 1,5 hours later, I present you ADJUSTABLE SPEEDS * Confetti *
+
+    door Door = LoadDoor();
 
     //------load sounds--------
 
@@ -111,26 +114,13 @@ int main(int argc, char **argv)
                 case SDLK_h:
                     H_Key = KeyState;
                     break;
+                case SDLK_e:
+                    E_Key = KeyState;
                 default:
                     break;
                 }
             }
         }
-
-        //GameUpdate----------------------------------------------------------------------------------
-
-        float MapLimitR = Map.ActiveMap.w * 0.5f - 3 * 16;
-        float MapLimitL = -Map.ActiveMap.w * 0.5f + 3 * 16;
-
-        PlayerUpdate(&Player, CamPosX, RightButton, LeftButton, UpButton, DownButton, Shift, MapLimitL, MapLimitR, WalkSpeed, RunSpeed);
-        PlayerSoundUpdate(Sound, F_Key, H_Key);
-        MapUpdate(&CamPosX, &Player);
-
-        //printf("CamPosX = %.0f  ", CamPosX);
-        //printf("P-PosX = %.0f  ", Player.PosX);
-        //printf("M-PosX = %.0f  \n", Map.PosX);
-        //printf("MapLimitL = %.0f  ", MapLimitL);
-        //printf("MapLimitR = %0.f\n", MapLimitR);
 
         //----------------------------Pre-Rendering---------------------------------------------------
         int R = 50;
@@ -140,18 +130,15 @@ int main(int argc, char **argv)
 
         // WINDOWS USES BGRA (that does not stand for bulgaria)
         // TODO: map it so that it works on multiple systems
-
         // TODO: Move the SDL_Rect clutter into somehting organized
+
         SDL_FillRect(WindowSurface, 0, (A << 24) | (R << 16) | (G << 8) | (B));
-        SDL_Rect Rect;
+        SDL_Rect PlayerRect;
 
-        //putting the player in the center of the screen later :
-        Rect.x = (WindowWidth / 2) + (Player.PosX - CamPosX) - (3 * 16);
-        Rect.y = (WindowHight / 2) - 48;
-
-        // TODO: Scaling is an inherent problem that needs fixing.
-        Rect.w = 32 * 3;
-        Rect.h = 32 * 3;
+        PlayerRect.x = (WindowWidth / 2) + (Player.PosX - CamPosX) - (3 * 16); //putting the player in the center of the screen
+        PlayerRect.y = (WindowHight / 2) - 48;
+        PlayerRect.w = 32 * 3; // TODO: Scaling is an inherent problem that needs fixing.
+        PlayerRect.h = 32 * 3;
 
         SDL_Rect ActiveRectangle;
         //int p = (i-1) % 3;
@@ -190,8 +177,6 @@ int main(int argc, char **argv)
             break;
         };
 
-        //-----------------------------Rendering-------------------------------------------------
-
         ActiveRectangle.x = p * 32;
         ActiveRectangle.y = q * 32;
         ActiveRectangle.w = ActiveRectangle.h = 32;
@@ -204,31 +189,41 @@ int main(int argc, char **argv)
         MapRect.x = ((WindowWidth - Map.ActiveMap.w) / 2) - CamPosX;
         MapRect.y = Map.PosY;
 
-        SDL_BlitScaled(Map.ActiveMap.Surface, 0, WindowSurface, &MapRect);
+        SDL_Rect DoorRect;
+        DoorRect.h = Door.Closed.h * 3;
+        DoorRect.w = Door.Closed.w * 3;
+        DoorRect.x = (WindowWidth / 2) - CamPosX - 48 - 200;
+        DoorRect.y = (WindowHight / 2) - 96;
 
-        SDL_BlitScaled(Player.ActiveTexture->Surface, &ActiveRectangle, WindowSurface, &Rect);
+        //GameUpdate----------------------------------------------------------------------------------
 
-        RenderText(Regular, "Test, test, testicles.", 255, 255, 255, TextSurface, WindowSurface, WindowWidth, WindowHight);
+        float MapLimitR = Map.ActiveMap.w * 0.5f - 3 * 16;
+        float MapLimitL = -Map.ActiveMap.w * 0.5f + 3 * 16;
 
-        /*font Message1 = LoadFont("this is a fixed Text in white", 20, 255, 255, 255);
-        SDL_Rect TextRect1;
-        TextRect1.h = Message1.TextSurface->h;
-        TextRect1.w = Message1.TextSurface->w;
-        TextRect1.x = ((WindowWidth - Message1.TextSurface->w) / 2);
-        TextRect1.y = WindowHight/2 +150;
-        SDL_BlitSurface(Message1.TextSurface, 0, WindowSurface, &TextRect1);
+        PlayerUpdate(&Player, CamPosX, RightButton, LeftButton, UpButton, DownButton, Shift, MapLimitL, MapLimitR, WalkSpeed, RunSpeed);
+        PlayerSoundUpdate(Sound, F_Key, H_Key);
+        MapUpdate(&CamPosX, &Player);
+        DoorUpdate(&Door, PlayerRect, DoorRect, Regular, TextSurface, WindowSurface, WindowWidth, WindowHight, E_Key);
 
-        font Message2 = LoadFont("this is a moving Text in blue", 20, 100, 100, 255);
-        SDL_Rect TextRect2;
-        TextRect2.h = Message2.TextSurface->h;
-        TextRect2.w = Message2.TextSurface->w;
-        TextRect2.x = ((WindowWidth - Message2.TextSurface->w) / 2) - CamPosX;
-        TextRect2.y = WindowHight/2 -160;
-        SDL_BlitSurface(Message2.TextSurface, 0, WindowSurface, &TextRect2);*/
+            //printf("CamPosX = %.0f  ", CamPosX);
+            //printf("P-PosX = %.0f  ", Player.PosX);
+            //printf("M-PosX = %.0f  \n", Map.PosX);
+            //printf("MapLimitL = %.0f  ", MapLimitL);
+            //printf("MapLimitR = %0.f\n", MapLimitR);
+
+            //-----------------------------Rendering-------------------------------------------------
+            SDL_BlitScaled(Map.ActiveMap.Surface, 0, WindowSurface, &MapRect);
+
+        //RenderText(Regular, "Test, test, testicles.", 255, 255, 255, TextSurface, WindowSurface, WindowWidth, WindowHight);
+
+        SDL_BlitScaled(Door.ActiveTexture->Surface, 0, WindowSurface, &DoorRect);
+
+        //IMPORTANT: make sure you render the character last and the map first.
+        SDL_BlitScaled(Player.ActiveTexture->Surface, &ActiveRectangle, WindowSurface, &PlayerRect);
 
         SDL_UpdateWindowSurface(Window);
 
-        printf("CamPos = %.0f\n", CamPosX);
+        //printf("CamPos = %.0f\n", CamPosX);
 
         //FPS------------------------------------------------------
         {

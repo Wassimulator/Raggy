@@ -25,11 +25,11 @@ struct sounds
 };
 
 sounds LoadSound()
-{  
+{
     sounds Sound = {};
     Sound.Yo = Mix_LoadWAV("data/sounds/yo.wav");
     Sound.Fart = Mix_LoadWAV("data/sounds/fart.wav");
-    
+
     return Sound;
 }
 
@@ -40,28 +40,27 @@ struct font
     int g;
     int b;
     TTF_Font *Font;
-    char* filename = "data/fonts/PTSans-Regular.ttf";
-    
+    char *filename = "data/fonts/PTSans-Regular.ttf";
+
     SDL_Surface *TextSurface;
     SDL_Color TextColor;
 };
 
-
-void RenderText(TTF_Font *Font, char* text, Uint8 R, Uint8 G, Uint8 B, SDL_Surface *TextSurface, SDL_Surface* WindowSurface, int WindowWidth, int WindowHight)
+void RenderText(TTF_Font *Font, char *text, Uint8 R, Uint8 G, Uint8 B, SDL_Surface *TextSurface, SDL_Surface *WindowSurface, int WindowWidth, int WindowHight)
 {
+
     SDL_Color TextColor = {R, G, B};
-    TextSurface = TTF_RenderText_Solid(Font, text , TextColor);
+    TextSurface = TTF_RenderText_Solid(Font, text, TextColor);
 
     SDL_Rect TextRect1;
     TextRect1.h = TextSurface->h;
     TextRect1.w = TextSurface->w;
     TextRect1.x = ((WindowWidth - TextSurface->w) / 2);
-    TextRect1.y = WindowHight/2 +150;
+    TextRect1.y = WindowHight / 2 + 150;
     SDL_BlitSurface(TextSurface, 0, WindowSurface, &TextRect1);
 
     SDL_FreeSurface(TextSurface);
 }
-
 
 //-----------------------------ACTOR STRUCTS---------------------------------------------
 enum direction
@@ -80,7 +79,7 @@ struct player
     sprite IdleLeft;
     float PosX;
     float PosY;
-    sprite *ActiveTexture;
+    sprite *ActiveTexture; //WHY is this a pointer??????????????
     int i;
     int T;
     int Speed;
@@ -92,8 +91,63 @@ struct map
     sprite ActiveMap;
     float PosX;
     float PosY;
-    int Speed;
+    //int Speed; no longer necessary
 };
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+struct door
+{
+    sprite Closed;
+    sprite Open;
+    float PosX;
+    float PosY;
+    sprite *ActiveTexture;
+    bool StatusClosed = true;
+};
+//-----------------things----------------------
+door LoadDoor()
+{
+    door Door = {};
+
+    Door.Closed = LoadSprite("data/textures/door_closed.png");
+
+    return Door;
+}
+
+void DoorUpdate(door *Door, SDL_Rect PlayerRect, SDL_Rect DoorRect, TTF_Font *Font, SDL_Surface *TextSurface,
+                SDL_Surface *WindowSurface, int WindowWidth, int WindowHight, bool E_Key)
+{
+
+    if (&Door->StatusClosed)
+    {
+        Door->ActiveTexture = &Door->Closed;
+    }
+    else if (&Door->StatusClosed == false)
+    {
+        Door->ActiveTexture = &Door->Open;
+    }
+
+    if (PlayerRect.x < (DoorRect.x + 48) && PlayerRect.x > (DoorRect.x - 48))
+    {
+        RenderText(Font, "This is a door", 255, 255, 255, TextSurface, WindowSurface, WindowWidth, WindowHight);
+
+        if (E_Key && Door->ActiveTexture == &Door->Closed)
+        {
+            Door->ActiveTexture = &Door->Open;
+            Door->StatusClosed = false;
+        }
+        else if (E_Key && Door->ActiveTexture == &Door->Open)
+        {
+            Door->ActiveTexture = &Door->Closed;
+            Door->StatusClosed = true;
+        }
+    }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    printf("PlayerX = %i   ", PlayerRect.x);
+    printf("DoorX = %i\n", DoorRect.x);
+}
 
 //-----------------PLAYER------------------------------------------------------------------------
 
@@ -250,7 +304,7 @@ void MapUpdate(float *CamPosX, player *Player)
     {
         *CamPosX = Player->PosX - HalfRange;
     }
-    printf("Player->Posx = %.0f  ", Player->PosX);
-    printf("PlayerCamX = %.0f  ", PlayerCamX);
-    printf("HalfRange = %.0f  ", HalfRange);
+    //printf("Player->Posx = %.0f  ", Player->PosX);
+    //printf("PlayerCamX = %.0f  ", PlayerCamX);
+    //printf("HalfRange = %.0f  ", HalfRange);
 }
