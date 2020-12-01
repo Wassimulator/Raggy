@@ -16,13 +16,47 @@ sprite LoadSprite(char *filename)
         Result.w * Result.n, SDL_PIXELFORMAT_RGBA32);
     return Result;
 }
+
+//--------SOUNDS-----------
+
+/*struct sample
+{
+    Mix_Chunk *Sample;
+};
+
+sample LoadSample(char *filename)
+{
+    sample Result = {};
+    Result.Sample = Mix_LoadWAV(filename);
+
+    return Result;
+}*/
+
+struct sounds
+{
+    Mix_Chunk *Yo;
+    Mix_Chunk *Fart;
+};
+
+sounds LoadSound()
+{  
+    sounds Sound = {};
+    Sound.Yo = Mix_LoadWAV("sounds/yo.wav");
+    Sound.Fart = Mix_LoadWAV("sounds/fart.wav");
+    
+    return Sound;
+}
+
+//---------SOUNDS-------------
+
+
+
+//-----------------------------ACTOR STRUCTS---------------------------------------------
 enum direction
 {
     RightDirection,
     LeftDirection
 };
-
-//-----------------------------STRUCTS---------------------------------------------
 
 struct player
 {
@@ -49,13 +83,6 @@ struct map
     int Speed;
 };
 
-struct sound
-{
-    char *file;
-    SDL_AudioSpec wavSpec;
-    Uint32 wavLength;
-    Uint8 *wavBuffer;
-};
 //-----------------PLAYER------------------------------------------------------------------------
 
 player LoadPlayer()
@@ -91,11 +118,11 @@ void PlayerUpdate(player *Player, float CamPosX,
         Player->ActiveTexture = &Player->IdleLeft;
     }
 
-    //Player->ActiveTexture = &Player->Idle;
     //TODO: fix the idle guy in Pyxel
 
     Player->Speed = WalkSpeed;
-    if (Shift) {
+    if (Shift)
+    {
         Player->Speed = RunSpeed;
     }
 
@@ -113,20 +140,25 @@ void PlayerUpdate(player *Player, float CamPosX,
 
     bool IsIdle = true;
 
-    if (dx > 0) {
+    if (dx > 0)
+    {
         IsIdle = false;
 
         Player->Direction = RightDirection;
         Player->ActiveTexture = &Player->RightAnimation;
-        if (Shift) {
+        if (Shift)
+        {
             Player->ActiveTexture = &Player->RightRunAnimation;
         }
-    } else if (dx < 0) {
+    }
+    else if (dx < 0)
+    {
         IsIdle = false;
 
         Player->Direction = LeftDirection;
         Player->ActiveTexture = &Player->LeftAnimation;
-        if (Shift) {
+        if (Shift)
+        {
             Player->ActiveTexture = &Player->LeftRunAnimation;
         }
     }
@@ -141,9 +173,12 @@ void PlayerUpdate(player *Player, float CamPosX,
         Player->PosY = Player->PosY + dy * Player->Speed;
     }
 
-    if (Player->PosX < MapLimitL) {
+    if (Player->PosX < MapLimitL)
+    {
         Player->PosX = MapLimitL;
-    } else if (Player->PosX > MapLimitR) {
+    }
+    else if (Player->PosX > MapLimitR)
+    {
         Player->PosX = MapLimitR;
     }
 
@@ -164,13 +199,17 @@ void PlayerUpdate(player *Player, float CamPosX,
     }
 }
 
-void PlayerSoundUpdate(Mix_Chunk *Sound, bool F_Key)
+void PlayerSoundUpdate(sounds Sound, bool F_Key, bool H_Key)
 {
-    if(Mix_Playing(1) == 0)
+    if (Mix_Playing(1) == 0)
     {
         if (F_Key)
         {
-            Mix_PlayChannel(1, Sound, 0);
+            Mix_PlayChannel(1, Sound.Fart, 0);
+        }
+        if (H_Key)
+        {
+            Mix_PlayChannel(1, Sound.Yo, 0);
         }
     }
 }
@@ -191,9 +230,15 @@ void MapUpdate(float *CamPosX, player *Player)
 
     float HalfRange = 300.0f;
 
-    if (PlayerCamX < -HalfRange) {
+    if (PlayerCamX < -HalfRange)
+    {
         *CamPosX = Player->PosX + HalfRange;
-    } else if (PlayerCamX > HalfRange) {
+    }
+    else if (PlayerCamX > HalfRange)
+    {
         *CamPosX = Player->PosX - HalfRange;
     }
+    printf("Player->Posx = %.0f  ", Player->PosX);
+    printf("PlayerCamX = %.0f  ", PlayerCamX);
+    printf("HalfRange = %.0f  ", HalfRange);
 }

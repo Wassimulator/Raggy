@@ -23,6 +23,8 @@ int main(int argc, char **argv)
     bool F_Key = false;
     bool H_Key = false;
 
+   
+
     player Player = LoadPlayer();
     //putting the player in the center of the screen:
     Player.PosX = 0;
@@ -33,6 +35,7 @@ int main(int argc, char **argv)
     map Map = LoadMap();
     Map.ActiveMap.h = Map.ActiveMap.h * 3;
     Map.ActiveMap.w = Map.ActiveMap.w * 3;
+
     //putting the map in the center of the screen:
     Map.PosX = -(Map.ActiveMap.w - WindowWidth) / 2; // -1000 + 800 / 2 = -100
     Map.PosY = -(Map.ActiveMap.h - WindowHight) / 2;
@@ -47,8 +50,7 @@ int main(int argc, char **argv)
     //------load sounds--------
 
     Mix_OpenAudio(44800, MIX_DEFAULT_FORMAT, 2, 4096);
-    Mix_Chunk *S_Yo = Mix_LoadWAV("sounds/yo.wav");
-    Mix_Chunk *S_Fart = Mix_LoadWAV("sounds/fart.wav");
+    sounds Sound = LoadSound();
 
     printf ("Press H to say hello\nPress F to pay respects\n");
 
@@ -63,7 +65,6 @@ int main(int argc, char **argv)
         const int frameDelay = 1000 / FPS;
         Uint32 frameStart = SDL_GetTicks();
         //---------------------------------------------------------
-
         SDL_Event Event;
         while (SDL_PollEvent(&Event)) //if pPollEvent returns 1 then we enter the while loop this
                                       //means thatif we have more than one event, it gathers them all before running
@@ -112,6 +113,7 @@ int main(int argc, char **argv)
                 }
             }
         }
+        
 
         //GameUpdate----------------------------------------------------------------------------------
 
@@ -119,8 +121,7 @@ int main(int argc, char **argv)
         float MapLimitL = -Map.ActiveMap.w * 0.5f + 3 * 16;
 
         PlayerUpdate(&Player, CamPosX, RightButton, LeftButton, UpButton, DownButton, Shift, MapLimitL, MapLimitR, WalkSpeed, RunSpeed);
-        PlayerSoundUpdate(S_Yo, H_Key);
-        PlayerSoundUpdate(S_Fart, F_Key);
+        PlayerSoundUpdate(Sound, F_Key, H_Key);
         MapUpdate(&CamPosX, &Player);
 
         //printf("CamPosX = %.0f  ", CamPosX);
@@ -129,7 +130,7 @@ int main(int argc, char **argv)
         //printf("MapLimitL = %.0f  ", MapLimitL);
         //printf("MapLimitR = %0.f\n", MapLimitR);
 
-        //---------------------------------------------------------------------------------------------
+        //----------------------------Pre-Rendering---------------------------------------------------
         int R = 100;
         int G = 100;
         int B = 100;
@@ -156,7 +157,7 @@ int main(int argc, char **argv)
         int p;
         int q;
 
-        // animation sequence ----------
+        //animation sequence----------
         switch (Player.i)
         {
         case 1:
@@ -186,7 +187,7 @@ int main(int argc, char **argv)
             break;
         };
 
-        //Rendering------------------------------------------------------------------------
+        //-----------------------------Rendering-------------------------------------------------
 
         ActiveRectangle.x = p * 32;
         ActiveRectangle.y = q * 32;
@@ -209,12 +210,14 @@ int main(int argc, char **argv)
 
         SDL_UpdateWindowSurface(Window);
 
+        printf("CamPos = %.0f\n", CamPosX);
+
         //FPS------------------------------------------------------
         {
             int frameEnd = SDL_GetTicks();
             int frameTime = frameEnd - frameStart;
             if (frameTime < frameDelay)
-            {
+            { 
                 SDL_Delay(frameDelay - frameTime);
             }
             int actualFrameEnd = SDL_GetTicks();
@@ -224,6 +227,7 @@ int main(int argc, char **argv)
             }
         } //------------------------------------------------------
     };
+    //end of game loop
 
     return 0;
 }
