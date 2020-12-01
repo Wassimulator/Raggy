@@ -23,10 +23,8 @@ int main(int argc, char **argv)
     bool F_Key = false;
     bool H_Key = false;
 
-   
-
     player Player = LoadPlayer();
-    //putting the player in the center of the screen:
+
     Player.PosX = 0;
     Player.PosY = 0;
 
@@ -52,9 +50,12 @@ int main(int argc, char **argv)
     Mix_OpenAudio(44800, MIX_DEFAULT_FORMAT, 2, 4096);
     sounds Sound = LoadSound();
 
-    printf ("Press H to say hello\nPress F to pay respects\n");
+    printf("Press H to say hello\nPress F to pay respects\n");
 
     float CamPosX = 0;
+
+    //load fonts---
+    TTF_Init();
 
     //Game Loop-----------------------------------------------------------------
     while (running)
@@ -113,7 +114,6 @@ int main(int argc, char **argv)
                 }
             }
         }
-        
 
         //GameUpdate----------------------------------------------------------------------------------
 
@@ -131,9 +131,9 @@ int main(int argc, char **argv)
         //printf("MapLimitR = %0.f\n", MapLimitR);
 
         //----------------------------Pre-Rendering---------------------------------------------------
-        int R = 100;
-        int G = 100;
-        int B = 100;
+        int R = 50;
+        int G = 50;
+        int B = 50;
         int A = 255;
 
         // WINDOWS USES BGRA (that does not stand for bulgaria)
@@ -143,6 +143,7 @@ int main(int argc, char **argv)
         SDL_FillRect(WindowSurface, 0, (A << 24) | (R << 16) | (G << 8) | (B));
         SDL_Rect Rect;
 
+        //putting the player in the center of the screen later :
         Rect.x = (WindowWidth / 2) + (Player.PosX - CamPosX) - (3 * 16);
         Rect.y = (WindowHight / 2) - 48;
 
@@ -205,8 +206,21 @@ int main(int argc, char **argv)
 
         SDL_BlitScaled(Player.ActiveTexture->Surface, &ActiveRectangle, WindowSurface, &Rect);
 
-        //SDL_BlitScaled(Player.ActiveTexture->Surface, 0, WindowSurface, &Rect);
-        //SDL_BlitSurface(Player.Surface,  PlayerPos, WindowSurface,  PlayerPos);
+        font Message1 = LoadFont("this is a fixed Text in white", 20, 255, 255, 255);
+        SDL_Rect TextRect1;
+        TextRect1.h = Message1.TextSurface->h;
+        TextRect1.w = Message1.TextSurface->w;
+        TextRect1.x = ((WindowWidth - Message1.TextSurface->w) / 2);
+        TextRect1.y = WindowHight/2 +150;
+        SDL_BlitSurface(Message1.TextSurface, 0, WindowSurface, &TextRect1);
+
+        font Message2 = LoadFont("this is a moving Text in blue", 20, 100, 100, 255);
+        SDL_Rect TextRect2;
+        TextRect2.h = Message2.TextSurface->h;
+        TextRect2.w = Message2.TextSurface->w;
+        TextRect2.x = ((WindowWidth - Message2.TextSurface->w) / 2) - CamPosX;
+        TextRect2.y = WindowHight/2 -160;
+        SDL_BlitSurface(Message2.TextSurface, 0, WindowSurface, &TextRect2);
 
         SDL_UpdateWindowSurface(Window);
 
@@ -217,7 +231,7 @@ int main(int argc, char **argv)
             int frameEnd = SDL_GetTicks();
             int frameTime = frameEnd - frameStart;
             if (frameTime < frameDelay)
-            { 
+            {
                 SDL_Delay(frameDelay - frameTime);
             }
             int actualFrameEnd = SDL_GetTicks();

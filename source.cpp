@@ -18,20 +18,6 @@ sprite LoadSprite(char *filename)
 }
 
 //--------SOUNDS-----------
-
-/*struct sample
-{
-    Mix_Chunk *Sample;
-};
-
-sample LoadSample(char *filename)
-{
-    sample Result = {};
-    Result.Sample = Mix_LoadWAV(filename);
-
-    return Result;
-}*/
-
 struct sounds
 {
     Mix_Chunk *Yo;
@@ -41,14 +27,33 @@ struct sounds
 sounds LoadSound()
 {  
     sounds Sound = {};
-    Sound.Yo = Mix_LoadWAV("sounds/yo.wav");
-    Sound.Fart = Mix_LoadWAV("sounds/fart.wav");
+    Sound.Yo = Mix_LoadWAV("data/sounds/yo.wav");
+    Sound.Fart = Mix_LoadWAV("data/sounds/fart.wav");
     
     return Sound;
 }
 
-//---------SOUNDS-------------
+//---------FONTS-------------
+struct font
+{
+    int r;
+    int g;
+    int b;
+    TTF_Font *SelectedFont;
+    
+    SDL_Surface *TextSurface;
+    SDL_Color TextColor;
+};
 
+font LoadFont(char* text, int size, Uint8 R, Uint8 G, Uint8 B)
+{
+    font Font = {};
+    Font.SelectedFont = TTF_OpenFont("data/fonts/PTSans-Regular.ttf", size);
+    Font.TextColor = {R, G, B};
+    Font.TextSurface = TTF_RenderText_Solid(Font.SelectedFont, text, Font.TextColor);
+
+    return Font;
+}
 
 
 //-----------------------------ACTOR STRUCTS---------------------------------------------
@@ -90,12 +95,12 @@ player LoadPlayer()
     player Player = {}; // it sets everything to zero, so Direction would be 0 which is RightDirection based on the enum
     //to be sure we could set it :
     Player.Direction = RightDirection;
-    Player.IdleRight = LoadSprite("textures/player_right.png");
-    Player.IdleLeft = LoadSprite("textures/player_left.png");
-    Player.LeftAnimation = LoadSprite("textures/player_walk_left.png");
-    Player.LeftRunAnimation = LoadSprite("textures/player_run_left.png");
-    Player.RightAnimation = LoadSprite("textures/player_walk_right.png");
-    Player.RightRunAnimation = LoadSprite("textures/player_run_right.png");
+    Player.IdleRight = LoadSprite("data/textures/player_right.png");
+    Player.IdleLeft = LoadSprite("data/textures/player_left.png");
+    Player.LeftAnimation = LoadSprite("data/textures/player_walk_left.png");
+    Player.LeftRunAnimation = LoadSprite("data/textures/player_run_left.png");
+    Player.RightAnimation = LoadSprite("data/textures/player_walk_right.png");
+    Player.RightRunAnimation = LoadSprite("data/textures/player_run_right.png");
 
     return Player;
 };
@@ -219,7 +224,7 @@ void PlayerSoundUpdate(sounds Sound, bool F_Key, bool H_Key)
 map LoadMap()
 {
     map LoadedMap = {};
-    LoadedMap.ActiveMap = LoadSprite("textures/map.png");
+    LoadedMap.ActiveMap = LoadSprite("data/textures/map.png");
 
     return LoadedMap;
 }
