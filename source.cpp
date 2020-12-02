@@ -167,8 +167,6 @@ void DoorUpdate(door *Door, SDL_Rect PlayerRect, SDL_Rect DoorRect, TTF_Font *Fo
     }
     else if (Door->Status == Open)
     {
-        //Door->ActiveTexture = &Door->Open;
-
         if (PlayerRect.x < (DoorRect.x + 48) && PlayerRect.x > (DoorRect.x - 48))
         {
             RenderTextCentered(Font, "Door: press E to Close", 255, 255, 255, 0, 140, TextSurface, WindowSurface, WindowWidth, WindowHight);
