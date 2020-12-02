@@ -109,6 +109,7 @@ struct door
     float PosY;
     sprite *ActiveTexture;
     doorStatus Status;
+    int t;
 };
 //-----------------things----------------------
 door LoadDoor()
@@ -139,7 +140,7 @@ void DoorUpdate(door *Door, SDL_Rect PlayerRect, SDL_Rect DoorRect, TTF_Font *Fo
         {
             RenderText(Font, "Door: press E to Open", 255, 255, 255, 0, 140, TextSurface, WindowSurface, WindowWidth, WindowHight);
 
-            if (E_Key)
+            if (E_Key && Door->t++ % 6 == 0)
             {
                 Door->ActiveTexture = &Door->Open;
                 Door->Status = Open;
@@ -154,7 +155,7 @@ void DoorUpdate(door *Door, SDL_Rect PlayerRect, SDL_Rect DoorRect, TTF_Font *Fo
         {
             RenderText(Font, "Door: press E to Close", 255, 255, 255, 0, 140, TextSurface, WindowSurface, WindowWidth, WindowHight);
 
-            if (E_Key)
+            if (E_Key && Door->t++ % 6 == 0)
             {
                 Door->ActiveTexture = &Door->Closed;
                 Door->Status = Closed;
