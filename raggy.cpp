@@ -66,7 +66,7 @@ int main(int argc, char **argv)
     //Game Loop-----------------------------------------------------------------
     while (running)
     {
-
+        E_Key = false;
         //FPS------------------------------------------------------
         const int FPS = 60;
         const int frameDelay = 1000 / FPS;
@@ -80,7 +80,14 @@ int main(int argc, char **argv)
             {
                 running = false;
             }
-
+            if (Event.type == SDL_KEYDOWN)
+            {
+                if (Event.key.keysym.sym == SDLK_e)
+                {
+                    E_Key = true;
+                }
+            }
+            printf(E_Key ? "E = true\n" : "E = false\n");
             //cool shit:
             if (Event.type == SDL_KEYDOWN || Event.type == SDL_KEYUP)
             {
@@ -115,8 +122,8 @@ int main(int argc, char **argv)
                 case SDLK_h:
                     H_Key = KeyState;
                     break;
-                case SDLK_e:
-                    E_Key = KeyState;
+//                case SDLK_e:
+//                    E_Key = KeyState;
                 default:
                     break;
                 }
@@ -135,38 +142,10 @@ int main(int argc, char **argv)
 
         SDL_FillRect(WindowSurface, 0, (A << 24) | (R << 16) | (G << 8) | (B));
         SDL_Rect PlayerRect;
-        //animation sequence----------
-        int p;
-        int q;
 
-        switch (Player.i)
-        {
-        case 1:
-            p = 0;
-            q = 0;
-            break;
-        case 2:
-            p = 1;
-            q = 0;
-            break;
-        case 3:
-            p = 2;
-            q = 0;
-            break;
-        case 4:
-            p = 0;
-            q = 1;
-            break;
-        case 5:
-            p = 1;
-            q = 1;
-            break;
-        case 6:
-            p = 2;
-            q = 1;
-        default:
-            break;
-        };
+        //animation sequence
+        int p = (Player.i - 1) % 3;
+        int q = (Player.i - 1) / 3;
 
         PlayerRect.x = (WindowWidth / 2) + (Player.PosX - CamPosX) - (3 * 16); //putting the player in the center of the screen
         PlayerRect.y = (WindowHight / 2) - 48;
@@ -174,8 +153,6 @@ int main(int argc, char **argv)
         PlayerRect.h = 32 * 3;
 
         SDL_Rect ActiveRectangle;
-        //int p = (i-1) % 3;
-        //int q = (i-1) / 3;
 
         ActiveRectangle.x = p * 32;
         ActiveRectangle.y = q * 32;
@@ -200,10 +177,12 @@ int main(int argc, char **argv)
         float MapLimitR = Map.ActiveMap.w * 0.5f - 3 * 16;
         float MapLimitL = -Map.ActiveMap.w * 0.5f + 3 * 16;
 
-        PlayerUpdate(&Player, CamPosX, RightButton, LeftButton, UpButton, DownButton, Shift, MapLimitL, MapLimitR, WalkSpeed, RunSpeed);
+        PlayerUpdate(&Player, CamPosX, RightButton, LeftButton, UpButton,
+                     DownButton, Shift, MapLimitL, MapLimitR, WalkSpeed, RunSpeed);
         PlayerSoundUpdate(Sound, F_Key, H_Key);
         MapUpdate(&CamPosX, &Player);
-        DoorUpdate(&Door, PlayerRect, DoorRect, Regular, TextSurface, WindowSurface, WindowWidth, WindowHight, E_Key);
+        DoorUpdate(&Door, PlayerRect, DoorRect, Regular, TextSurface,
+                   WindowSurface, WindowWidth, WindowHight, E_Key);
 
         //printf("CamPosX = %.0f  ", CamPosX);
         //printf("P-PosX = %.0f  ", Player.PosX);

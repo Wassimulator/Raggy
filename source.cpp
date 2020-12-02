@@ -1,3 +1,4 @@
+#pragma once
 #include "raggy.hpp"
 
 struct sprite
@@ -158,7 +159,7 @@ void DoorUpdate(door *Door, SDL_Rect PlayerRect, SDL_Rect DoorRect, TTF_Font *Fo
         {
             RenderTextCentered(Font, "Door: press E to Open", 255, 255, 255, 0, 140, TextSurface, WindowSurface, WindowWidth, WindowHight);
 
-            if (E_Key && Door->t++ % 6 == 0)
+            if (E_Key)
             {
                 Door->ActiveTexture = &Door->Open;
                 Door->Status = Open;
@@ -171,7 +172,7 @@ void DoorUpdate(door *Door, SDL_Rect PlayerRect, SDL_Rect DoorRect, TTF_Font *Fo
         {
             RenderTextCentered(Font, "Door: press E to Close", 255, 255, 255, 0, 140, TextSurface, WindowSurface, WindowWidth, WindowHight);
 
-            if (E_Key && Door->t++ % 6 == 0)
+            if (E_Key)
             {
                 Door->ActiveTexture = &Door->Closed;
                 Door->Status = Closed;
