@@ -96,6 +96,11 @@ struct map
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+enum doorStatus
+{
+    Closed,
+    Open
+};
 struct door
 {
     sprite Closed;
@@ -103,7 +108,7 @@ struct door
     float PosX;
     float PosY;
     sprite *ActiveTexture;
-    bool StatusClosed = true;
+    doorStatus Status;
 };
 //-----------------things----------------------
 door LoadDoor()
@@ -111,40 +116,53 @@ door LoadDoor()
     door Door = {};
 
     Door.Closed = LoadSprite("data/textures/door_closed.png");
-
+    Door.Open = LoadSprite("data/textures/door_open.png");
+    Door.Status = Closed;
     return Door;
 }
 
 void DoorUpdate(door *Door, SDL_Rect PlayerRect, SDL_Rect DoorRect, TTF_Font *Font, SDL_Surface *TextSurface,
                 SDL_Surface *WindowSurface, int WindowWidth, int WindowHight, bool E_Key)
 {
-
-   /* if (&Door->StatusClosed)
+    if (Door->Status == Closed)
     {
         Door->ActiveTexture = &Door->Closed;
     }
-    else if (&Door->StatusClosed == false)
+    else if (Door->Status == Open)
     {
         Door->ActiveTexture = &Door->Open;
     }
 
-    if (PlayerRect.x < (DoorRect.x + 48) && PlayerRect.x > (DoorRect.x - 48))
+
+    if (Door->Status == Closed)
     {
-        RenderText(Font, "This is a door", 255, 255, 255, TextSurface, WindowSurface, WindowWidth, WindowHight);
-
-        if (E_Key && Door->ActiveTexture == &Door->Closed)
+        if (PlayerRect.x < (DoorRect.x + 48) && PlayerRect.x > (DoorRect.x - 48))
         {
-            Door->ActiveTexture = &Door->Open;
-            Door->StatusClosed = false;
-        }
-        else if (E_Key && Door->ActiveTexture == &Door->Open)
-        {
-            Door->ActiveTexture = &Door->Closed;
-            Door->StatusClosed = true;
-        }
-    }*/
+            RenderText(Font, "Door: press E to Open", 255, 255, 255, TextSurface, WindowSurface, WindowWidth, WindowHight);
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            if (E_Key)
+            {
+                Door->ActiveTexture = &Door->Open;
+                Door->Status = Open;
+            }
+        }
+    }
+    else if (Door->Status == Open)
+    {
+        //Door->ActiveTexture = &Door->Open;
+
+        if (PlayerRect.x < (DoorRect.x + 48) && PlayerRect.x > (DoorRect.x - 48))
+        {
+            RenderText(Font, "Door: press E to Close", 255, 255, 255, TextSurface, WindowSurface, WindowWidth, WindowHight);
+
+            if (E_Key)
+            {
+                Door->ActiveTexture = &Door->Closed;
+                Door->Status = Closed;
+            }
+        }
+    }
+
     printf("PlayerX = %i   ", PlayerRect.x);
     printf("DoorX = %i\n", DoorRect.x);
 }
