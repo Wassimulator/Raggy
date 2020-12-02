@@ -48,8 +48,8 @@ struct font
 };
 
 void RenderTextCentered(TTF_Font *Font, char *text, Uint8 R, Uint8 G, Uint8 B,
-                int PosXfromCenter, int PosYfromCenter, SDL_Surface *TextSurface, SDL_Surface *WindowSurface, 
-                int WindowWidth, int WindowHight)
+                        int PosXfromCenter, int PosYfromCenter, SDL_Surface *TextSurface, SDL_Surface *WindowSurface,
+                        int WindowWidth, int WindowHight)
 {
 
     SDL_Color TextColor = {R, G, B};
@@ -66,7 +66,7 @@ void RenderTextCentered(TTF_Font *Font, char *text, Uint8 R, Uint8 G, Uint8 B,
 }
 
 void RenderText(TTF_Font *Font, char *text, Uint8 R, Uint8 G, Uint8 B,
-                int PosX, int PosY, SDL_Surface *TextSurface, SDL_Surface *WindowSurface, 
+                int PosX, int PosY, SDL_Surface *TextSurface, SDL_Surface *WindowSurface,
                 int WindowWidth, int WindowHight)
 {
 
@@ -128,9 +128,68 @@ struct door
     float PosY;
     sprite *ActiveTexture;
     doorStatus Status;
-    int t;
+};
+struct fart
+{
+    sprite FartLeft;
+    sprite FartRight;
+    sprite Empty;
+    float PosX;
+    float PosY;
+    sprite *ActiveTexture; //WHY is this a pointer??????????????
+    int i;
+    int T;
+    int Speed;
+    direction Direction;
 };
 //-----------------things----------------------
+fart LoadFart()
+{  
+    fart PlayerFart = {};
+
+    PlayerFart.FartLeft = LoadSprite("data/textures/fart_left.png");
+    PlayerFart.FartRight = LoadSprite("data/textures/fart_right.png");
+    PlayerFart.Empty = LoadSprite("data/textures/empty.png");
+
+    return PlayerFart;
+}
+void FartUpdate(player *Player, fart *PlayerFart, bool F_Key, bool ToFart)
+{ 
+    if (F_Key)
+    {
+        if (Player->Direction == RightDirection)
+        {
+            PlayerFart->ActiveTexture = &PlayerFart->FartRight;
+        }
+        if (Player->Direction == LeftDirection)
+        {
+            PlayerFart->ActiveTexture = &PlayerFart->FartLeft;
+        }
+        ToFart = true;
+        PlayerFart->i = 0;
+    }
+
+    if (PlayerFart->T++ % 10 == 0 && ToFart == true)
+    {
+        if (PlayerFart->i >= 0 && PlayerFart->i < 2)
+        {
+            PlayerFart->i++;
+        }
+        if (PlayerFart->i > 2)
+        {
+            ToFart = false;
+        }
+        /*else
+        {
+            PlayerFart->i = 1;
+        }*/
+    }
+    if (ToFart = false)
+    {
+        PlayerFart->i = 0;
+    }
+}
+
 door LoadDoor()
 {
     door Door = {};
@@ -179,7 +238,6 @@ void DoorUpdate(door *Door, SDL_Rect PlayerRect, SDL_Rect DoorRect, TTF_Font *Fo
             }
         }
     }
-
 }
 
 //-----------------PLAYER------------------------------------------------------------------------
@@ -216,8 +274,6 @@ void PlayerUpdate(player *Player, float CamPosX,
     {
         Player->ActiveTexture = &Player->IdleLeft;
     }
-
-    //TODO: fix the idle guy in Pyxel
 
     Player->Speed = WalkSpeed;
     if (Shift)
@@ -283,8 +339,17 @@ void PlayerUpdate(player *Player, float CamPosX,
 
     if (IsIdle)
     {
+        /*if(Player->Direction == RightDirection)
+        {
+            Player->ActiveTexture = &Player->IdleRight;
+        }
+        else if(Player->Direction == LeftDirection)
+        {
+            Player->ActiveTexture = &Player->IdleLeft;
+        }*/
         Player->i = 1;
     }
+
     else if (Player->T++ % 10 == 0)
     {
         if (Player->i >= 1 && Player->i < 6)

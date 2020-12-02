@@ -46,6 +46,7 @@ int main(int argc, char **argv)
                       // but here, 1,5 hours later, I present you ADJUSTABLE SPEEDS * Confetti *
 
     door Door = LoadDoor();
+    fart PlayerFart = LoadFart();
 
     //------load sounds--------
 
@@ -62,11 +63,16 @@ int main(int argc, char **argv)
     TTF_Font *Bold = TTF_OpenFont("data/fonts/PTSans-Bold.ttf", 20);
     TTF_Font *Bold2 = TTF_OpenFont("data/fonts/PTSans-Bold.ttf", 24);
     SDL_Surface *TextSurface;
+    //---
+
+    bool ToFart = false;
 
     //Game Loop-----------------------------------------------------------------
     while (running)
     {
-        E_Key = false;
+        E_Key = false; //leave this here.
+        F_Key = false;
+
         //FPS------------------------------------------------------
         const int FPS = 60;
         const int frameDelay = 1000 / FPS;
@@ -80,14 +86,20 @@ int main(int argc, char **argv)
             {
                 running = false;
             }
+            //only pressable once key:
             if (Event.type == SDL_KEYDOWN)
             {
-                if (Event.key.keysym.sym == SDLK_e)
+                if (Event.key.keysym.sym == SDLK_e && Event.key.repeat == false)
                 {
                     E_Key = true;
                 }
+                if (Event.key.keysym.sym == SDLK_f && Event.key.repeat == false)
+                {
+                    F_Key = true;
+                }
             }
-            printf(E_Key ? "E = true\n" : "E = false\n");
+
+            //printf(E_Key ? "E = true\n" : "E = false\n");
             //cool shit:
             if (Event.type == SDL_KEYDOWN || Event.type == SDL_KEYUP)
             {
@@ -116,14 +128,9 @@ int main(int argc, char **argv)
                 case SDLK_RSHIFT:
                     Shift = KeyState;
                     break;
-                case SDLK_f:
-                    F_Key = KeyState;
-                    break;
                 case SDLK_h:
                     H_Key = KeyState;
                     break;
-//                case SDLK_e:
-//                    E_Key = KeyState;
                 default:
                     break;
                 }
@@ -143,20 +150,10 @@ int main(int argc, char **argv)
         SDL_FillRect(WindowSurface, 0, (A << 24) | (R << 16) | (G << 8) | (B));
         SDL_Rect PlayerRect;
 
-        //animation sequence
-        int p = (Player.i - 1) % 3;
-        int q = (Player.i - 1) / 3;
-
         PlayerRect.x = (WindowWidth / 2) + (Player.PosX - CamPosX) - (3 * 16); //putting the player in the center of the screen
         PlayerRect.y = (WindowHight / 2) - 48;
         PlayerRect.w = 32 * 3; // TODO: Scaling is an inherent problem that needs fixing.
         PlayerRect.h = 32 * 3;
-
-        SDL_Rect ActiveRectangle;
-
-        ActiveRectangle.x = p * 32;
-        ActiveRectangle.y = q * 32;
-        ActiveRectangle.w = ActiveRectangle.h = 32;
 
         //TODO: move the SDL_Rect clutter in a struct or something.
 
@@ -183,12 +180,31 @@ int main(int argc, char **argv)
         MapUpdate(&CamPosX, &Player);
         DoorUpdate(&Door, PlayerRect, DoorRect, Regular, TextSurface,
                    WindowSurface, WindowWidth, WindowHight, E_Key);
+        FartUpdate(&Player, &PlayerFart, F_Key, ToFart);
 
         //printf("CamPosX = %.0f  ", CamPosX);
         //printf("P-PosX = %.0f  ", Player.PosX);
         //printf("M-PosX = %.0f  \n", Map.PosX);
         //printf("MapLimitL = %.0f  ", MapLimitL);
         //printf("MapLimitR = %0.f\n", MapLimitR);
+
+        //animation sequence
+        int SixCounterP = (Player.i - 1) % 3;
+        int SixCOunterQ = (Player.i - 1) / 3;
+
+        SDL_Rect PlayerActiveRectangle;
+        PlayerActiveRectangle.x = SixCounterP * 32;
+        PlayerActiveRectangle.y = SixCOunterQ * 32;
+        PlayerActiveRectangle.w = PlayerActiveRectangle.h = 32;
+
+        SDL_Rect PlayerFartRect;
+        PlayerFartRect.x = PlayerRect.x - 10;
+        PlayerFartRect.y = PlayerRect.y - 32;
+        PlayerFartRect.w = PlayerFartRect.h = 32;
+        SDL_Rect PlayerFartActiveRect;
+        PlayerFartActiveRect.x = PlayerFart.i * 32;
+        PlayerFartActiveRect.y = 0;
+        PlayerFartActiveRect.w = PlayerFartActiveRect.w = 32;
 
         //-----------------------------Rendering-------------------------------------------------
         SDL_BlitScaled(Map.ActiveMap.Surface, 0, WindowSurface, &MapRect);
@@ -200,7 +216,11 @@ int main(int argc, char **argv)
         SDL_BlitScaled(Door.ActiveTexture->Surface, 0, WindowSurface, &DoorRect);
 
         //IMPORTANT: make sure you render the character last and the map first.
-        SDL_BlitScaled(Player.ActiveTexture->Surface, &ActiveRectangle, WindowSurface, &PlayerRect);
+        SDL_BlitScaled(Player.ActiveTexture->Surface, &PlayerActiveRectangle, WindowSurface, &PlayerRect);
+        if (ToFart)
+        {
+            SDL_BlitScaled(PlayerFart.ActiveTexture->Surface, &PlayerFartActiveRect, WindowSurface, &PlayerFartRect);
+        }
 
         SDL_UpdateWindowSurface(Window);
 
