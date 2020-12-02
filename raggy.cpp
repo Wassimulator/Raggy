@@ -215,7 +215,9 @@ int main(int argc, char **argv)
         //-----------------------------Rendering-------------------------------------------------
         SDL_BlitScaled(Map.ActiveMap.Surface, 0, WindowSurface, &MapRect);
 
-        RenderText(Bold2, "This is a Game", 255, 255, 255, 0, -170, TextSurface, WindowSurface, WindowWidth, WindowHight);
+        RenderTextCentered(Bold2, "This is a Game", 255, 255, 255, 0, -170, TextSurface, WindowSurface, WindowWidth, WindowHight);
+        RenderText(Regular, "Press H to say hello", 255, 255, 255, 0, 0, TextSurface, WindowSurface, WindowWidth, WindowHight);
+        RenderText(Regular, "Press F to pay respects", 255, 255, 255, 0, 25, TextSurface, WindowSurface, WindowWidth, WindowHight);
 
         SDL_BlitScaled(Door.ActiveTexture->Surface, 0, WindowSurface, &DoorRect);
 
