@@ -46,7 +46,9 @@ struct font
     SDL_Color TextColor;
 };
 
-void RenderText(TTF_Font *Font, char *text, Uint8 R, Uint8 G, Uint8 B, SDL_Surface *TextSurface, SDL_Surface *WindowSurface, int WindowWidth, int WindowHight)
+void RenderText(TTF_Font *Font, char *text, Uint8 R, Uint8 G, Uint8 B,
+                int PosXfromCenter, int PosYfromCenter, SDL_Surface *TextSurface, SDL_Surface *WindowSurface, 
+                int WindowWidth, int WindowHight)
 {
 
     SDL_Color TextColor = {R, G, B};
@@ -55,8 +57,8 @@ void RenderText(TTF_Font *Font, char *text, Uint8 R, Uint8 G, Uint8 B, SDL_Surfa
     SDL_Rect TextRect1;
     TextRect1.h = TextSurface->h;
     TextRect1.w = TextSurface->w;
-    TextRect1.x = ((WindowWidth - TextSurface->w) / 2);
-    TextRect1.y = WindowHight / 2 + 150;
+    TextRect1.x = ((WindowWidth - TextSurface->w) / 2) + PosXfromCenter;
+    TextRect1.y = WindowHight / 2 + PosYfromCenter;
     SDL_BlitSurface(TextSurface, 0, WindowSurface, &TextRect1);
 
     SDL_FreeSurface(TextSurface);
@@ -93,9 +95,7 @@ struct map
     float PosY;
     //int Speed; no longer necessary
 };
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 enum doorStatus
 {
     Closed,
@@ -133,12 +133,11 @@ void DoorUpdate(door *Door, SDL_Rect PlayerRect, SDL_Rect DoorRect, TTF_Font *Fo
         Door->ActiveTexture = &Door->Open;
     }
 
-
     if (Door->Status == Closed)
     {
         if (PlayerRect.x < (DoorRect.x + 48) && PlayerRect.x > (DoorRect.x - 48))
         {
-            RenderText(Font, "Door: press E to Open", 255, 255, 255, TextSurface, WindowSurface, WindowWidth, WindowHight);
+            RenderText(Font, "Door: press E to Open", 255, 255, 255, 0, 140, TextSurface, WindowSurface, WindowWidth, WindowHight);
 
             if (E_Key)
             {
@@ -153,7 +152,7 @@ void DoorUpdate(door *Door, SDL_Rect PlayerRect, SDL_Rect DoorRect, TTF_Font *Fo
 
         if (PlayerRect.x < (DoorRect.x + 48) && PlayerRect.x > (DoorRect.x - 48))
         {
-            RenderText(Font, "Door: press E to Close", 255, 255, 255, TextSurface, WindowSurface, WindowWidth, WindowHight);
+            RenderText(Font, "Door: press E to Close", 255, 255, 255, 0, 140, TextSurface, WindowSurface, WindowWidth, WindowHight);
 
             if (E_Key)
             {

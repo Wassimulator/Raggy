@@ -60,6 +60,8 @@ int main(int argc, char **argv)
     //load fonts---
     TTF_Init();
     TTF_Font *Regular = TTF_OpenFont("data/fonts/PTSans-Regular.ttf", 20);
+    TTF_Font *Bold = TTF_OpenFont("data/fonts/PTSans-Bold.ttf", 20);
+    TTF_Font *Bold2 = TTF_OpenFont("data/fonts/PTSans-Bold.ttf", 24);
     SDL_Surface *TextSurface;
 
     //Game Loop-----------------------------------------------------------------
@@ -134,20 +136,10 @@ int main(int argc, char **argv)
 
         SDL_FillRect(WindowSurface, 0, (A << 24) | (R << 16) | (G << 8) | (B));
         SDL_Rect PlayerRect;
-
-        PlayerRect.x = (WindowWidth / 2) + (Player.PosX - CamPosX) - (3 * 16); //putting the player in the center of the screen
-        PlayerRect.y = (WindowHight / 2) - 48;
-        PlayerRect.w = 32 * 3; // TODO: Scaling is an inherent problem that needs fixing.
-        PlayerRect.h = 32 * 3;
-
-        SDL_Rect ActiveRectangle;
-        //int p = (i-1) % 3;
-        //int q = (i-1) / 3;
-
+        //animation sequence----------
         int p;
         int q;
 
-        //animation sequence----------
         switch (Player.i)
         {
         case 1:
@@ -176,6 +168,15 @@ int main(int argc, char **argv)
         default:
             break;
         };
+
+        PlayerRect.x = (WindowWidth / 2) + (Player.PosX - CamPosX) - (3 * 16); //putting the player in the center of the screen
+        PlayerRect.y = (WindowHight / 2) - 48;
+        PlayerRect.w = 32 * 3; // TODO: Scaling is an inherent problem that needs fixing.
+        PlayerRect.h = 32 * 3;
+
+        SDL_Rect ActiveRectangle;
+        //int p = (i-1) % 3;
+        //int q = (i-1) / 3;
 
         ActiveRectangle.x = p * 32;
         ActiveRectangle.y = q * 32;
@@ -214,7 +215,7 @@ int main(int argc, char **argv)
         //-----------------------------Rendering-------------------------------------------------
         SDL_BlitScaled(Map.ActiveMap.Surface, 0, WindowSurface, &MapRect);
 
-        //RenderText(Regular, "Test, test, testicles.", 255, 255, 255, TextSurface, WindowSurface, WindowWidth, WindowHight);
+        RenderText(Bold2, "This is a Game", 255, 255, 255, 0, -170, TextSurface, WindowSurface, WindowWidth, WindowHight);
 
         SDL_BlitScaled(Door.ActiveTexture->Surface, 0, WindowSurface, &DoorRect);
 
