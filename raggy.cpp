@@ -210,8 +210,8 @@ int main(int argc, char **argv)
         PlayerFartRect.h = 32 * 3;*/
         PlayerFartRect.x = (WindowWidth / 2) + (Player.PosX - CamPosX) - (3 * 16);
         PlayerFartRect.y = (WindowHight / 2) - 48;
-        PlayerFartRect.w = 32 ; 
-        PlayerFartRect.h = 32 * 18 ; // WHY?!!!!!!
+        PlayerFartRect.w = 32*3; 
+        PlayerFartRect.h = 32*3; // WHY?!!!!!!
         SDL_Rect PlayerFartActiveRect;
         PlayerFartActiveRect.x = /*PlayerFart.i * 32*/ 0;
         PlayerFartActiveRect.y = 0;
@@ -231,7 +231,7 @@ int main(int argc, char **argv)
         //SDL_BlitScaled(Player.ActiveTexture->Surface, &PlayerActiveRectangle, WindowSurface, &PlayerRect);
         //if (ToFart)
         //{
-        SDL_BlitScaled(PlayerFart.ActiveTexture->Surface, &PlayerFartActiveRect, WindowSurface, &PlayerFartRect);
+        SDL_BlitScaled(PlayerFart.ActiveTexture->Surface, 0, WindowSurface, &PlayerFartRect);
         //}
 
         SDL_UpdateWindowSurface(Window);
