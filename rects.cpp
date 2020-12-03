@@ -2,14 +2,16 @@
 #include "raggy.hpp"
 #include "source.cpp"
 
-void LoadRects(int WindowWidth, int WindowHight, int CamPosX,
+void LoadRects(int WindowWidth, int WindowHight, int CamPosX, bool *F_Key,
                SDL_Rect *PlayerRect, player Player,
                SDL_Rect *PlayerActiveRectangle,
                SDL_Rect *MapRect, map Map,
                SDL_Rect *DoorRect, door Door,
                SDL_Rect *PlayerFartRectR, fart PlayerFart,
                SDL_Rect *PlayerFartRectL,
-               SDL_Rect *PlayerFartActiveRect)
+               SDL_Rect *PlayerFartActiveRect,
+               SDL_Rect *PlayerFartCloudRect, fartCloud *PlayerFartCloud,
+               SDL_Rect *PlayerFartCloudActiveRect)
 {
     //animation sequence
     int SixCounterP = (Player.i - 1) % 3;
@@ -47,4 +49,39 @@ void LoadRects(int WindowWidth, int WindowHight, int CamPosX,
     PlayerFartActiveRect->x = (PlayerFart.i - 1) * 32;
     PlayerFartActiveRect->y = 0;
     PlayerFartActiveRect->w = PlayerFartActiveRect->h = 32;
+
+    if (PlayerFartCloud->T % 20 == 0)
+    {
+        if (PlayerFartCloud->iY >= 0 && PlayerFartCloud->iY < 64)
+        {
+            PlayerFartCloud->iY++;
+        }
+        if (PlayerFartCloud->iY == 64)
+        {
+            PlayerFartCloud->iY = 65;
+        }
+    }
+
+    ;
+    if (*F_Key)
+    {
+        PlayerFartCloud->FartCloudInitX = (WindowWidth / 2) + (Player.PosX - CamPosX) - (3 * 16); //it sticks to the edge of the screen!
+    }
+    PlayerFartCloud->FartCloudInitX = PlayerFartCloud->FartCloudInitX;
+    if (Player.Direction == RightDirection)
+    {
+        PlayerFartCloudRect->x = PlayerFartCloud->FartCloudInitX - 70;
+    }
+    else if (Player.Direction == LeftDirection)
+    {
+        PlayerFartCloudRect->x = PlayerFartCloud->FartCloudInitX + 70;
+    }
+    PlayerFartCloudRect->y = (WindowHight / 2) - PlayerFartCloud->iY - 24;
+    PlayerFartCloudRect->w = PlayerFartCloudRect->h = 32 * 2;
+
+    PlayerFartCloudActiveRect->x = (PlayerFartCloud->i - 1) * 32;
+    PlayerFartCloudActiveRect->y = 0;
+    PlayerFartCloudActiveRect->h = PlayerFartCloudActiveRect->w = 32;
+
+    printf("initX = %i\n", PlayerFartCloud->FartCloudInitX);
 };

@@ -134,15 +134,30 @@ struct fart
     sprite FartLeft;
     sprite FartRight;
     sprite Empty;
-    float PosX;
-    float PosY;
     sprite *ActiveTexture; //WHY is this a pointer??????????????
     int i;
     int T;
     bool ToFart;
     direction Direction;
 };
+struct fartCloud
+{
+    sprite FartCloud;
+    bool HasFarted;
+    int FartCloudInitX;
+    int i;
+    int iY;
+    int aY;
+    int T;
+};
 //-----------------things----------------------
+fartCloud LoadFartCloud()
+{
+    fartCloud PlayerFartCloud = {};
+    PlayerFartCloud.FartCloud = LoadSprite("data/textures/fart_cloud.png");
+    PlayerFartCloud.FartCloudInitX = 0;
+    return PlayerFartCloud;
+}
 fart LoadFart()
 {
     fart PlayerFart = {};
@@ -154,7 +169,7 @@ fart LoadFart()
 
     return PlayerFart;
 }
-void FartUpdate(player *Player, fart *PlayerFart, bool F_Key)
+void FartUpdate(player *Player, fart *PlayerFart, fartCloud *PlayerFartCloud, bool F_Key)
 {
     if (F_Key)
     {
@@ -167,6 +182,8 @@ void FartUpdate(player *Player, fart *PlayerFart, bool F_Key)
             PlayerFart->ActiveTexture = &PlayerFart->FartLeft;
         }
         PlayerFart->ToFart = true;
+
+        PlayerFartCloud->i = 2;
     }
 
     if (PlayerFart->T++ % 5 == 0 && PlayerFart->ToFart == true)
@@ -179,11 +196,20 @@ void FartUpdate(player *Player, fart *PlayerFart, bool F_Key)
         {
             PlayerFart->ToFart = false;
             PlayerFart->i = 1;
+            PlayerFartCloud->HasFarted = true;
         }
     }
-
-    printf("i = %i ", PlayerFart->i);
-    /*printf(F_Key ? "F_key is true\n" : "F_key is false\n");*/
+    if (PlayerFartCloud->T++ % 20 == 0)
+    {
+        if (PlayerFartCloud->i == 1)
+        {
+            PlayerFartCloud->i = 2;
+        }
+        else if (PlayerFartCloud->i == 2)
+        {
+            PlayerFartCloud->i = 1;
+        }
+    }
 }
 
 door LoadDoor()
@@ -335,14 +361,6 @@ void PlayerUpdate(player *Player, float CamPosX,
 
     if (IsIdle)
     {
-        /*if(Player->Direction == RightDirection)
-        {
-            Player->ActiveTexture = &Player->IdleRight;
-        }
-        else if(Player->Direction == LeftDirection)
-        {
-            Player->ActiveTexture = &Player->IdleLeft;
-        }*/
         Player->i = 1;
     }
 

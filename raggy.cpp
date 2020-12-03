@@ -28,6 +28,7 @@ int main(int argc, char **argv)
     map Map = LoadMap();
     door Door = LoadDoor();
     fart PlayerFart = LoadFart();
+    fartCloud PlayerFartCloud = LoadFartCloud();
 
     Player.PosX = 0;
     Player.PosY = 0;
@@ -86,6 +87,8 @@ int main(int argc, char **argv)
     SDL_Rect PlayerFartRectR;
     SDL_Rect PlayerFartRectL;
     SDL_Rect PlayerFartActiveRect;
+    SDL_Rect PlayerFartCloudRect;
+    SDL_Rect PlayerFartCloudActiveRect;
     //Game Loop-----------------------------------------------------------------
     while (running)
     {
@@ -179,19 +182,23 @@ int main(int argc, char **argv)
         MapUpdate(&CamPosX, &Player);
         DoorUpdate(&Door, PlayerRect, DoorRect, Regular, TextSurface,
                    WindowSurface, WindowWidth, WindowHight, E_Key);
-        FartUpdate(&Player, &PlayerFart, F_Key);
+        FartUpdate(&Player, &PlayerFart, &PlayerFartCloud, F_Key);
 
         //----------------------------LOAD RECTS HERE------------------------------------------
         //          IMPORTANT: make sure you update this function here and in rect.cpp
-        //                     every time you add a new object!
+        //                     every time you add a new object! and define the rects
+        //                     outside the loop.
 
-        LoadRects(WindowWidth, WindowHight, CamPosX,
+        LoadRects(WindowWidth, WindowHight, CamPosX, &F_Key,
                   &PlayerRect, Player,
                   &PlayerActiveRectangle,
                   &MapRect, Map,
                   &DoorRect, Door,
                   &PlayerFartRectR, PlayerFart,
-                  &PlayerFartRectL, &PlayerFartActiveRect);
+                  &PlayerFartRectL,
+                  &PlayerFartActiveRect,
+                  &PlayerFartCloudRect, &PlayerFartCloud,
+                  &PlayerFartCloudActiveRect);
 
         //-----------------------------Rendering-------------------------------------------------
         //          IMPORTANT: make sure you render the character last and the map first.
@@ -205,6 +212,7 @@ int main(int argc, char **argv)
         SDL_BlitScaled(Door.ActiveTexture->Surface, 0, WindowSurface, &DoorRect);
 
         SDL_BlitScaled(Player.ActiveTexture->Surface, &PlayerActiveRectangle, WindowSurface, &PlayerRect);
+
         if (PlayerFart.ToFart)
         {
             if (Player.Direction == RightDirection)
@@ -217,6 +225,11 @@ int main(int argc, char **argv)
                 SDL_BlitScaled(PlayerFart.ActiveTexture->Surface,
                                &PlayerFartActiveRect, WindowSurface, &PlayerFartRectL);
             }
+        }
+        if (PlayerFartCloud.HasFarted)
+        {
+            SDL_BlitScaled(PlayerFartCloud.FartCloud.Surface,
+                           &PlayerFartCloudActiveRect, WindowSurface, &PlayerFartCloudRect);
         }
         SDL_UpdateWindowSurface(Window);
 
