@@ -144,7 +144,7 @@ struct fart
 };
 //-----------------things----------------------
 fart LoadFart()
-{  
+{
     fart PlayerFart = {};
 
     PlayerFart.FartLeft = LoadSprite("data/textures/fart_left.png");
@@ -154,22 +154,24 @@ fart LoadFart()
     return PlayerFart;
 }
 void FartUpdate(player *Player, fart *PlayerFart, bool F_Key, bool ToFart)
-{ 
+{
+    PlayerFart->ActiveTexture = &PlayerFart->FartRight;
+    /*if (Player->Direction == RightDirection)
+    {
+        PlayerFart->ActiveTexture = &PlayerFart->FartRight;
+    }
+    if (Player->Direction == LeftDirection)
+    {
+        PlayerFart->ActiveTexture = &PlayerFart->FartLeft;
+    }
     if (F_Key)
     {
-        if (Player->Direction == RightDirection)
-        {
-            PlayerFart->ActiveTexture = &PlayerFart->FartRight;
-        }
-        if (Player->Direction == LeftDirection)
-        {
-            PlayerFart->ActiveTexture = &PlayerFart->FartLeft;
-        }
-        ToFart = true;
-        PlayerFart->i = 0;
-    }
 
-    if (PlayerFart->T++ % 10 == 0 && ToFart == true)
+        ToFart = true;
+        //PlayerFart->i = 0;
+    }*/
+
+    /*if (PlayerFart->T++ % 10 == 0 && ToFart == true)
     {
         if (PlayerFart->i >= 0 && PlayerFart->i < 2)
         {
@@ -179,15 +181,17 @@ void FartUpdate(player *Player, fart *PlayerFart, bool F_Key, bool ToFart)
         {
             ToFart = false;
         }
-        /*else
+        else
         {
             PlayerFart->i = 1;
-        }*/
-    }
-    if (ToFart = false)
+        }
+    }*/
+    /*if (ToFart = false)
     {
         PlayerFart->i = 0;
-    }
+    }*/
+    printf(ToFart ? "ToFart is true       " : "ToFart is false      ");
+    /*printf(F_Key ? "F_key is true\n" : "F_key is false\n");*/
 }
 
 door LoadDoor()

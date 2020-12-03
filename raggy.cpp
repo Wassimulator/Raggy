@@ -66,11 +66,13 @@ int main(int argc, char **argv)
     //---
 
     bool ToFart = false;
+    bool F_KeyWasPressed = false;
 
     //Game Loop-----------------------------------------------------------------
     while (running)
     {
-        E_Key = false; //leave this here.
+        //leave these here. they're necessary for the "pressable once" system.
+        E_Key = false;
         F_Key = false;
 
         //FPS------------------------------------------------------
@@ -131,6 +133,9 @@ int main(int argc, char **argv)
                 case SDLK_h:
                     H_Key = KeyState;
                     break;
+                /*case SDLK_f:
+                    F_Key = KeyState;
+                    break;*/
                 default:
                     break;
                 }
@@ -146,10 +151,9 @@ int main(int argc, char **argv)
         // WINDOWS USES BGRA (that does not stand for bulgaria)
         // TODO: map it so that it works on multiple systems
         // TODO: Move the SDL_Rect clutter into somehting organized
-
         SDL_FillRect(WindowSurface, 0, (A << 24) | (R << 16) | (G << 8) | (B));
+        
         SDL_Rect PlayerRect;
-
         PlayerRect.x = (WindowWidth / 2) + (Player.PosX - CamPosX) - (3 * 16); //putting the player in the center of the screen
         PlayerRect.y = (WindowHight / 2) - 48;
         PlayerRect.w = 32 * 3; // TODO: Scaling is an inherent problem that needs fixing.
@@ -182,6 +186,8 @@ int main(int argc, char **argv)
                    WindowSurface, WindowWidth, WindowHight, E_Key);
         FartUpdate(&Player, &PlayerFart, F_Key, ToFart);
 
+        //--------------------------------------------------------------------------------------------
+
         //printf("CamPosX = %.0f  ", CamPosX);
         //printf("P-PosX = %.0f  ", Player.PosX);
         //printf("M-PosX = %.0f  \n", Map.PosX);
@@ -198,33 +204,40 @@ int main(int argc, char **argv)
         PlayerActiveRectangle.w = PlayerActiveRectangle.h = 32;
 
         SDL_Rect PlayerFartRect;
-        PlayerFartRect.x = PlayerRect.x - 10;
+        /*PlayerFartRect.x = PlayerRect.x - 10;
         PlayerFartRect.y = PlayerRect.y - 32;
-        PlayerFartRect.w = PlayerFartRect.h = 32;
+        PlayerFartRect.w = 32 * 3;
+        PlayerFartRect.h = 32 * 3;*/
+        PlayerFartRect.x = (WindowWidth / 2) + (Player.PosX - CamPosX) - (3 * 16);
+        PlayerFartRect.y = (WindowHight / 2) - 48;
+        PlayerFartRect.w = 32 ; 
+        PlayerFartRect.h = 32 * 18 ; // WHY?!!!!!!
         SDL_Rect PlayerFartActiveRect;
-        PlayerFartActiveRect.x = PlayerFart.i * 32;
+        PlayerFartActiveRect.x = /*PlayerFart.i * 32*/ 0;
         PlayerFartActiveRect.y = 0;
         PlayerFartActiveRect.w = PlayerFartActiveRect.w = 32;
 
         //-----------------------------Rendering-------------------------------------------------
-        SDL_BlitScaled(Map.ActiveMap.Surface, 0, WindowSurface, &MapRect);
+        //          IMPORTANT: make sure you render the character last and the map first.
+
+        //SDL_BlitScaled(Map.ActiveMap.Surface, 0, WindowSurface, &MapRect);
 
         RenderTextCentered(Bold2, "This is a Game", 255, 255, 255, 0, -170, TextSurface, WindowSurface, WindowWidth, WindowHight);
         RenderText(Regular, "Press H to say hello", 255, 255, 255, 0, 0, TextSurface, WindowSurface, WindowWidth, WindowHight);
         RenderText(Regular, "Press F to pay respects", 255, 255, 255, 0, 25, TextSurface, WindowSurface, WindowWidth, WindowHight);
 
-        SDL_BlitScaled(Door.ActiveTexture->Surface, 0, WindowSurface, &DoorRect);
+        //SDL_BlitScaled(Door.ActiveTexture->Surface, 0, WindowSurface, &DoorRect);
 
-        //IMPORTANT: make sure you render the character last and the map first.
-        SDL_BlitScaled(Player.ActiveTexture->Surface, &PlayerActiveRectangle, WindowSurface, &PlayerRect);
-        if (ToFart)
-        {
-            SDL_BlitScaled(PlayerFart.ActiveTexture->Surface, &PlayerFartActiveRect, WindowSurface, &PlayerFartRect);
-        }
+        //SDL_BlitScaled(Player.ActiveTexture->Surface, &PlayerActiveRectangle, WindowSurface, &PlayerRect);
+        //if (ToFart)
+        //{
+        SDL_BlitScaled(PlayerFart.ActiveTexture->Surface, &PlayerFartActiveRect, WindowSurface, &PlayerFartRect);
+        //}
 
         SDL_UpdateWindowSurface(Window);
 
-        //printf("CamPos = %.0f\n", CamPosX);
+        printf("Player.PosX = %.0f\n", Player.PosX);
+        printf("PlayerRect.x = %i\n", PlayerRect.x);
 
         //FPS------------------------------------------------------
         {
