@@ -139,7 +139,7 @@ struct fart
     sprite *ActiveTexture; //WHY is this a pointer??????????????
     int i;
     int T;
-    int Speed;
+    bool ToFart;
     direction Direction;
 };
 //-----------------things----------------------
@@ -150,10 +150,11 @@ fart LoadFart()
     PlayerFart.FartLeft = LoadSprite("data/textures/fart_left.png");
     PlayerFart.FartRight = LoadSprite("data/textures/fart_right.png");
     PlayerFart.Empty = LoadSprite("data/textures/empty.png");
+    PlayerFart.ToFart = false;
 
     return PlayerFart;
 }
-void FartUpdate(player *Player, fart *PlayerFart, bool F_Key, bool *ToFart)
+void FartUpdate(player *Player, fart *PlayerFart, bool F_Key)
 {
     if (F_Key)
     {
@@ -165,10 +166,10 @@ void FartUpdate(player *Player, fart *PlayerFart, bool F_Key, bool *ToFart)
         {
             PlayerFart->ActiveTexture = &PlayerFart->FartLeft;
         }
-        *ToFart = true;
+        PlayerFart->ToFart = true;
     }
 
-    if (PlayerFart->T++ % 5 == 0 && *ToFart == true)
+    if (PlayerFart->T++ % 5 == 0 && PlayerFart->ToFart == true)
     {
         if (PlayerFart->i >= 0 && PlayerFart->i <= 3)
         {
@@ -176,13 +177,12 @@ void FartUpdate(player *Player, fart *PlayerFart, bool F_Key, bool *ToFart)
         }
         if (PlayerFart->i > 3)
         {
-            *ToFart = false;
+            PlayerFart->ToFart = false;
             PlayerFart->i = 1;
         }
     }
 
     printf("i = %i ", PlayerFart->i);
-    printf(ToFart ? "ToFart is true\n" : "ToFart is false\n");
     /*printf(F_Key ? "F_key is true\n" : "F_key is false\n");*/
 }
 

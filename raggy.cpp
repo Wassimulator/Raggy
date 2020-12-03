@@ -1,5 +1,6 @@
 #include "raggy.hpp"
 #include "source.cpp"
+#include "rects.cpp"
 
 int main(int argc, char **argv)
 {
@@ -24,13 +25,15 @@ int main(int argc, char **argv)
     bool E_Key = false;
 
     player Player = LoadPlayer();
+    map Map = LoadMap();
+    door Door = LoadDoor();
+    fart PlayerFart = LoadFart();
 
     Player.PosX = 0;
     Player.PosY = 0;
 
     bool running = true;
 
-    map Map = LoadMap();
     Map.ActiveMap.h = Map.ActiveMap.h * 3;
     Map.ActiveMap.w = Map.ActiveMap.w * 3;
 
@@ -44,9 +47,6 @@ int main(int argc, char **argv)
     int WalkSpeed = 2;
     int RunSpeed = 4; //They're now adjustable, I still don't see why you need them to be as such,
                       // but here, 1,5 hours later, I present you ADJUSTABLE SPEEDS * Confetti *
-
-    door Door = LoadDoor();
-    fart PlayerFart = LoadFart();
 
     //------load sounds--------
 
@@ -64,10 +64,28 @@ int main(int argc, char **argv)
     TTF_Font *Bold2 = TTF_OpenFont("data/fonts/PTSans-Bold.ttf", 24);
     SDL_Surface *TextSurface;
     //---
+    SDL_Rect PlayerRect;
+    PlayerRect.x = (WindowWidth / 2) + (Player.PosX - CamPosX) - (3 * 16);
+    PlayerRect.y = (WindowHight / 2) - 48;
+    PlayerRect.w = 32 * 3; // TODO: Scaling is an inherent problem that needs fixing.
+    PlayerRect.h = 32 * 3;
 
-    bool ToFart = false;
-    bool F_KeyWasPressed = false;
+    SDL_Rect MapRect;
+    MapRect.h = Map.ActiveMap.h;
+    MapRect.w = Map.ActiveMap.w;
+    MapRect.x = ((WindowWidth - Map.ActiveMap.w) / 2) - CamPosX;
+    MapRect.y = Map.PosY;
 
+    SDL_Rect DoorRect;
+    DoorRect.h = Door.Closed.h * 3;
+    DoorRect.w = Door.Closed.w * 3;
+    DoorRect.x = (WindowWidth / 2) - CamPosX - 48 - 200;
+    DoorRect.y = (WindowHight / 2) - 96;
+
+    SDL_Rect PlayerActiveRectangle;
+    SDL_Rect PlayerFartRectR;
+    SDL_Rect PlayerFartRectL;
+    SDL_Rect PlayerFartActiveRect;
     //Game Loop-----------------------------------------------------------------
     while (running)
     {
@@ -133,9 +151,6 @@ int main(int argc, char **argv)
                 case SDLK_h:
                     H_Key = KeyState;
                     break;
-                /*case SDLK_f:
-                    F_Key = KeyState;
-                    break;*/
                 default:
                     break;
                 }
@@ -153,30 +168,10 @@ int main(int argc, char **argv)
         // TODO: Move the SDL_Rect clutter into somehting organized
         SDL_FillRect(WindowSurface, 0, (A << 24) | (R << 16) | (G << 8) | (B));
 
-        SDL_Rect PlayerRect;
-        PlayerRect.x = (WindowWidth / 2) + (Player.PosX - CamPosX) - (3 * 16); //putting the player in the center of the screen
-        PlayerRect.y = (WindowHight / 2) - 48;
-        PlayerRect.w = 32 * 3; // TODO: Scaling is an inherent problem that needs fixing.
-        PlayerRect.h = 32 * 3;
-
-        //TODO: move the SDL_Rect clutter in a struct or something.
-
-        SDL_Rect MapRect;
-        MapRect.h = Map.ActiveMap.h;
-        MapRect.w = Map.ActiveMap.w;
-        MapRect.x = ((WindowWidth - Map.ActiveMap.w) / 2) - CamPosX;
-        MapRect.y = Map.PosY;
-
-        SDL_Rect DoorRect;
-        DoorRect.h = Door.Closed.h * 3;
-        DoorRect.w = Door.Closed.w * 3;
-        DoorRect.x = (WindowWidth / 2) - CamPosX - 48 - 200;
-        DoorRect.y = (WindowHight / 2) - 96;
-
-        //GameUpdate----------------------------------------------------------------------------------
-
         float MapLimitR = Map.ActiveMap.w * 0.5f - 3 * 16;
         float MapLimitL = -Map.ActiveMap.w * 0.5f + 3 * 16;
+
+        //-------------------------Game Update----------------------------------------------------------
 
         PlayerUpdate(&Player, CamPosX, RightButton, LeftButton, UpButton,
                      DownButton, Shift, MapLimitL, MapLimitR, WalkSpeed, RunSpeed);
@@ -184,39 +179,19 @@ int main(int argc, char **argv)
         MapUpdate(&CamPosX, &Player);
         DoorUpdate(&Door, PlayerRect, DoorRect, Regular, TextSurface,
                    WindowSurface, WindowWidth, WindowHight, E_Key);
-        FartUpdate(&Player, &PlayerFart, F_Key, &ToFart);
+        FartUpdate(&Player, &PlayerFart, F_Key);
 
-        //--------------------------------------------------------------------------------------------
+        //----------------------------LOAD RECTS HERE------------------------------------------
+        //          IMPORTANT: make sure you update this function here and in rect.cpp
+        //                     every time you add a new object!
 
-        //printf("CamPosX = %.0f  ", CamPosX);
-        //printf("P-PosX = %.0f  ", Player.PosX);
-        //printf("M-PosX = %.0f  \n", Map.PosX);
-        //printf("MapLimitL = %.0f  ", MapLimitL);
-        //printf("MapLimitR = %0.f\n", MapLimitR);
-
-        //animation sequence
-        int SixCounterP = (Player.i - 1) % 3;
-        int SixCOunterQ = (Player.i - 1) / 3;
-
-        SDL_Rect PlayerActiveRectangle;
-        PlayerActiveRectangle.x = SixCounterP * 32;
-        PlayerActiveRectangle.y = SixCOunterQ * 32;
-        PlayerActiveRectangle.w = PlayerActiveRectangle.h = 32;
-
-        SDL_Rect PlayerFartRectR;
-        PlayerFartRectR.x = (WindowWidth / 2) + (Player.PosX - CamPosX) - (3 * 16) - 38;
-        PlayerFartRectR.y = (WindowHight / 2) - 48 + 25;
-        PlayerFartRectR.w = 32 * 2;
-        PlayerFartRectR.h = 32 * 2;
-        SDL_Rect PlayerFartRectL;
-        PlayerFartRectL.x = (WindowWidth / 2) + (Player.PosX - CamPosX) - (3 * 16) + 70;
-        PlayerFartRectL.y = (WindowHight / 2) - 48 + 25;
-        PlayerFartRectL.w = 32 * 2;
-        PlayerFartRectL.h = 32 * 2;
-        SDL_Rect PlayerFartActiveRect;
-        PlayerFartActiveRect.x = (PlayerFart.i - 1) * 32;
-        PlayerFartActiveRect.y = 0;
-        PlayerFartActiveRect.w = PlayerFartActiveRect.h = 32;
+        LoadRects(WindowWidth, WindowHight, CamPosX,
+                  &PlayerRect, Player,
+                  &PlayerActiveRectangle,
+                  &MapRect, Map,
+                  &DoorRect, Door,
+                  &PlayerFartRectR, PlayerFart,
+                  &PlayerFartRectL, &PlayerFartActiveRect);
 
         //-----------------------------Rendering-------------------------------------------------
         //          IMPORTANT: make sure you render the character last and the map first.
@@ -230,15 +205,17 @@ int main(int argc, char **argv)
         SDL_BlitScaled(Door.ActiveTexture->Surface, 0, WindowSurface, &DoorRect);
 
         SDL_BlitScaled(Player.ActiveTexture->Surface, &PlayerActiveRectangle, WindowSurface, &PlayerRect);
-        if (ToFart)
+        if (PlayerFart.ToFart)
         {
             if (Player.Direction == RightDirection)
             {
-                SDL_BlitScaled(PlayerFart.ActiveTexture->Surface, &PlayerFartActiveRect, WindowSurface, &PlayerFartRectR);
+                SDL_BlitScaled(PlayerFart.ActiveTexture->Surface,
+                               &PlayerFartActiveRect, WindowSurface, &PlayerFartRectR);
             }
             if (Player.Direction == LeftDirection)
             {
-                SDL_BlitScaled(PlayerFart.ActiveTexture->Surface, &PlayerFartActiveRect, WindowSurface, &PlayerFartRectL);
+                SDL_BlitScaled(PlayerFart.ActiveTexture->Surface,
+                               &PlayerFartActiveRect, WindowSurface, &PlayerFartRectL);
             }
         }
         SDL_UpdateWindowSurface(Window);
