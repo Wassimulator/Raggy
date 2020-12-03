@@ -152,7 +152,7 @@ int main(int argc, char **argv)
         // TODO: map it so that it works on multiple systems
         // TODO: Move the SDL_Rect clutter into somehting organized
         SDL_FillRect(WindowSurface, 0, (A << 24) | (R << 16) | (G << 8) | (B));
-        
+
         SDL_Rect PlayerRect;
         PlayerRect.x = (WindowWidth / 2) + (Player.PosX - CamPosX) - (3 * 16); //putting the player in the center of the screen
         PlayerRect.y = (WindowHight / 2) - 48;
@@ -184,7 +184,7 @@ int main(int argc, char **argv)
         MapUpdate(&CamPosX, &Player);
         DoorUpdate(&Door, PlayerRect, DoorRect, Regular, TextSurface,
                    WindowSurface, WindowWidth, WindowHight, E_Key);
-        FartUpdate(&Player, &PlayerFart, F_Key, ToFart);
+        FartUpdate(&Player, &PlayerFart, F_Key, &ToFart);
 
         //--------------------------------------------------------------------------------------------
 
@@ -203,41 +203,45 @@ int main(int argc, char **argv)
         PlayerActiveRectangle.y = SixCOunterQ * 32;
         PlayerActiveRectangle.w = PlayerActiveRectangle.h = 32;
 
-        SDL_Rect PlayerFartRect;
-        /*PlayerFartRect.x = PlayerRect.x - 10;
-        PlayerFartRect.y = PlayerRect.y - 32;
-        PlayerFartRect.w = 32 * 3;
-        PlayerFartRect.h = 32 * 3;*/
-        PlayerFartRect.x = (WindowWidth / 2) + (Player.PosX - CamPosX) - (3 * 16);
-        PlayerFartRect.y = (WindowHight / 2) - 48;
-        PlayerFartRect.w = 32*3; 
-        PlayerFartRect.h = 32*3; // WHY?!!!!!!
+        SDL_Rect PlayerFartRectR;
+        PlayerFartRectR.x = (WindowWidth / 2) + (Player.PosX - CamPosX) - (3 * 16) - 38;
+        PlayerFartRectR.y = (WindowHight / 2) - 48 + 25;
+        PlayerFartRectR.w = 32 * 2;
+        PlayerFartRectR.h = 32 * 2;
+        SDL_Rect PlayerFartRectL;
+        PlayerFartRectL.x = (WindowWidth / 2) + (Player.PosX - CamPosX) - (3 * 16) + 70;
+        PlayerFartRectL.y = (WindowHight / 2) - 48 + 25;
+        PlayerFartRectL.w = 32 * 2;
+        PlayerFartRectL.h = 32 * 2;
         SDL_Rect PlayerFartActiveRect;
-        PlayerFartActiveRect.x = /*PlayerFart.i * 32*/ 0;
+        PlayerFartActiveRect.x = (PlayerFart.i - 1) * 32;
         PlayerFartActiveRect.y = 0;
-        PlayerFartActiveRect.w = PlayerFartActiveRect.w = 32;
+        PlayerFartActiveRect.w = PlayerFartActiveRect.h = 32;
 
         //-----------------------------Rendering-------------------------------------------------
         //          IMPORTANT: make sure you render the character last and the map first.
 
-        //SDL_BlitScaled(Map.ActiveMap.Surface, 0, WindowSurface, &MapRect);
+        SDL_BlitScaled(Map.ActiveMap.Surface, 0, WindowSurface, &MapRect);
 
         RenderTextCentered(Bold2, "This is a Game", 255, 255, 255, 0, -170, TextSurface, WindowSurface, WindowWidth, WindowHight);
         RenderText(Regular, "Press H to say hello", 255, 255, 255, 0, 0, TextSurface, WindowSurface, WindowWidth, WindowHight);
         RenderText(Regular, "Press F to pay respects", 255, 255, 255, 0, 25, TextSurface, WindowSurface, WindowWidth, WindowHight);
 
-        //SDL_BlitScaled(Door.ActiveTexture->Surface, 0, WindowSurface, &DoorRect);
+        SDL_BlitScaled(Door.ActiveTexture->Surface, 0, WindowSurface, &DoorRect);
 
-        //SDL_BlitScaled(Player.ActiveTexture->Surface, &PlayerActiveRectangle, WindowSurface, &PlayerRect);
-        //if (ToFart)
-        //{
-        SDL_BlitScaled(PlayerFart.ActiveTexture->Surface, 0, WindowSurface, &PlayerFartRect);
-        //}
-
+        SDL_BlitScaled(Player.ActiveTexture->Surface, &PlayerActiveRectangle, WindowSurface, &PlayerRect);
+        if (ToFart)
+        {
+            if (Player.Direction == RightDirection)
+            {
+                SDL_BlitScaled(PlayerFart.ActiveTexture->Surface, &PlayerFartActiveRect, WindowSurface, &PlayerFartRectR);
+            }
+            if (Player.Direction == LeftDirection)
+            {
+                SDL_BlitScaled(PlayerFart.ActiveTexture->Surface, &PlayerFartActiveRect, WindowSurface, &PlayerFartRectL);
+            }
+        }
         SDL_UpdateWindowSurface(Window);
-
-        printf("Player.PosX = %.0f\n", Player.PosX);
-        printf("PlayerRect.x = %i\n", PlayerRect.x);
 
         //FPS------------------------------------------------------
         {
