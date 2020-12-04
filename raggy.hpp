@@ -6,3 +6,8 @@
 //#include "SDL_audio.h"
 #include <SDL_mixer.h>
 #include <SDL_ttf.h>
+
+int FartCloudWriteIndex = 1;
+int FartCloudReadIndex = 1;
+int const MaxFartClouds = 20;
+int FartCloudBufferLength;

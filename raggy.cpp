@@ -28,7 +28,7 @@ int main(int argc, char **argv)
     map Map = LoadMap();
     door Door = LoadDoor();
     fart PlayerFart = LoadFart();
-    fartCloud PlayerFartCloud = LoadFartCloud();
+    fartCloud PlayerFartCloud[MaxFartClouds] = {LoadFartCloud()};
 
     Player.PosX = 0;
     Player.PosY = 0;
@@ -87,8 +87,8 @@ int main(int argc, char **argv)
     SDL_Rect PlayerFartRectR;
     SDL_Rect PlayerFartRectL;
     SDL_Rect PlayerFartActiveRect;
-    SDL_Rect PlayerFartCloudRect;
-    SDL_Rect PlayerFartCloudActiveRect;
+    SDL_Rect PlayerFartCloudRect[MaxFartClouds];
+    SDL_Rect PlayerFartCloudActiveRect[MaxFartClouds];
     //Game Loop-----------------------------------------------------------------
     while (running)
     {
@@ -106,6 +106,10 @@ int main(int argc, char **argv)
                                       //means thatif we have more than one event, it gathers them all before running
         {
             if (Event.type == SDL_QUIT)
+            {
+                running = false;
+            }
+            if (Event.key.keysym.sym == SDLK_q)
             {
                 running = false;
             }
@@ -182,23 +186,38 @@ int main(int argc, char **argv)
         MapUpdate(&CamPosX, &Player);
         DoorUpdate(&Door, PlayerRect, DoorRect, Regular, TextSurface,
                    WindowSurface, WindowWidth, WindowHight, E_Key);
-        FartUpdate(&Player, &PlayerFart, &PlayerFartCloud, F_Key);
+
+        FartUpdate(&Player, &PlayerFart, PlayerFartCloud, F_Key);
 
         //----------------------------LOAD RECTS HERE------------------------------------------
         //          IMPORTANT: make sure you update this function here and in rect.cpp
         //                     every time you add a new object! and define the rects
         //                     outside the loop.
 
+        if (F_Key)
+        {
+
+            if (FartCloudReadIndex != (MaxFartClouds))
+            {
+                PlayerFartCloud[FartCloudReadIndex]; //ReadIndex is declared outside and initialized as Zero
+                FartCloudReadIndex++;
+            }
+            if (FartCloudReadIndex == (MaxFartClouds))
+            {
+                FartCloudReadIndex = 1;
+            }
+        }
+
         LoadRects(WindowWidth, WindowHight, CamPosX, &F_Key,
-                  &PlayerRect, Player,
+                  &PlayerRect, &Player,
                   &PlayerActiveRectangle,
                   &MapRect, Map,
                   &DoorRect, Door,
                   &PlayerFartRectR, PlayerFart,
                   &PlayerFartRectL,
                   &PlayerFartActiveRect,
-                  &PlayerFartCloudRect, &PlayerFartCloud,
-                  &PlayerFartCloudActiveRect);
+                  &PlayerFartCloudRect[FartCloudWriteIndex], PlayerFartCloud,
+                  &PlayerFartCloudActiveRect[FartCloudWriteIndex]);
 
         //-----------------------------Rendering-------------------------------------------------
         //          IMPORTANT: make sure you render the character last and the map first.
@@ -208,6 +227,7 @@ int main(int argc, char **argv)
         RenderTextCentered(Bold2, "This is a Game", 255, 255, 255, 0, -170, TextSurface, WindowSurface, WindowWidth, WindowHight);
         RenderText(Regular, "Press H to say hello", 255, 255, 255, 0, 0, TextSurface, WindowSurface, WindowWidth, WindowHight);
         RenderText(Regular, "Press F to pay respects", 255, 255, 255, 0, 25, TextSurface, WindowSurface, WindowWidth, WindowHight);
+        RenderText(Regular, "Press Q to quit the game", 255, 255, 255, 0, 50, TextSurface, WindowSurface, WindowWidth, WindowHight);
 
         SDL_BlitScaled(Door.ActiveTexture->Surface, 0, WindowSurface, &DoorRect);
 
@@ -226,11 +246,20 @@ int main(int argc, char **argv)
                                &PlayerFartActiveRect, WindowSurface, &PlayerFartRectL);
             }
         }
-        if (PlayerFartCloud.HasFarted)
+        FartCloudWriteIndex = 1;
+        for (FartCloudWriteIndex = 1;
+             FartCloudWriteIndex < MaxFartClouds;
+             FartCloudWriteIndex++)
+        if (PlayerFartCloud[FartCloudWriteIndex].HasFarted)
         {
-            SDL_BlitScaled(PlayerFartCloud.FartCloud.Surface,
-                           &PlayerFartCloudActiveRect, WindowSurface, &PlayerFartCloudRect);
+            {
+                SDL_BlitScaled(PlayerFartCloud[FartCloudWriteIndex].FartCloud.Surface,
+                               &PlayerFartCloudActiveRect[FartCloudWriteIndex], WindowSurface, &PlayerFartCloudRect[FartCloudWriteIndex]);
+            }
         }
+
+        printf("read index = %i, write index = %i\n", FartCloudReadIndex, FartCloudWriteIndex);
+
         SDL_UpdateWindowSurface(Window);
 
         //FPS------------------------------------------------------

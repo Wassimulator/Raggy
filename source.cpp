@@ -145,6 +145,7 @@ struct fartCloud
     sprite FartCloud;
     bool HasFarted;
     int FartCloudInitX;
+    int ReadIndex;
     int i;
     int iY;
     int aY;
@@ -156,6 +157,7 @@ fartCloud LoadFartCloud()
     fartCloud PlayerFartCloud = {};
     PlayerFartCloud.FartCloud = LoadSprite("data/textures/fart_cloud.png");
     PlayerFartCloud.FartCloudInitX = 0;
+    PlayerFartCloud.ReadIndex = 0;
     return PlayerFartCloud;
 }
 fart LoadFart()
@@ -183,7 +185,7 @@ void FartUpdate(player *Player, fart *PlayerFart, fartCloud *PlayerFartCloud, bo
         }
         PlayerFart->ToFart = true;
 
-        PlayerFartCloud->i = 2;
+        PlayerFartCloud[FartCloudReadIndex].i = 2;
     }
 
     if (PlayerFart->T++ % 5 == 0 && PlayerFart->ToFart == true)
@@ -196,18 +198,18 @@ void FartUpdate(player *Player, fart *PlayerFart, fartCloud *PlayerFartCloud, bo
         {
             PlayerFart->ToFart = false;
             PlayerFart->i = 1;
-            PlayerFartCloud->HasFarted = true;
+            PlayerFartCloud[FartCloudReadIndex].HasFarted = true;
         }
     }
-    if (PlayerFartCloud->T++ % 20 == 0)
+    if (PlayerFartCloud[FartCloudReadIndex].T++ % 20 == 0)
     {
-        if (PlayerFartCloud->i == 1)
+        if (PlayerFartCloud[FartCloudReadIndex].i == 1)
         {
-            PlayerFartCloud->i = 2;
+            PlayerFartCloud[FartCloudReadIndex].i = 2;
         }
-        else if (PlayerFartCloud->i == 2)
+        else if (PlayerFartCloud[FartCloudReadIndex].i == 2)
         {
-            PlayerFartCloud->i = 1;
+            PlayerFartCloud[FartCloudReadIndex].i = 1;
         }
     }
 }
