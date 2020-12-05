@@ -185,7 +185,8 @@ void FartUpdate(player *Player, fart *PlayerFart, fartCloud *PlayerFartCloud, bo
         }
         PlayerFart->ToFart = true;
 
-        PlayerFartCloud[FartCloudReadIndex].i = 2;
+        //PlayerFartCloud[FartCloudReadIndex].i = 2;
+        PlayerFartCloud->i = 2;
     }
 
     if (PlayerFart->T++ % 5 == 0 && PlayerFart->ToFart == true)
@@ -198,10 +199,22 @@ void FartUpdate(player *Player, fart *PlayerFart, fartCloud *PlayerFartCloud, bo
         {
             PlayerFart->ToFart = false;
             PlayerFart->i = 1;
-            PlayerFartCloud[FartCloudReadIndex].HasFarted = true;
+            PlayerFartCloud->HasFarted = true;
+            //PlayerFartCloud[FartCloudReadIndex].HasFarted = true;
         }
     }
-    if (PlayerFartCloud[FartCloudReadIndex].T++ % 20 == 0)
+    if (PlayerFartCloud->T++ % 20 == 0)
+    {
+        if (PlayerFartCloud->i == 1)
+        {
+            PlayerFartCloud->i = 2;
+        }
+        else if (PlayerFartCloud->i == 2)
+        {
+            PlayerFartCloud->i = 1;
+        }
+    }
+    /*if (PlayerFartCloud[FartCloudReadIndex].T++ % 20 == 0)
     {
         if (PlayerFartCloud[FartCloudReadIndex].i == 1)
         {
@@ -211,7 +224,7 @@ void FartUpdate(player *Player, fart *PlayerFart, fartCloud *PlayerFartCloud, bo
         {
             PlayerFartCloud[FartCloudReadIndex].i = 1;
         }
-    }
+    }*/
 }
 
 door LoadDoor()

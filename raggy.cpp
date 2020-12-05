@@ -24,11 +24,16 @@ int main(int argc, char **argv)
     bool H_Key = false;
     bool E_Key = false;
 
+    //-------------------Load Objects--------------------------
+
     player Player = LoadPlayer();
     map Map = LoadMap();
     door Door = LoadDoor();
     fart PlayerFart = LoadFart();
-    fartCloud PlayerFartCloud[MaxFartClouds] = {LoadFartCloud()};
+    fartCloud PlayerFartCloud = LoadFartCloud();
+    //fartCloud PlayerFartCloud[MaxFartClouds] = {LoadFartCloud()};
+
+    //---------------------------------------------------------
 
     Player.PosX = 0;
     Player.PosY = 0;
@@ -87,8 +92,8 @@ int main(int argc, char **argv)
     SDL_Rect PlayerFartRectR;
     SDL_Rect PlayerFartRectL;
     SDL_Rect PlayerFartActiveRect;
-    SDL_Rect PlayerFartCloudRect[MaxFartClouds];
-    SDL_Rect PlayerFartCloudActiveRect[MaxFartClouds];
+    SDL_Rect PlayerFartCloudRect;
+    SDL_Rect PlayerFartCloudActiveRect;
     //Game Loop-----------------------------------------------------------------
     while (running)
     {
@@ -187,27 +192,28 @@ int main(int argc, char **argv)
         DoorUpdate(&Door, PlayerRect, DoorRect, Regular, TextSurface,
                    WindowSurface, WindowWidth, WindowHight, E_Key);
 
-        FartUpdate(&Player, &PlayerFart, PlayerFartCloud, F_Key);
+        FartUpdate(&Player, &PlayerFart, &PlayerFartCloud, F_Key);
 
         //----------------------------LOAD RECTS HERE------------------------------------------
         //          IMPORTANT: make sure you update this function here and in rect.cpp
         //                     every time you add a new object! and define the rects
         //                     outside the loop.
 
-        if (F_Key)
+        /*if (F_Key)
         {
 
             if (FartCloudReadIndex != (MaxFartClouds))
             {
                 PlayerFartCloud[FartCloudReadIndex]; //ReadIndex is declared outside and initialized as Zero
                 FartCloudReadIndex++;
+                FartCloudBufferLength++;
             }
             if (FartCloudReadIndex == (MaxFartClouds))
             {
                 FartCloudReadIndex = 1;
+                FartCloudBufferLength = 20;
             }
-        }
-
+        }*/
         LoadRects(WindowWidth, WindowHight, CamPosX, &F_Key,
                   &PlayerRect, &Player,
                   &PlayerActiveRectangle,
@@ -216,8 +222,8 @@ int main(int argc, char **argv)
                   &PlayerFartRectR, PlayerFart,
                   &PlayerFartRectL,
                   &PlayerFartActiveRect,
-                  &PlayerFartCloudRect[FartCloudWriteIndex], PlayerFartCloud,
-                  &PlayerFartCloudActiveRect[FartCloudWriteIndex]);
+                  &PlayerFartCloudRect, &PlayerFartCloud,
+                  &PlayerFartCloudActiveRect);
 
         //-----------------------------Rendering-------------------------------------------------
         //          IMPORTANT: make sure you render the character last and the map first.
@@ -246,24 +252,16 @@ int main(int argc, char **argv)
                                &PlayerFartActiveRect, WindowSurface, &PlayerFartRectL);
             }
         }
-        FartCloudWriteIndex = 1;
-        for (FartCloudWriteIndex = 1;
-             FartCloudWriteIndex < MaxFartClouds;
-             FartCloudWriteIndex++)
-        if (PlayerFartCloud[FartCloudWriteIndex].HasFarted)
+        if (PlayerFartCloud.HasFarted)
         {
-            {
-                SDL_BlitScaled(PlayerFartCloud[FartCloudWriteIndex].FartCloud.Surface,
-                               &PlayerFartCloudActiveRect[FartCloudWriteIndex], WindowSurface, &PlayerFartCloudRect[FartCloudWriteIndex]);
-            }
+            SDL_BlitScaled(PlayerFartCloud.FartCloud.Surface, &PlayerFartCloudActiveRect,
+                           WindowSurface, &PlayerFartCloudRect);
         }
-
-        printf("read index = %i, write index = %i\n", FartCloudReadIndex, FartCloudWriteIndex);
-
-        SDL_UpdateWindowSurface(Window);
+        //printf("read index = %i, write index = %i\n", FartCloudReadIndex, FartCloudWriteIndex);
 
         //FPS------------------------------------------------------
         {
+            char NowFPS[10];
             int frameEnd = SDL_GetTicks();
             int frameTime = frameEnd - frameStart;
             if (frameTime < frameDelay)
@@ -273,9 +271,14 @@ int main(int argc, char **argv)
             int actualFrameEnd = SDL_GetTicks();
             if (frameIndex++ % 10 == 0)
             {
+                int CurrentFPS = (float)(1000.0f / (actualFrameEnd - frameStart));
+                sprintf(NowFPS, "FPS: %i", CurrentFPS);
                 //   printf("\rFPS:%f", (float)(1000.0f / (actualFrameEnd - frameStart)));
             }
+
+            RenderText(Regular, NowFPS, 255, 255, 255, WindowWidth - 70, 0, TextSurface, WindowSurface, WindowWidth, WindowHight);
         } //------------------------------------------------------
+        SDL_UpdateWindowSurface(Window);
     };
     //end of game loop
 

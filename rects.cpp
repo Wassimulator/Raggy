@@ -50,38 +50,72 @@ void LoadRects(int WindowWidth, int WindowHight, int CamPosX, bool *F_Key,
     PlayerFartActiveRect->y = 0;
     PlayerFartActiveRect->w = PlayerFartActiveRect->h = 32;
 
-    if (PlayerFartCloud[FartCloudReadIndex].T % 20 == 0)
+    if (PlayerFartCloud->T % 20 == 0)
     {
-        if (PlayerFartCloud[FartCloudReadIndex].iY >= 0 && PlayerFartCloud[FartCloudReadIndex].iY < 64)
+        if (PlayerFartCloud->iY >= 0 && PlayerFartCloud->iY < 64)
         {
-            PlayerFartCloud[FartCloudReadIndex].iY++;
+            PlayerFartCloud->iY++;
         }
-        if (PlayerFartCloud[FartCloudReadIndex].iY == 64)
+        if (PlayerFartCloud->iY == 64)
         {
-            PlayerFartCloud[FartCloudReadIndex].iY = 65;
+            PlayerFartCloud->iY = 65;
         }
     }
 
     int PlayerPosition = PlayerRect->x + CamPosX; // This the player's actual position on the map
 
     const int MaxFartClouds = 20;
-
     if (*F_Key == true)
     {
         if (Player->Direction == RightDirection)
         {
-            PlayerFartCloud[FartCloudReadIndex].FartCloudInitX = PlayerPosition - 70;
+            PlayerFartCloud->FartCloudInitX = PlayerPosition - 50;
         }
         else if (Player->Direction == LeftDirection)
         {
-            PlayerFartCloud[FartCloudReadIndex].FartCloudInitX = PlayerPosition + 70;
+            PlayerFartCloud->FartCloudInitX = PlayerPosition + 80;
         }
-        PlayerFartCloud[FartCloudReadIndex].iY = 0;
+        PlayerFartCloud->iY = 0;
     }
-    for (FartCloudReadIndex = 1;
-         FartCloudReadIndex < MaxFartClouds;
+    PlayerFartCloudRect->x = PlayerFartCloud->FartCloudInitX - CamPosX;
+    PlayerFartCloudRect->y = (WindowHight / 2) - PlayerFartCloud->iY - 24;
+    PlayerFartCloudRect->w = PlayerFartCloudRect->h = 32 * 2;
+
+    PlayerFartCloudActiveRect->x = (PlayerFartCloud->i - 1) * 32;
+    PlayerFartCloudActiveRect->y = 0;
+    PlayerFartCloudActiveRect->h = PlayerFartCloudActiveRect->w = 32;
+
+    /*for (FartCloudReadIndex = 1;
+         FartCloudReadIndex < FartCloudBufferLength;
          FartCloudReadIndex++)
     {
+        if (PlayerFartCloud[FartCloudReadIndex].T % 20 == 0)
+        {
+            if (PlayerFartCloud[FartCloudReadIndex].iY >= 0 && PlayerFartCloud[FartCloudReadIndex].iY < 64)
+            {
+                PlayerFartCloud[FartCloudReadIndex].iY++;
+            }
+            if (PlayerFartCloud[FartCloudReadIndex].iY == 64)
+            {
+                PlayerFartCloud[FartCloudReadIndex].iY = 65;
+            }
+        }
+
+        int PlayerPosition = PlayerRect->x + CamPosX; // This the player's actual position on the map
+
+        const int MaxFartClouds = 20;
+        if (*F_Key == true)
+        {
+            if (Player->Direction == RightDirection)
+            {
+                PlayerFartCloud[FartCloudReadIndex].FartCloudInitX = PlayerPosition - 70;
+            }
+            else if (Player->Direction == LeftDirection)
+            {
+                PlayerFartCloud[FartCloudReadIndex].FartCloudInitX = PlayerPosition + 70;
+            }
+            PlayerFartCloud[FartCloudReadIndex].iY = 0;
+        }
         PlayerFartCloudRect[FartCloudReadIndex].x = PlayerFartCloud[FartCloudReadIndex].FartCloudInitX - CamPosX;
         PlayerFartCloudRect[FartCloudReadIndex].y = (WindowHight / 2) - PlayerFartCloud[FartCloudReadIndex].iY - 24;
         PlayerFartCloudRect[FartCloudReadIndex].w = PlayerFartCloudRect->h = 32 * 2;
@@ -89,7 +123,7 @@ void LoadRects(int WindowWidth, int WindowHight, int CamPosX, bool *F_Key,
         PlayerFartCloudActiveRect[FartCloudReadIndex].x = (PlayerFartCloud[FartCloudReadIndex].i - 1) * 32;
         PlayerFartCloudActiveRect[FartCloudReadIndex].y = 0;
         PlayerFartCloudActiveRect[FartCloudReadIndex].h = PlayerFartCloudActiveRect[FartCloudReadIndex].w = 32;
-    }
+    }*/
     //  printf("initX = %i, CloudRectPosX = %i, PlayerRect->x = %i, CamPosX = %i\n",
     //         PlayerFartCloud->FartCloudInitX, PlayerFartCloudRect->x, PlayerRect->x, CamPosX);
 };
