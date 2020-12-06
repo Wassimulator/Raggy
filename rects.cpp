@@ -11,7 +11,8 @@ void LoadRects(int WindowWidth, int WindowHight, int CamPosX, bool *F_Key,
                SDL_Rect *PlayerFartRectL,
                SDL_Rect *PlayerFartActiveRect,
                SDL_Rect *PlayerFartCloudRect, fartCloud *PlayerFartCloud,
-               SDL_Rect *PlayerFartCloudActiveRect)
+               SDL_Rect *PlayerFartCloudActiveRect,
+               SDL_Rect *DTRect, door *DT, int DTi) // Do I need a pointer here for the array since the array is a pointer?
 {
     //animation sequence
     int SixCounterP = (Player->i - 1) % 3;
@@ -84,6 +85,14 @@ void LoadRects(int WindowWidth, int WindowHight, int CamPosX, bool *F_Key,
     PlayerFartCloudActiveRect->x = (PlayerFartCloud->i - 1) * 32;
     PlayerFartCloudActiveRect->y = 0;
     PlayerFartCloudActiveRect->h = PlayerFartCloudActiveRect->w = 32;
+
+    for (DTi = 0; DTi < 10; DTi++)
+    {
+        DTRect[DTi].h = DT[DTi].Closed.h * 3;
+        DTRect[DTi].w = DT[DTi].Closed.w * 3;
+        DTRect[DTi].x = (WindowWidth / 2) - CamPosX - 48 + 200 + 100 * (DTi);
+        DTRect[DTi].y = (WindowHight / 2) - 96;
+    }
 
     /*for (FartCloudReadIndex = 1;
          FartCloudReadIndex < FartCloudBufferLength;

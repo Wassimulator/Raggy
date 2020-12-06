@@ -32,6 +32,7 @@ int main(int argc, char **argv)
     fart PlayerFart = LoadFart();
     fartCloud PlayerFartCloud = LoadFartCloud();
     //fartCloud PlayerFartCloud[MaxFartClouds] = {LoadFartCloud()};
+    door DT[10] = {LoadDoor()};
 
     //---------------------------------------------------------
 
@@ -94,6 +95,9 @@ int main(int argc, char **argv)
     SDL_Rect PlayerFartActiveRect;
     SDL_Rect PlayerFartCloudRect;
     SDL_Rect PlayerFartCloudActiveRect;
+    SDL_Rect DTRect[10];
+    /**/ SDL_Rect(*ptrDTRect)[10] = &DTRect; // why the parantheses?
+    int DTi = 0;
     //Game Loop-----------------------------------------------------------------
     while (running)
     {
@@ -169,7 +173,7 @@ int main(int argc, char **argv)
             }
         }
 
-        //----------------------------Pre-Rendering---------------------------------------------------
+        //----------------------------Fill Screen---------------------------------------------------
         int R = 50;
         int G = 50;
         int B = 50;
@@ -177,7 +181,6 @@ int main(int argc, char **argv)
 
         // WINDOWS USES BGRA (that does not stand for bulgaria)
         // TODO: map it so that it works on multiple systems
-        // TODO: Move the SDL_Rect clutter into somehting organized
         SDL_FillRect(WindowSurface, 0, (A << 24) | (R << 16) | (G << 8) | (B));
 
         float MapLimitR = Map.ActiveMap.w * 0.5f - 3 * 16;
@@ -194,6 +197,10 @@ int main(int argc, char **argv)
 
         FartUpdate(&Player, &PlayerFart, &PlayerFartCloud, F_Key);
 
+        for (DTi = 0; DTi < 10; DTi++)
+        {
+            DoorUpdate(&DT[DTi], PlayerRect, DTRect[DTi], Regular, TextSurface, WindowSurface, WindowWidth, WindowHight, E_Key);
+        }
         //----------------------------LOAD RECTS HERE------------------------------------------
         //          IMPORTANT: make sure you update this function here and in rect.cpp
         //                     every time you add a new object! and define the rects
@@ -223,7 +230,8 @@ int main(int argc, char **argv)
                   &PlayerFartRectL,
                   &PlayerFartActiveRect,
                   &PlayerFartCloudRect, &PlayerFartCloud,
-                  &PlayerFartCloudActiveRect);
+                  &PlayerFartCloudActiveRect,
+                  DTRect, DT, DTi);
 
         //-----------------------------Rendering-------------------------------------------------
         //          IMPORTANT: make sure you render the character last and the map first.
@@ -236,6 +244,11 @@ int main(int argc, char **argv)
         RenderText(Regular, "Press Q to quit the game", 255, 255, 255, 0, 50, TextSurface, WindowSurface, WindowWidth, WindowHight);
 
         SDL_BlitScaled(Door.ActiveTexture->Surface, 0, WindowSurface, &DoorRect);
+
+        for (DTi = 0; DTi < 10; DTi++)
+        {
+            SDL_BlitScaled(DT[DTi].ActiveTexture->Surface, 0, WindowSurface, &DoorRect);
+        }
 
         SDL_BlitScaled(Player.ActiveTexture->Surface, &PlayerActiveRectangle, WindowSurface, &PlayerRect);
 
