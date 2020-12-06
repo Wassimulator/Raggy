@@ -24,16 +24,17 @@ int main(int argc, char **argv)
     bool H_Key = false;
     bool E_Key = false;
 
-    int DTi = 0;
-
     //-------------------Load Objects--------------------------
 
     player Player = LoadPlayer();
     map Map = LoadMap();
     door Door = LoadDoor();
     fart PlayerFart = LoadFart();
-    fartCloud PlayerFartCloud = LoadFartCloud();
-    //fartCloud PlayerFartCloud[MaxFartClouds] = {LoadFartCloud()};
+    fartCloud PlayerFartCloud[20];
+    for (FCi = 0; FCi < 25; FCi++)
+    {
+        PlayerFartCloud[FCi] = LoadFartCloud();
+    }
     door DT[10];
     for (DTi = 0; DTi < 10; DTi++)
     {
@@ -99,10 +100,9 @@ int main(int argc, char **argv)
     SDL_Rect PlayerFartRectR;
     SDL_Rect PlayerFartRectL;
     SDL_Rect PlayerFartActiveRect;
-    SDL_Rect PlayerFartCloudRect;
-    SDL_Rect PlayerFartCloudActiveRect;
+    SDL_Rect PlayerFartCloudRect[20];
+    SDL_Rect PlayerFartCloudActiveRect[20];
     SDL_Rect DTRect[10];
-    /**/ SDL_Rect(*ptrDTRect)[10] = &DTRect; // why the parantheses?
 
     //Game Loop-----------------------------------------------------------------
     while (running)
@@ -201,9 +201,9 @@ int main(int argc, char **argv)
         DoorUpdate(&Door, PlayerRect, DoorRect, Regular, TextSurface,
                    WindowSurface, WindowWidth, WindowHight, E_Key);
 
-        FartUpdate(&Player, &PlayerFart, &PlayerFartCloud, F_Key);
+        FartUpdate(&Player, &PlayerFart, PlayerFartCloud, F_Key);
 
-        DTUpdate(DT, PlayerRect, DTRect, Regular, TextSurface, WindowSurface, WindowWidth, WindowHight, E_Key, DTi);
+        DTUpdate(DT, PlayerRect, DTRect, Regular, TextSurface, WindowSurface, WindowWidth, WindowHight, E_Key);
         //----------------------------LOAD RECTS HERE------------------------------------------
         //          IMPORTANT: make sure you update this function here and in rect.cpp
         //                     every time you add a new object! and define the rects
@@ -232,9 +232,9 @@ int main(int argc, char **argv)
                   &PlayerFartRectR, PlayerFart,
                   &PlayerFartRectL,
                   &PlayerFartActiveRect,
-                  &PlayerFartCloudRect, &PlayerFartCloud,
-                  &PlayerFartCloudActiveRect,
-                  DTRect, DT, DTi);
+                  PlayerFartCloudRect, PlayerFartCloud,
+                  PlayerFartCloudActiveRect,
+                  DTRect, DT);
         //-----------------------------Rendering-------------------------------------------------
         //          IMPORTANT: make sure you render the character last and the map first.
 
@@ -252,7 +252,6 @@ int main(int argc, char **argv)
             SDL_BlitScaled(DT[DTi].ActiveTexture->Surface, 0, WindowSurface, &DTRect[DTi]);
         }
 
-
         SDL_BlitScaled(Player.ActiveTexture->Surface, &PlayerActiveRectangle, WindowSurface, &PlayerRect);
 
         if (PlayerFart.ToFart)
@@ -268,11 +267,18 @@ int main(int argc, char **argv)
                                &PlayerFartActiveRect, WindowSurface, &PlayerFartRectL);
             }
         }
-        if (PlayerFartCloud.HasFarted)
+        for (FCi = 0; FCi < FClength; FCi++)
         {
-            SDL_BlitScaled(PlayerFartCloud.FartCloud.Surface, &PlayerFartCloudActiveRect,
-                           WindowSurface, &PlayerFartCloudRect);
+            if (PlayerFartCloud[FCi].HasFarted)
+            {
+                SDL_BlitScaled(PlayerFartCloud[FCi].FartCloud.Surface, &PlayerFartCloudActiveRect[FCi],
+                               WindowSurface, &PlayerFartCloudRect[FCi]);
+            }
         }
+        char FCcount[50];
+        sprintf(FCcount, "Fart Cloud count: %i", FClength);
+
+        RenderText(Regular, FCcount, 255, 255, 255, WindowWidth - 180, 25, TextSurface, WindowSurface, WindowWidth, WindowHight);
         //printf("read index = %i, write index = %i\n", FartCloudReadIndex, FartCloudWriteIndex);
 
         //FPS------------------------------------------------------

@@ -12,7 +12,7 @@ void LoadRects(int WindowWidth, int WindowHight, int CamPosX, bool *F_Key,
                SDL_Rect *PlayerFartActiveRect,
                SDL_Rect *PlayerFartCloudRect, fartCloud *PlayerFartCloud,
                SDL_Rect *PlayerFartCloudActiveRect,
-               SDL_Rect *DTRect, door *DT, int DTi) // Do I need a pointer here for the array since the array is a pointer?
+               SDL_Rect *DTRect, door *DT) // Do I need a pointer here for the array since the array is a pointer?
 {
     //animation sequence
     int SixCounterP = (Player->i - 1) % 3;
@@ -33,6 +33,14 @@ void LoadRects(int WindowWidth, int WindowHight, int CamPosX, bool *F_Key,
     DoorRect->x = (WindowWidth / 2) - CamPosX - 48;
     DoorRect->y = (WindowHight / 2) - 96;
 
+    for (DTi = 0; DTi < 10; DTi++)
+    {
+        DTRect[DTi].h = DT[DTi].Closed.h * 3;
+        DTRect[DTi].w = DT[DTi].Closed.w * 3;
+        DTRect[DTi].x = (WindowWidth / 2) - CamPosX - 48 - 1300 + 300 * (DTi);
+        DTRect[DTi].y = (WindowHight / 2) - 96;
+    }
+
     PlayerActiveRectangle->x = SixCounterP * 32;
     PlayerActiveRectangle->y = SixCOunterQ * 32;
     PlayerActiveRectangle->w = PlayerActiveRectangle->h = 32;
@@ -51,89 +59,55 @@ void LoadRects(int WindowWidth, int WindowHight, int CamPosX, bool *F_Key,
     PlayerFartActiveRect->y = 0;
     PlayerFartActiveRect->w = PlayerFartActiveRect->h = 32;
 
-    if (PlayerFartCloud->T % 20 == 0)
+    for (FCi = 0; FCi < 20; FCi++) //update all the cloud's positions as they all need to be rising with time
     {
-        if (PlayerFartCloud->iY >= 0 && PlayerFartCloud->iY < 64)
+        if (PlayerFartCloud[FCi].T % 20 == 0)
         {
-            PlayerFartCloud->iY++;
-        }
-        if (PlayerFartCloud->iY == 64)
-        {
-            PlayerFartCloud->iY = 65;
+            if (PlayerFartCloud[FCi].iY >= 0 && PlayerFartCloud[FCi].iY < 64)
+            {
+                PlayerFartCloud[FCi].iY++;
+            }
+            if (PlayerFartCloud[FCi].iY == 64)
+            {
+                PlayerFartCloud[FCi].iY = 65;
+            }
         }
     }
 
     int PlayerPosition = PlayerRect->x + CamPosX; // This the player's actual position on the map
 
     const int MaxFartClouds = 20;
-    if (*F_Key == true)
     {
-        if (Player->Direction == RightDirection)
-        {
-            PlayerFartCloud->FartCloudInitX = PlayerPosition - 50;
-        }
-        else if (Player->Direction == LeftDirection)
-        {
-            PlayerFartCloud->FartCloudInitX = PlayerPosition + 80;
-        }
-        PlayerFartCloud->iY = 0;
-    }
-    PlayerFartCloudRect->x = PlayerFartCloud->FartCloudInitX - CamPosX;
-    PlayerFartCloudRect->y = (WindowHight / 2) - PlayerFartCloud->iY - 24;
-    PlayerFartCloudRect->w = PlayerFartCloudRect->h = 32 * 2;
-
-    PlayerFartCloudActiveRect->x = (PlayerFartCloud->i - 1) * 32;
-    PlayerFartCloudActiveRect->y = 0;
-    PlayerFartCloudActiveRect->h = PlayerFartCloudActiveRect->w = 32;
-
-    for (DTi = 0; DTi < 10; DTi++)
-    {
-        DTRect[DTi].h = DT[DTi].Closed.h * 3;
-        DTRect[DTi].w = DT[DTi].Closed.w * 3;
-        DTRect[DTi].x = (WindowWidth / 2) - CamPosX - 48 - 1300 + 300 * (DTi);
-        DTRect[DTi].y = (WindowHight / 2) - 96;
-    }
-
-    /*for (FartCloudReadIndex = 1;
-         FartCloudReadIndex < FartCloudBufferLength;
-         FartCloudReadIndex++)
-    {
-        if (PlayerFartCloud[FartCloudReadIndex].T % 20 == 0)
-        {
-            if (PlayerFartCloud[FartCloudReadIndex].iY >= 0 && PlayerFartCloud[FartCloudReadIndex].iY < 64)
-            {
-                PlayerFartCloud[FartCloudReadIndex].iY++;
-            }
-            if (PlayerFartCloud[FartCloudReadIndex].iY == 64)
-            {
-                PlayerFartCloud[FartCloudReadIndex].iY = 65;
-            }
-        }
-
-        int PlayerPosition = PlayerRect->x + CamPosX; // This the player's actual position on the map
-
-        const int MaxFartClouds = 20;
         if (*F_Key == true)
         {
             if (Player->Direction == RightDirection)
             {
-                PlayerFartCloud[FartCloudReadIndex].FartCloudInitX = PlayerPosition - 70;
+                PlayerFartCloud[FCiw].FartCloudInitX = PlayerPosition - 50;
             }
             else if (Player->Direction == LeftDirection)
             {
-                PlayerFartCloud[FartCloudReadIndex].FartCloudInitX = PlayerPosition + 70;
+                PlayerFartCloud[FCiw].FartCloudInitX = PlayerPosition + 80;
             }
-            PlayerFartCloud[FartCloudReadIndex].iY = 0;
+            PlayerFartCloud[FCiw].iY = 0;
+            if (FCiw == 20)
+            {
+                FCiw = 0;
+            }
+            if (FCiw != 20)
+            {
+                FCiw++; // increment the write index
+            }
         }
-        PlayerFartCloudRect[FartCloudReadIndex].x = PlayerFartCloud[FartCloudReadIndex].FartCloudInitX - CamPosX;
-        PlayerFartCloudRect[FartCloudReadIndex].y = (WindowHight / 2) - PlayerFartCloud[FartCloudReadIndex].iY - 24;
-        PlayerFartCloudRect[FartCloudReadIndex].w = PlayerFartCloudRect->h = 32 * 2;
 
-        PlayerFartCloudActiveRect[FartCloudReadIndex].x = (PlayerFartCloud[FartCloudReadIndex].i - 1) * 32;
-        PlayerFartCloudActiveRect[FartCloudReadIndex].y = 0;
-        PlayerFartCloudActiveRect[FartCloudReadIndex].h = PlayerFartCloudActiveRect[FartCloudReadIndex].w = 32;
-    }*/
-    //  printf("initX = %i, CloudRectPosX = %i, PlayerRect->x = %i, CamPosX = %i\n",
-    //         PlayerFartCloud->FartCloudInitX, PlayerFartCloudRect->x, PlayerRect->x, CamPosX);
+        for (FCi = 0; FCi < 20; FCi++)
+        {
+            PlayerFartCloudRect[FCi].x = PlayerFartCloud[FCi].FartCloudInitX - CamPosX;
+            PlayerFartCloudRect[FCi].y = (WindowHight / 2) - PlayerFartCloud[FCi].iY - 24;
+            PlayerFartCloudRect[FCi].w = PlayerFartCloudRect[FCi].h = 32 * 2;
+
+            PlayerFartCloudActiveRect[FCi].x = (PlayerFartCloud[FCi].i - 1) * 32;
+            PlayerFartCloudActiveRect[FCi].y = 0;
+            PlayerFartCloudActiveRect[FCi].h = PlayerFartCloudActiveRect[FCi].w = 32;
+        }
+    }
 };
-

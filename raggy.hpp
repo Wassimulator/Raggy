@@ -1,4 +1,4 @@
-#pragma once   
+#pragma once
 #include <stdio.h>
 #include <SDL.h>
 #define STB_IMAGE_IMPLEMENTATION
@@ -7,7 +7,9 @@
 #include <SDL_mixer.h>
 #include <SDL_ttf.h>
 
-int FartCloudWriteIndex = 1;
-int FartCloudReadIndex = 1;
-int const MaxFartClouds = 20;
-int FartCloudBufferLength;
+//-----------------array indeces---------------------------
+
+int DTi = 0;
+int FCi = 0;
+int FCiw = 0;
+int FClength = 0;

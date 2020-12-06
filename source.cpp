@@ -184,9 +184,14 @@ void FartUpdate(player *Player, fart *PlayerFart, fartCloud *PlayerFartCloud, bo
             PlayerFart->ActiveTexture = &PlayerFart->FartLeft;
         }
         PlayerFart->ToFart = true;
-
-        //PlayerFartCloud[FartCloudReadIndex].i = 2;
-        PlayerFartCloud->i = 2;
+        for (FCi = 0; FCi < 20; FCi++)
+        {
+            PlayerFartCloud[FCi].i = 2; //i is used for the animation sequence
+        }
+        if (FClength != 20)
+        {
+        FClength++; // increment the lenghth
+        }
     }
 
     if (PlayerFart->T++ % 5 == 0 && PlayerFart->ToFart == true)
@@ -199,32 +204,26 @@ void FartUpdate(player *Player, fart *PlayerFart, fartCloud *PlayerFartCloud, bo
         {
             PlayerFart->ToFart = false;
             PlayerFart->i = 1;
-            PlayerFartCloud->HasFarted = true;
-            //PlayerFartCloud[FartCloudReadIndex].HasFarted = true;
+            for (FCi = 0; FCi < 20; FCi++)
+            {
+                PlayerFartCloud[FCi].HasFarted = true;
+            }
         }
     }
-    if (PlayerFartCloud->T++ % 20 == 0)
+    for (FCi = 0; FCi < 20; FCi++) //updating all the i's simultaneously to make all clouds move in unison
     {
-        if (PlayerFartCloud->i == 1)
+        if (PlayerFartCloud[FCi].T++ % 20 == 0)
         {
-            PlayerFartCloud->i = 2;
-        }
-        else if (PlayerFartCloud->i == 2)
-        {
-            PlayerFartCloud->i = 1;
+            if (PlayerFartCloud[FCi].i == 1)
+            {
+                PlayerFartCloud[FCi].i = 2;
+            }
+            else if (PlayerFartCloud[FCi].i == 2)
+            {
+                PlayerFartCloud[FCi].i = 1;
+            }
         }
     }
-    /*if (PlayerFartCloud[FartCloudReadIndex].T++ % 20 == 0)
-    {
-        if (PlayerFartCloud[FartCloudReadIndex].i == 1)
-        {
-            PlayerFartCloud[FartCloudReadIndex].i = 2;
-        }
-        else if (PlayerFartCloud[FartCloudReadIndex].i == 2)
-        {
-            PlayerFartCloud[FartCloudReadIndex].i = 1;
-        }
-    }*/
 }
 
 door LoadDoor()
@@ -278,7 +277,7 @@ void DoorUpdate(door *Door, SDL_Rect PlayerRect, SDL_Rect DoorRect, TTF_Font *Fo
 }
 
 void DTUpdate(door *DT, SDL_Rect PlayerRect, SDL_Rect *DTRect, TTF_Font *Font, SDL_Surface *TextSurface,
-              SDL_Surface *WindowSurface, int WindowWidth, int WindowHight, bool E_Key, int DTi)
+              SDL_Surface *WindowSurface, int WindowWidth, int WindowHight, bool E_Key)
 {
     for (DTi = 0; DTi < 10; DTi++)
     {
