@@ -105,6 +105,7 @@ struct player
     int T;
     int Speed;
     direction Direction;
+    bool ChattingAhole = false;
 };
 
 struct npc
@@ -337,15 +338,15 @@ npc LoadAhole()
     return Ahole;
 };
 
-void AholeUpdate(SDL_Rect PlayerRect, SDL_Rect *AholeRect, TTF_Font *Font, SDL_Surface *TextSurface,
-                 SDL_Surface *WindowSurface, int WindowWidth, int WindowHight, bool E_Key, bool *ChattingAhole)
+void AholeUpdate(player Player, SDL_Rect PlayerRect, SDL_Rect *AholeRect, TTF_Font *Font, SDL_Surface *TextSurface,
+                 SDL_Surface *WindowSurface, int WindowWidth, int WindowHight, bool E_Key)
 {
     if (PlayerRect.x > (AholeRect->x - 48))
     {
         RenderText(Font, "Prickson Ahole: press E to Speak", 255, 255, 255, 0, 150, TextSurface, WindowSurface, WindowWidth, WindowHight);
         if (E_Key)
         {
-            &ChattingAhole = true;
+            Player.ChattingAhole = true;
             //RenderTextCentered(Font, "Hey asshole", 255, 255, 255, 0, 150, TextSurface, WindowSurface, WindowWidth, WindowHight);
         }
     }

@@ -207,10 +207,10 @@ int main(int argc, char **argv)
         FartUpdate(&Player, &PlayerFart, PlayerFartCloud, F_Key);
 
         DTUpdate(DT, PlayerRect, DTRect, Regular, TextSurface, WindowSurface, WindowWidth, WindowHight, E_Key);
-        AholeUpdate(PlayerRect, &AholeRect, Regular, TextSurface, WindowSurface, WindowWidth, WindowHight, E_Key, &ChattingAhole);
-        if(ChattingAhole == true)
+        AholeUpdate(Player, PlayerRect, &AholeRect, Regular, TextSurface, WindowSurface, WindowWidth, WindowHight, E_Key);
+        if(Player.ChattingAhole == true)
         {
-            
+
         }
         //----------------------------LOAD RECTS HERE------------------------------------------
         //          IMPORTANT: make sure you update this function here and in rect.cpp
