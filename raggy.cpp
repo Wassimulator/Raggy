@@ -24,6 +24,8 @@ int main(int argc, char **argv)
     bool H_Key = false;
     bool E_Key = false;
 
+
+    bool ChattingAhole = false;
     //-------------------Load Objects--------------------------
 
     player Player = LoadPlayer();
@@ -40,7 +42,7 @@ int main(int argc, char **argv)
     {
         DT[DTi] = LoadDoor();
     }
-
+    npc Ahole = LoadAhole();
     //---------------------------------------------------------
 
     Player.PosX = 0;
@@ -103,6 +105,7 @@ int main(int argc, char **argv)
     SDL_Rect PlayerFartCloudRect[20];
     SDL_Rect PlayerFartCloudActiveRect[20];
     SDL_Rect DTRect[10];
+    SDL_Rect AholeRect;
 
     //Game Loop-----------------------------------------------------------------
     while (running)
@@ -204,6 +207,11 @@ int main(int argc, char **argv)
         FartUpdate(&Player, &PlayerFart, PlayerFartCloud, F_Key);
 
         DTUpdate(DT, PlayerRect, DTRect, Regular, TextSurface, WindowSurface, WindowWidth, WindowHight, E_Key);
+        AholeUpdate(PlayerRect, &AholeRect, Regular, TextSurface, WindowSurface, WindowWidth, WindowHight, E_Key, &ChattingAhole);
+        if(ChattingAhole == true)
+        {
+            
+        }
         //----------------------------LOAD RECTS HERE------------------------------------------
         //          IMPORTANT: make sure you update this function here and in rect.cpp
         //                     every time you add a new object! and define the rects
@@ -234,9 +242,11 @@ int main(int argc, char **argv)
                   &PlayerFartActiveRect,
                   PlayerFartCloudRect, PlayerFartCloud,
                   PlayerFartCloudActiveRect,
-                  DTRect, DT);
+                  DTRect, DT,
+                  &AholeRect, Ahole);
         //-----------------------------Rendering-------------------------------------------------
         //          IMPORTANT: make sure you render the character last and the map first.
+        //                     NPCs go before the player typically.
 
         SDL_BlitScaled(Map.ActiveMap.Surface, 0, WindowSurface, &MapRect);
 
@@ -251,6 +261,8 @@ int main(int argc, char **argv)
         {
             SDL_BlitScaled(DT[DTi].ActiveTexture->Surface, 0, WindowSurface, &DTRect[DTi]);
         }
+
+        SDL_BlitScaled(Ahole.LeftLeaning.Surface, 0, WindowSurface, &AholeRect);
 
         SDL_BlitScaled(Player.ActiveTexture->Surface, &PlayerActiveRectangle, WindowSurface, &PlayerRect);
 

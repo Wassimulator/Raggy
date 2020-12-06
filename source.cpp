@@ -107,6 +107,11 @@ struct player
     direction Direction;
 };
 
+struct npc
+{
+    sprite LeftLeaning;
+};
+
 struct map
 {
     sprite ActiveMap;
@@ -190,7 +195,7 @@ void FartUpdate(player *Player, fart *PlayerFart, fartCloud *PlayerFartCloud, bo
         }
         if (FClength != 20)
         {
-        FClength++; // increment the lenghth
+            FClength++; // increment the lenghth
         }
     }
 
@@ -252,7 +257,7 @@ void DoorUpdate(door *Door, SDL_Rect PlayerRect, SDL_Rect DoorRect, TTF_Font *Fo
     {
         if (PlayerRect.x < (DoorRect.x + 48) && PlayerRect.x > (DoorRect.x - 48))
         {
-            RenderTextCentered(Font, "Door: press E to Open", 255, 255, 255, 0, 140, TextSurface, WindowSurface, WindowWidth, WindowHight);
+            RenderText(Font, "Door: press E to Open", 255, 255, 255, 0, 150, TextSurface, WindowSurface, WindowWidth, WindowHight);
 
             if (E_Key)
             {
@@ -265,7 +270,7 @@ void DoorUpdate(door *Door, SDL_Rect PlayerRect, SDL_Rect DoorRect, TTF_Font *Fo
     {
         if (PlayerRect.x < (DoorRect.x + 48) && PlayerRect.x > (DoorRect.x - 48))
         {
-            RenderTextCentered(Font, "Door: press E to Close", 255, 255, 255, 0, 140, TextSurface, WindowSurface, WindowWidth, WindowHight);
+            RenderText(Font, "Door: press E to Close", 255, 255, 255, 0, 150, TextSurface, WindowSurface, WindowWidth, WindowHight);
 
             if (E_Key)
             {
@@ -294,7 +299,7 @@ void DTUpdate(door *DT, SDL_Rect PlayerRect, SDL_Rect *DTRect, TTF_Font *Font, S
         {
             if (PlayerRect.x < (DTRect[DTi].x + 48) && PlayerRect.x > (DTRect[DTi].x - 48))
             {
-                RenderTextCentered(Font, "Door: press E to Open", 255, 255, 255, 0, 140, TextSurface, WindowSurface, WindowWidth, WindowHight);
+                RenderText(Font, "Door: press E to Open", 255, 255, 255, 0, 150, TextSurface, WindowSurface, WindowWidth, WindowHight);
 
                 if (E_Key)
                 {
@@ -307,7 +312,7 @@ void DTUpdate(door *DT, SDL_Rect PlayerRect, SDL_Rect *DTRect, TTF_Font *Font, S
         {
             if (PlayerRect.x < (DTRect[DTi].x + 48) && PlayerRect.x > (DTRect[DTi].x - 48))
             {
-                RenderTextCentered(Font, "Door: press E to Close", 255, 255, 255, 0, 140, TextSurface, WindowSurface, WindowWidth, WindowHight);
+                RenderText(Font, "Door: press E to Close", 255, 255, 255, 0, 150, TextSurface, WindowSurface, WindowWidth, WindowHight);
 
                 if (E_Key)
                 {
@@ -315,6 +320,33 @@ void DTUpdate(door *DT, SDL_Rect PlayerRect, SDL_Rect *DTRect, TTF_Font *Font, S
                     DT[DTi].Status = Closed;
                 }
             }
+        }
+    }
+}
+//-----------------NPC---------------------------------------------------------------------------
+
+void DialogueAhole(TTF_Font *Font, SDL_Surface *TextSurface,
+                   SDL_Surface *WindowSurface, int WindowWidth, int WindowHight, bool E_Key)
+{
+    RenderTextCentered(Font, "Hey asshole", 255, 255, 255, 0, 150, TextSurface, WindowSurface, WindowWidth, WindowHight);
+}
+npc LoadAhole()
+{
+    npc Ahole = {};
+    Ahole.LeftLeaning = LoadSprite("data/textures/a_hole_leaning_left.png");
+    return Ahole;
+};
+
+void AholeUpdate(SDL_Rect PlayerRect, SDL_Rect *AholeRect, TTF_Font *Font, SDL_Surface *TextSurface,
+                 SDL_Surface *WindowSurface, int WindowWidth, int WindowHight, bool E_Key, bool *ChattingAhole)
+{
+    if (PlayerRect.x > (AholeRect->x - 48))
+    {
+        RenderText(Font, "Prickson Ahole: press E to Speak", 255, 255, 255, 0, 150, TextSurface, WindowSurface, WindowWidth, WindowHight);
+        if (E_Key)
+        {
+            &ChattingAhole = true;
+            //RenderTextCentered(Font, "Hey asshole", 255, 255, 255, 0, 150, TextSurface, WindowSurface, WindowWidth, WindowHight);
         }
     }
 }
