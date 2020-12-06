@@ -277,6 +277,49 @@ void DoorUpdate(door *Door, SDL_Rect PlayerRect, SDL_Rect DoorRect, TTF_Font *Fo
     }
 }
 
+void DTUpdate(door *DT, SDL_Rect PlayerRect, SDL_Rect *DTRect, TTF_Font *Font, SDL_Surface *TextSurface,
+              SDL_Surface *WindowSurface, int WindowWidth, int WindowHight, bool E_Key, int DTi)
+{
+    for (DTi = 0; DTi < 10; DTi++)
+    {
+        if (DT[DTi].Status == Closed)
+        {
+            DT[DTi].ActiveTexture = &DT[DTi].Closed;
+        }
+        else if (DT[DTi].Status == Open)
+        {
+            DT[DTi].ActiveTexture = &DT[DTi].Open;
+        }
+
+        if (DT[DTi].Status == Closed)
+        {
+            if (PlayerRect.x < (DTRect[DTi].x + 48) && PlayerRect.x > (DTRect[DTi].x - 48))
+            {
+                RenderTextCentered(Font, "Door: press E to Open", 255, 255, 255, 0, 140, TextSurface, WindowSurface, WindowWidth, WindowHight);
+
+                if (E_Key)
+                {
+                    DT[DTi].ActiveTexture = &DT[DTi].Open;
+                    DT[DTi].Status = Open;
+                }
+            }
+        }
+        else if (DT[DTi].Status == Open)
+        {
+            if (PlayerRect.x < (DTRect[DTi].x + 48) && PlayerRect.x > (DTRect[DTi].x - 48))
+            {
+                RenderTextCentered(Font, "Door: press E to Close", 255, 255, 255, 0, 140, TextSurface, WindowSurface, WindowWidth, WindowHight);
+
+                if (E_Key)
+                {
+                    DT[DTi].ActiveTexture = &DT[DTi].Closed;
+                    DT[DTi].Status = Closed;
+                }
+            }
+        }
+    }
+}
+
 //-----------------PLAYER------------------------------------------------------------------------
 
 player LoadPlayer()

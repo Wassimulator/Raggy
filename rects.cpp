@@ -30,7 +30,7 @@ void LoadRects(int WindowWidth, int WindowHight, int CamPosX, bool *F_Key,
 
     DoorRect->h = Door.Closed.h * 3;
     DoorRect->w = Door.Closed.w * 3;
-    DoorRect->x = (WindowWidth / 2) - CamPosX - 48 - 200;
+    DoorRect->x = (WindowWidth / 2) - CamPosX - 48;
     DoorRect->y = (WindowHight / 2) - 96;
 
     PlayerActiveRectangle->x = SixCounterP * 32;
@@ -90,7 +90,7 @@ void LoadRects(int WindowWidth, int WindowHight, int CamPosX, bool *F_Key,
     {
         DTRect[DTi].h = DT[DTi].Closed.h * 3;
         DTRect[DTi].w = DT[DTi].Closed.w * 3;
-        DTRect[DTi].x = (WindowWidth / 2) - CamPosX - 48 + 200 + 100 * (DTi);
+        DTRect[DTi].x = (WindowWidth / 2) - CamPosX - 48 - 1300 + 300 * (DTi);
         DTRect[DTi].y = (WindowHight / 2) - 96;
     }
 
@@ -136,3 +136,4 @@ void LoadRects(int WindowWidth, int WindowHight, int CamPosX, bool *F_Key,
     //  printf("initX = %i, CloudRectPosX = %i, PlayerRect->x = %i, CamPosX = %i\n",
     //         PlayerFartCloud->FartCloudInitX, PlayerFartCloudRect->x, PlayerRect->x, CamPosX);
 };
+

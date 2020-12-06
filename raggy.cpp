@@ -24,6 +24,8 @@ int main(int argc, char **argv)
     bool H_Key = false;
     bool E_Key = false;
 
+    int DTi = 0;
+
     //-------------------Load Objects--------------------------
 
     player Player = LoadPlayer();
@@ -32,7 +34,11 @@ int main(int argc, char **argv)
     fart PlayerFart = LoadFart();
     fartCloud PlayerFartCloud = LoadFartCloud();
     //fartCloud PlayerFartCloud[MaxFartClouds] = {LoadFartCloud()};
-    door DT[10] = {LoadDoor()};
+    door DT[10];
+    for (DTi = 0; DTi < 10; DTi++)
+    {
+        DT[DTi] = LoadDoor();
+    }
 
     //---------------------------------------------------------
 
@@ -97,7 +103,7 @@ int main(int argc, char **argv)
     SDL_Rect PlayerFartCloudActiveRect;
     SDL_Rect DTRect[10];
     /**/ SDL_Rect(*ptrDTRect)[10] = &DTRect; // why the parantheses?
-    int DTi = 0;
+
     //Game Loop-----------------------------------------------------------------
     while (running)
     {
@@ -197,10 +203,7 @@ int main(int argc, char **argv)
 
         FartUpdate(&Player, &PlayerFart, &PlayerFartCloud, F_Key);
 
-        for (DTi = 0; DTi < 10; DTi++)
-        {
-            DoorUpdate(&DT[DTi], PlayerRect, DTRect[DTi], Regular, TextSurface, WindowSurface, WindowWidth, WindowHight, E_Key);
-        }
+        DTUpdate(DT, PlayerRect, DTRect, Regular, TextSurface, WindowSurface, WindowWidth, WindowHight, E_Key, DTi);
         //----------------------------LOAD RECTS HERE------------------------------------------
         //          IMPORTANT: make sure you update this function here and in rect.cpp
         //                     every time you add a new object! and define the rects
@@ -232,7 +235,6 @@ int main(int argc, char **argv)
                   &PlayerFartCloudRect, &PlayerFartCloud,
                   &PlayerFartCloudActiveRect,
                   DTRect, DT, DTi);
-
         //-----------------------------Rendering-------------------------------------------------
         //          IMPORTANT: make sure you render the character last and the map first.
 
@@ -247,8 +249,9 @@ int main(int argc, char **argv)
 
         for (DTi = 0; DTi < 10; DTi++)
         {
-            SDL_BlitScaled(DT[DTi].ActiveTexture->Surface, 0, WindowSurface, &DoorRect);
+            SDL_BlitScaled(DT[DTi].ActiveTexture->Surface, 0, WindowSurface, &DTRect[DTi]);
         }
+
 
         SDL_BlitScaled(Player.ActiveTexture->Surface, &PlayerActiveRectangle, WindowSurface, &PlayerRect);
 
