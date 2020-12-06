@@ -33,7 +33,7 @@ int main(int argc, char **argv)
     door Door = LoadDoor();
     fart PlayerFart = LoadFart();
     fartCloud PlayerFartCloud[20];
-    for (FCi = 0; FCi < 25; FCi++)
+    for (FCi = 0; FCi < 20; FCi++)
     {
         PlayerFartCloud[FCi] = LoadFartCloud();
     }
