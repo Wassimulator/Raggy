@@ -65,6 +65,42 @@ void RenderTextCentered(TTF_Font *Font, char *text, Uint8 R, Uint8 G, Uint8 B,
     SDL_FreeSurface(TextSurface);
 }
 
+void RenderTextCenteredX(TTF_Font *Font, char *text, Uint8 R, Uint8 G, Uint8 B,
+                        int PosXfromCenter, int PosYfromTop, SDL_Surface *TextSurface, SDL_Surface *WindowSurface,
+                        int WindowWidth, int WindowHight)
+{
+
+    SDL_Color TextColor = {R, G, B};
+    TextSurface = TTF_RenderText_Solid(Font, text, TextColor);
+
+    SDL_Rect TextRect1;
+    TextRect1.h = TextSurface->h;
+    TextRect1.w = TextSurface->w;
+    TextRect1.x = ((WindowWidth - TextSurface->w) / 2) + PosXfromCenter;
+    TextRect1.y = PosYfromTop;
+    SDL_BlitSurface(TextSurface, 0, WindowSurface, &TextRect1);
+
+    SDL_FreeSurface(TextSurface);
+}
+
+void RenderTextDialogue(TTF_Font *Font, char *text, Uint8 R, Uint8 G, Uint8 B,
+                        int PosX, int PosY, SDL_Surface *TextSurface, SDL_Surface *WindowSurface,
+                        int WindowWidth, int WindowHight, Uint32 WrapLength)
+{
+
+    SDL_Color TextColor = {R, G, B};
+    TextSurface = TTF_RenderText_Blended_Wrapped(Font, text, TextColor, WrapLength);
+
+    SDL_Rect TextRect1;
+    TextRect1.h = TextSurface->h;
+    TextRect1.w = TextSurface->w;
+    TextRect1.x = PosX;
+    TextRect1.y = PosY;
+    SDL_BlitSurface(TextSurface, 0, WindowSurface, &TextRect1);
+
+    SDL_FreeSurface(TextSurface);
+}
+
 void RenderText(TTF_Font *Font, char *text, Uint8 R, Uint8 G, Uint8 B,
                 int PosX, int PosY, SDL_Surface *TextSurface, SDL_Surface *WindowSurface,
                 int WindowWidth, int WindowHight)
@@ -341,7 +377,7 @@ npc LoadAhole()
 void AholeUpdate(player Player, SDL_Rect PlayerRect, SDL_Rect *AholeRect, TTF_Font *Font, SDL_Surface *TextSurface,
                  SDL_Surface *WindowSurface, int WindowWidth, int WindowHight, bool E_Key)
 {
-    if (PlayerRect.x > (AholeRect->x - 48))
+    if (PlayerRect.x > (AholeRect->x - 60) && PlayerRect.x < (AholeRect->x + 10))
     {
         RenderText(Font, "Prickson Ahole: press E to Speak", 255, 255, 255, 0, 150, TextSurface, WindowSurface, WindowWidth, WindowHight);
         if (E_Key)

@@ -13,3 +13,5 @@ int DTi = 0;
 int FCi = 0;
 int FCiw = 0;
 int FClength = 0;
+
+bool GameIsRunning = true;

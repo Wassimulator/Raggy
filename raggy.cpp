@@ -1,20 +1,22 @@
 #include "raggy.hpp"
 #include "source.cpp"
 #include "rects.cpp"
+#include "dialogues.cpp"
 
 int main(int argc, char **argv)
 {
     SDL_Init(SDL_INIT_EVERYTHING);
     SDL_Window *Window;
 
-    int WindowWidth = 800;
-    int WindowHight = 640;
+    int WindowWidth = 1024;
+    int WindowHight = 768;
 
     Window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WindowWidth, WindowHight, 0);
     SDL_Surface *WindowSurface = SDL_GetWindowSurface(Window);
 
     int frameIndex = 0;
 
+    //------KEYS-------------
     bool RightButton = false;
     bool LeftButton = false;
     bool UpButton = false;
@@ -23,7 +25,8 @@ int main(int argc, char **argv)
     bool F_Key = false;
     bool H_Key = false;
     bool E_Key = false;
-
+    bool Tab_Key = false;
+    //-----------------------
 
     bool ChattingAhole = false;
     //-------------------Load Objects--------------------------
@@ -48,8 +51,6 @@ int main(int argc, char **argv)
     Player.PosX = 0;
     Player.PosY = 0;
 
-    bool running = true;
-
     Map.ActiveMap.h = Map.ActiveMap.h * 3;
     Map.ActiveMap.w = Map.ActiveMap.w * 3;
 
@@ -69,17 +70,18 @@ int main(int argc, char **argv)
     Mix_OpenAudio(44800, MIX_DEFAULT_FORMAT, 2, 4096);
     sounds Sound = LoadSound();
 
-    printf("Press H to say hello\nPress F to pay respects\n");
+    printf("Press H to say hello\nPress F to pay respects\nPress Tab to Enter Dialogue mode, use arrows to navigate and press Tab to exit Dialogue mode\n");
 
     float CamPosX = 0;
 
-    //load fonts---
+    //load fonts------------------------
     TTF_Init();
     TTF_Font *Regular = TTF_OpenFont("data/fonts/PTSans-Regular.ttf", 20);
     TTF_Font *Bold = TTF_OpenFont("data/fonts/PTSans-Bold.ttf", 20);
     TTF_Font *Bold2 = TTF_OpenFont("data/fonts/PTSans-Bold.ttf", 24);
     SDL_Surface *TextSurface;
-    //---
+    //----------------------------------
+
     SDL_Rect PlayerRect;
     PlayerRect.x = (WindowWidth / 2) + (Player.PosX - CamPosX) - (3 * 16);
     PlayerRect.y = (WindowHight / 2) - 48;
@@ -108,7 +110,7 @@ int main(int argc, char **argv)
     SDL_Rect AholeRect;
 
     //Game Loop-----------------------------------------------------------------
-    while (running)
+    while (GameIsRunning)
     {
         //leave these here. they're necessary for the "pressable once" system.
         E_Key = false;
@@ -125,11 +127,11 @@ int main(int argc, char **argv)
         {
             if (Event.type == SDL_QUIT)
             {
-                running = false;
+                GameIsRunning = false;
             }
             if (Event.key.keysym.sym == SDLK_q)
             {
-                running = false;
+                GameIsRunning = false;
             }
             //only pressable once key:
             if (Event.type == SDL_KEYDOWN)
@@ -141,6 +143,10 @@ int main(int argc, char **argv)
                 if (Event.key.keysym.sym == SDLK_f && Event.key.repeat == false)
                 {
                     F_Key = true;
+                }
+                if (Event.key.keysym.sym == SDLK_TAB && Event.key.repeat == false)
+                {
+                    Tab_Key = true;
                 }
             }
 
@@ -208,30 +214,25 @@ int main(int argc, char **argv)
 
         DTUpdate(DT, PlayerRect, DTRect, Regular, TextSurface, WindowSurface, WindowWidth, WindowHight, E_Key);
         AholeUpdate(Player, PlayerRect, &AholeRect, Regular, TextSurface, WindowSurface, WindowWidth, WindowHight, E_Key);
-        if(Player.ChattingAhole == true)
-        {
 
+        if (Tab_Key)
+        {
+            //lets go of all already pressed buttons otherwise they dont reset
+            RightButton = false;
+            LeftButton = false;
+            UpButton = false;
+            DownButton = false;
+            Shift = false;
+            F_Key = false;
+            H_Key = false;
+            E_Key = false;
+
+            Dialogue(Regular, Bold, Bold2, TextSurface, WindowSurface, Window, &WindowWidth, &WindowHight);
         }
         //----------------------------LOAD RECTS HERE------------------------------------------
         //          IMPORTANT: make sure you update this function here and in rect.cpp
         //                     every time you add a new object! and define the rects
         //                     outside the loop.
-
-        /*if (F_Key)
-        {
-
-            if (FartCloudReadIndex != (MaxFartClouds))
-            {
-                PlayerFartCloud[FartCloudReadIndex]; //ReadIndex is declared outside and initialized as Zero
-                FartCloudReadIndex++;
-                FartCloudBufferLength++;
-            }
-            if (FartCloudReadIndex == (MaxFartClouds))
-            {
-                FartCloudReadIndex = 1;
-                FartCloudBufferLength = 20;
-            }
-        }*/
         LoadRects(WindowWidth, WindowHight, CamPosX, &F_Key,
                   &PlayerRect, &Player,
                   &PlayerActiveRectangle,
