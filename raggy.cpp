@@ -262,6 +262,7 @@ int main(int argc, char **argv)
         RenderText(Regular, "Press H to say hello", 255, 255, 255, 0, 0, TextSurface, WindowSurface, WindowWidth, WindowHight);
         RenderText(Regular, "Press F to pay respects", 255, 255, 255, 0, 25, TextSurface, WindowSurface, WindowWidth, WindowHight);
         RenderText(Regular, "Press Q to quit the game", 255, 255, 255, 0, 50, TextSurface, WindowSurface, WindowWidth, WindowHight);
+        RenderText(Regular, "Press Space to enter Dialogue mode", 255, 255, 255, 0, 75, TextSurface, WindowSurface, WindowWidth, WindowHight);
 
         SDL_BlitScaled(Door.ActiveTexture->Surface, 0, WindowSurface, &DoorRect);
 

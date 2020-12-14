@@ -243,6 +243,7 @@ void Dialogue(TTF_Font *Regular, TTF_Font *Bold, TTF_Font *Bold2,
                            "This is stuff that the Player says anfd it is limited in this case to around 250 characters."
                            "This is stuff that the Player says and it is limited in this case to around 250 characters.",
                            255, 255, 255, 20, (PlayerText.y + 10), TextSurface, WindowSurface, *WindowWidth, *WindowHight, (*WindowWidth - 40));
+        RenderText(Regular, "Press Tab to exit Dialogue mode", 255, 255, 255, 0, 0, TextSurface, WindowSurface, *WindowWidth, *WindowHight);
 
         SDL_UpdateWindowSurface(Window);
     };
