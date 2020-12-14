@@ -71,7 +71,7 @@ int main(int argc, char **argv)
     Mix_OpenAudio(44800, MIX_DEFAULT_FORMAT, 2, 4096);
     sounds Sound = LoadSound();
 
-    printf("Press H to say hello\nPress F to pay respects\nPress Tab to Enter Dialogue mode, use arrows to navigate and press Tab to exit Dialogue mode\n");
+    printf("Press H to say hello\nPress F to pay respects\nPress Space to Enter Dialogue mode, use arrows to navigate and press Tab to exit Dialogue mode\n");
 
     float CamPosX = 0;
 
