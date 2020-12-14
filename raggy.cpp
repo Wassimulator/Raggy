@@ -26,6 +26,7 @@ int main(int argc, char **argv)
     bool H_Key = false;
     bool E_Key = false;
     bool Tab_Key = false;
+    bool Space_Key = false;
     //-----------------------
 
     bool ChattingAhole = false;
@@ -148,6 +149,10 @@ int main(int argc, char **argv)
                 {
                     Tab_Key = true;
                 }
+                if (Event.key.keysym.sym == SDLK_SPACE && Event.key.repeat == false)
+                {
+                    Space_Key = true;
+                }
             }
 
             //printf(E_Key ? "E = true\n" : "E = false\n");
@@ -215,7 +220,7 @@ int main(int argc, char **argv)
         DTUpdate(DT, PlayerRect, DTRect, Regular, TextSurface, WindowSurface, WindowWidth, WindowHight, E_Key);
         AholeUpdate(Player, PlayerRect, &AholeRect, Regular, TextSurface, WindowSurface, WindowWidth, WindowHight, E_Key);
 
-        if (Tab_Key)
+        if (Space_Key)
         {
             //lets go of all already pressed buttons otherwise they dont reset
             RightButton = false;
@@ -226,6 +231,8 @@ int main(int argc, char **argv)
             F_Key = false;
             H_Key = false;
             E_Key = false;
+            Tab_Key = false;
+            Space_Key = false;
 
             Dialogue(Regular, Bold, Bold2, TextSurface, WindowSurface, Window, &WindowWidth, &WindowHight);
         }
