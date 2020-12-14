@@ -110,6 +110,8 @@ int main(int argc, char **argv)
     SDL_Rect DTRect[10];
     SDL_Rect AholeRect;
 
+    dialogues Dialogue;
+
     //Game Loop-----------------------------------------------------------------
     while (GameIsRunning)
     {
@@ -218,9 +220,9 @@ int main(int argc, char **argv)
         FartUpdate(&Player, &PlayerFart, PlayerFartCloud, F_Key);
 
         DTUpdate(DT, PlayerRect, DTRect, Regular, TextSurface, WindowSurface, WindowWidth, WindowHight, E_Key);
-        AholeUpdate(Player, PlayerRect, &AholeRect, Regular, TextSurface, WindowSurface, WindowWidth, WindowHight, E_Key);
+        AholeUpdate(&Player, PlayerRect, &AholeRect, Regular, TextSurface, WindowSurface, WindowWidth, WindowHight, E_Key);
 
-        if (Space_Key)
+        if (Player.Chatting == true)
         {
             //lets go of all already pressed buttons otherwise they dont reset
             RightButton = false;
@@ -234,7 +236,7 @@ int main(int argc, char **argv)
             Tab_Key = false;
             Space_Key = false;
 
-            Dialogue(Regular, Bold, Bold2, TextSurface, WindowSurface, Window, &WindowWidth, &WindowHight);
+            DialogueMode(Regular, Bold, Bold2, TextSurface, WindowSurface, Window, &WindowWidth, &WindowHight, &Player, &Dialogue);
         }
         //----------------------------LOAD RECTS HERE------------------------------------------
         //          IMPORTANT: make sure you update this function here and in rect.cpp

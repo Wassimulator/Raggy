@@ -141,7 +141,10 @@ struct player
     int T;
     int Speed;
     direction Direction;
+    bool Chatting = false;
     bool ChattingAhole = false;
+
+    int AholeLevel = 0; // TODO: There should be a better way for tracking dialogue progress
 };
 
 struct npc
@@ -374,15 +377,16 @@ npc LoadAhole()
     return Ahole;
 };
 
-void AholeUpdate(player Player, SDL_Rect PlayerRect, SDL_Rect *AholeRect, TTF_Font *Font, SDL_Surface *TextSurface,
+void AholeUpdate(player *Player, SDL_Rect PlayerRect, SDL_Rect *AholeRect, TTF_Font *Font, SDL_Surface *TextSurface,
                  SDL_Surface *WindowSurface, int WindowWidth, int WindowHight, bool E_Key)
 {
     if (PlayerRect.x > (AholeRect->x - 60) && PlayerRect.x < (AholeRect->x + 10))
     {
-        RenderText(Font, "Prickson Ahole: press E to Speak", 255, 255, 255, 0, 150, TextSurface, WindowSurface, WindowWidth, WindowHight);
+        RenderText(Font, "Pricksoin Ahole: press E to Speak", 255, 255, 255, 0, 150, TextSurface, WindowSurface, WindowWidth, WindowHight);
         if (E_Key)
         {
-            Player.ChattingAhole = true;
+            Player->Chatting = true;
+            Player->ChattingAhole = true;
             //RenderTextCentered(Font, "Hey asshole", 255, 255, 255, 0, 150, TextSurface, WindowSurface, WindowWidth, WindowHight);
         }
     }
@@ -546,3 +550,18 @@ void MapUpdate(float *CamPosX, player *Player)
     //printf("PlayerCamX = %.0f  ", PlayerCamX);
     //printf("HalfRange = %.0f  ", HalfRange);
 }
+
+//---------------------Dialogues--------------------------
+struct dialogues
+{
+    bool Ahole = false;
+    char *OptionText[12];
+    int MaxOptions = 12;
+    char *DialogueTitle = "dialogue title";
+    char *NPCtext = "placeholder for NPC text (what they say)";
+    char *PlayerText = "placeholder for Player text (what he says)";
+    bool HighlightedOption[12];
+    bool SelectedOption[12];
+    sprite View;
+};
+//--------------------------------------------------------
