@@ -3,10 +3,10 @@
 #include "source.cpp"
 #include "dialogues.cpp"
 
-void AholeDialogue(dialogues *Dialogue, player *Player)
+void AholeDialogue(dialogues *Dialogue, player *Player, dialogueNPC *Ahole)
 {
     Dialogue->DialogueTitle = "Pricksoin Ahole";
-    Dialogue->View = LoadSprite("data/textures/ahole_dialogue_idle_anim.png");
+    Dialogue->View = Ahole->IdleView;
 
     if (Player->AholeLevel == 0)
     {
@@ -14,11 +14,11 @@ void AholeDialogue(dialogues *Dialogue, player *Player)
                             "day it is to be me!, how're you doing? I'm sure fine. Why wouldn't you be?";
         Dialogue->PlayerText = " ";
         Dialogue->MaxOptions = 5;
-        Dialogue->OptionText[0] = "Fuck off Prickard.";
-        Dialogue->OptionText[1] = "And a good day to you too!";
-        Dialogue->OptionText[2] = "Would you take a breath and let me answer your fucking question?";
-        Dialogue->OptionText[3] = "I'm fine, why wouldn't I be indeed! I just got fired from my fucking job";
-        Dialogue->OptionText[4] = "(Say nothing)";
+        Dialogue->Option[0].Text = "Fuck off Prickard.";
+        Dialogue->Option[1].Text = "And a good day to you too!";
+        Dialogue->Option[2].Text = "Would you take a breath and let me answer your fucking question?";
+        Dialogue->Option[3].Text = "I'm fine, why wouldn't I be indeed! I just got fired from my fucking job";
+        Dialogue->Option[4].Text = "(Say nothing)";
     }
 
     if (Dialogue->SelectedOption[0] == true)
@@ -67,7 +67,7 @@ void AholeDialogue(dialogues *Dialogue, player *Player)
         }
         Dialogue->HighlightedOption[0] = true;
     }
-    
+
     if (Dialogue->SelectedOption[3] == true)
     {
         Dialogue->PlayerText = Dialogue->OptionText[2];
@@ -99,4 +99,8 @@ void AholeDialogue(dialogues *Dialogue, player *Player)
         }
         Dialogue->HighlightedOption[0] = true;
     }
+
+    //Dialogue->Option[0].Text = Dialogue->OptionText[0];
+
+    //printf("%s\n", Dialogue->Option[0].Text);
 }

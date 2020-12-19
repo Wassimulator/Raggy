@@ -5,6 +5,7 @@
 
 int main(int argc, char **argv)
 {
+
     SDL_Init(SDL_INIT_EVERYTHING);
     SDL_Window *Window;
 
@@ -47,6 +48,7 @@ int main(int argc, char **argv)
         DT[DTi] = LoadDoor();
     }
     npc Ahole = LoadAhole();
+
     //---------------------------------------------------------
 
     Player.PosX = 0;
@@ -119,11 +121,27 @@ int main(int argc, char **argv)
         E_Key = false;
         F_Key = false;
 
+        //-------------------Getting Resource usage---------------------------------------------------------------------
+        //
+        //                  ------- RAM -------
+        MEMORYSTATUSEX memInfo;
+        memInfo.dwLength = sizeof(MEMORYSTATUSEX);
+        GlobalMemoryStatusEx(&memInfo);
+        DWORDLONG totalVirtualMem = memInfo.ullTotalPageFile;
+        PROCESS_MEMORY_COUNTERS_EX pmc;
+        GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS *)&pmc, sizeof(pmc));
+        SIZE_T virtualMemUsedByMe = pmc.PrivateUsage;
+        DWORDLONG totalPhysMem = memInfo.ullTotalPhys;
+        float totalRAM = (float)(totalPhysMem / 1073741824.0f);
+        SIZE_T physMemUsedByMe = pmc.WorkingSetSize;
+        float currentRAM = (float)(physMemUsedByMe / 1073741824.0f * 1024.0f);
+        //--------------------------------------------------------------------------------------------------------------
         //FPS------------------------------------------------------
         const int FPS = 60;
         const int frameDelay = 1000 / FPS;
         Uint32 frameStart = SDL_GetTicks();
         //---------------------------------------------------------
+
         SDL_Event Event;
         while (SDL_PollEvent(&Event)) //if pPollEvent returns 1 then we enter the while loop this
                                       //means thatif we have more than one event, it gathers them all before running
@@ -304,7 +322,7 @@ int main(int argc, char **argv)
         RenderText(Regular, FCcount, 255, 255, 255, WindowWidth - 180, 25, TextSurface, WindowSurface, WindowWidth, WindowHight);
         //printf("read index = %i, write index = %i\n", FartCloudReadIndex, FartCloudWriteIndex);
 
-        //FPS------------------------------------------------------
+        //FPS and Resources------------------------------------------------------
         {
             char NowFPS[10];
             int frameEnd = SDL_GetTicks();
@@ -318,10 +336,12 @@ int main(int argc, char **argv)
             {
                 int CurrentFPS = (float)(1000.0f / (actualFrameEnd - frameStart));
                 sprintf(NowFPS, "FPS: %i", CurrentFPS);
-                //   printf("\rFPS:%f", (float)(1000.0f / (actualFrameEnd - frameStart)));
             }
+            char NowRAM[50];
+            sprintf(NowRAM, "RAM usage: %.2f MB/ %.1f GB", currentRAM, totalRAM);
 
             RenderText(Regular, NowFPS, 255, 255, 255, WindowWidth - 70, 0, TextSurface, WindowSurface, WindowWidth, WindowHight);
+            RenderText(Regular, NowRAM, 255, 255, 255, WindowWidth - 340, 0, TextSurface, WindowSurface, WindowWidth, WindowHight);
         } //------------------------------------------------------
         SDL_UpdateWindowSurface(Window);
     };

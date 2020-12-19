@@ -66,8 +66,8 @@ void RenderTextCentered(TTF_Font *Font, char *text, Uint8 R, Uint8 G, Uint8 B,
 }
 
 void RenderTextCenteredX(TTF_Font *Font, char *text, Uint8 R, Uint8 G, Uint8 B,
-                        int PosXfromCenter, int PosYfromTop, SDL_Surface *TextSurface, SDL_Surface *WindowSurface,
-                        int WindowWidth, int WindowHight)
+                         int PosXfromCenter, int PosYfromTop, SDL_Surface *TextSurface, SDL_Surface *WindowSurface,
+                         int WindowWidth, int WindowHight)
 {
 
     SDL_Color TextColor = {R, G, B};
@@ -552,6 +552,11 @@ void MapUpdate(float *CamPosX, player *Player)
 }
 
 //---------------------Dialogues--------------------------
+struct dialogueNPC
+{
+    sprite IdleView;
+};
+
 struct dialogues
 {
     bool Ahole = false;
@@ -562,6 +567,14 @@ struct dialogues
     char *PlayerText = "placeholder for Player text (what he says)";
     bool HighlightedOption[12];
     bool SelectedOption[12];
+
+    struct options
+    {
+        char *Text;
+        dialogues *NextNode;
+    };
+
+    options Option[12];
     sprite View;
 };
 //--------------------------------------------------------

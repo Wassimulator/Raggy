@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <ProjectGuid>{CAD20A02-E363-4B98-BE34-39C26034FE09}</ProjectGuid>
+    <Keyword>MakeFileProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <NMakeBuildCommandLine>cl  ..\raggy.cpp /Zi /Od /I ..\include /link /debug /subsystem:console /LIBPATH:..\lib SDL2.lib SDL2main.lib shell32.lib SDL2_mixer.lib SDL2_ttf.lib vld.lib</NMakeBuildCommandLine>
+    <NMakePreprocessorDefinitions>WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <NMakeBuildCommandLine>cl  ..\raggy.cpp /Zi /Od /I ..\include /link /debug /subsystem:console /LIBPATH:..\lib SDL2.lib SDL2main.lib shell32.lib SDL2_mixer.lib SDL2_ttf.lib vld.lib</NMakeBuildCommandLine>
+    <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Ahole.cpp" />
+    <ClCompile Include="dialogues.cpp" />
+    <ClCompile Include="include\callstack.cpp" />
+    <ClCompile Include="include\dllspatches.cpp" />
+    <ClCompile Include="include\ntapi.cpp" />
+    <ClCompile Include="include\stdafx.cpp" />
+    <ClCompile Include="include\utility.cpp" />
+    <ClCompile Include="include\vld.cpp" />
+    <ClCompile Include="include\vldapi.cpp" />
+    <ClCompile Include="include\vldheap.cpp" />
+    <ClCompile Include="include\vld_hooks.cpp" />
+    <ClCompile Include="raggy.cpp" />
+    <ClCompile Include="rects.cpp" />
+    <ClCompile Include="source.cpp" />
+    <ClCompile Include="test.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\begin_code.h" />
+    <ClInclude Include="include\callstack.h" />
+    <ClInclude Include="include\close_code.h" />
+    <ClInclude Include="include\criticalsection.h" />
+    <ClInclude Include="include\crtmfcpatch.h" />
+    <ClInclude Include="include\dbghelp.h" />
+    <ClInclude Include="include\loaderlock.h" />
+    <ClInclude Include="include\map.h" />
+    <ClInclude Include="include\ntapi.h" />
+    <ClInclude Include="include\resource.h" />
+    <ClInclude Include="include\SDL.h" />
+    <ClInclude Include="include\SDL_assert.h" />
+    <ClInclude Include="include\SDL_atomic.h" />
+    <ClInclude Include="include\SDL_audio.h" />
+    <ClInclude Include="include\SDL_bits.h" />
+    <ClInclude Include="include\SDL_blendmode.h" />
+    <ClInclude Include="include\SDL_clipboard.h" />
+    <ClInclude Include="include\SDL_config.h" />
+    <ClInclude Include="include\SDL_config_android.h" />
+    <ClInclude Include="include\SDL_config_iphoneos.h" />
+    <ClInclude Include="include\SDL_config_macosx.h" />
+    <ClInclude Include="include\SDL_config_minimal.h" />
+    <ClInclude Include="include\SDL_config_pandora.h" />
+    <ClInclude Include="include\SDL_config_psp.h" />
+    <ClInclude Include="include\SDL_config_windows.h" />
+    <ClInclude Include="include\SDL_config_winrt.h" />
+    <ClInclude Include="include\SDL_config_wiz.h" />
+    <ClInclude Include="include\SDL_copying.h" />
+    <ClInclude Include="include\SDL_cpuinfo.h" />
+    <ClInclude Include="include\SDL_egl.h" />
+    <ClInclude Include="include\SDL_endian.h" />
+    <ClInclude Include="include\SDL_error.h" />
+    <ClInclude Include="include\SDL_events.h" />
+    <ClInclude Include="include\SDL_filesystem.h" />
+    <ClInclude Include="include\SDL_gamecontroller.h" />
+    <ClInclude Include="include\SDL_gesture.h" />
+    <ClInclude Include="include\SDL_haptic.h" />
+    <ClInclude Include="include\SDL_hints.h" />
+    <ClInclude Include="include\SDL_joystick.h" />
+    <ClInclude Include="include\SDL_keyboard.h" />
+    <ClInclude Include="include\SDL_keycode.h" />
+    <ClInclude Include="include\SDL_loadso.h" />
+    <ClInclude Include="include\SDL_log.h" />
+    <ClInclude Include="include\SDL_main.h" />
+    <ClInclude Include="include\SDL_messagebox.h" />
+    <ClInclude Include="include\SDL_metal.h" />
+    <ClInclude Include="include\SDL_mixer.h" />
+    <ClInclude Include="include\SDL_mouse.h" />
+    <ClInclude Include="include\SDL_mutex.h" />
+    <ClInclude Include="include\SDL_name.h" />
+    <ClInclude Include="include\SDL_opengl.h" />
+    <ClInclude Include="include\SDL_opengles.h" />
+    <ClInclude Include="include\SDL_opengles2.h" />
+    <ClInclude Include="include\SDL_opengles2_gl2.h" />
+    <ClInclude Include="include\SDL_opengles2_gl2ext.h" />
+    <ClInclude Include="include\SDL_opengles2_gl2platform.h" />
+    <ClInclude Include="include\SDL_opengles2_khrplatform.h" />
+    <ClInclude Include="include\SDL_opengl_glext.h" />
+    <ClInclude Include="include\SDL_pixels.h" />
+    <ClInclude Include="include\SDL_platform.h" />
+    <ClInclude Include="include\SDL_power.h" />
+    <ClInclude Include="include\SDL_quit.h" />
+    <ClInclude Include="include\SDL_rect.h" />
+    <ClInclude Include="include\SDL_render.h" />
+    <ClInclude Include="include\SDL_revision.h" />
+    <ClInclude Include="include\SDL_rwops.h" />
+    <ClInclude Include="include\SDL_scancode.h" />
+    <ClInclude Include="include\SDL_sensor.h" />
+    <ClInclude Include="include\SDL_shape.h" />
+    <ClInclude Include="include\SDL_stdinc.h" />
+    <ClInclude Include="include\SDL_surface.h" />
+    <ClInclude Include="include\SDL_system.h" />
+    <ClInclude Include="include\SDL_syswm.h" />
+    <ClInclude Include="include\SDL_test.h" />
+    <ClInclude Include="include\SDL_test_assert.h" />
+    <ClInclude Include="include\SDL_test_common.h" />
+    <ClInclude Include="include\SDL_test_compare.h" />
+    <ClInclude Include="include\SDL_test_crc32.h" />
+    <ClInclude Include="include\SDL_test_font.h" />
+    <ClInclude Include="include\SDL_test_fuzzer.h" />
+    <ClInclude Include="include\SDL_test_harness.h" />
+    <ClInclude Include="include\SDL_test_images.h" />
+    <ClInclude Include="include\SDL_test_log.h" />
+    <ClInclude Include="include\SDL_test_md5.h" />
+    <ClInclude Include="include\SDL_test_memory.h" />
+    <ClInclude Include="include\SDL_test_random.h" />
+    <ClInclude Include="include\SDL_thread.h" />
+    <ClInclude Include="include\SDL_timer.h" />
+    <ClInclude Include="include\SDL_touch.h" />
+    <ClInclude Include="include\SDL_ttf.h" />
+    <ClInclude Include="include\SDL_types.h" />
+    <ClInclude Include="include\SDL_version.h" />
+    <ClInclude Include="include\SDL_video.h" />
+    <ClInclude Include="include\SDL_vulkan.h" />
+    <ClInclude Include="include\set.h" />
+    <ClInclude Include="include\stb_image.h" />
+    <ClInclude Include="include\stdafx.h" />
+    <ClInclude Include="include\tree.h" />
+    <ClInclude Include="include\utility.h" />
+    <ClInclude Include="include\vld.h" />
+    <ClInclude Include="include\vldallocator.h" />
+    <ClInclude Include="include\vldheap.h" />
+    <ClInclude Include="include\vldint.h" />
+    <ClInclude Include="include\vld_def.h" />
+    <ClInclude Include="raggy.hpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

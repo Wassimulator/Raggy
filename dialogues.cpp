@@ -10,6 +10,7 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *Bold, TTF_Font *Bold2,
                   int *WindowWidth, int *WindowHight,
                   player *Player, dialogues *Dialogue)
 {
+    int frameIndex = 0;
     bool DialogueRunning = true;
 
     bool RightButton = false;
@@ -98,6 +99,11 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *Bold, TTF_Font *Bold2,
     int PQT = 1;
     int PQTt = 0;
 
+    //--------------------------define NPCs here----------------------
+    dialogueNPC Ahole;
+    Ahole.IdleView = LoadSprite("data/textures/ahole_dialogue_idle_anim.png");
+    //----------------------------------------------------------------
+
     while (DialogueRunning)
     {
         E_Key = false;
@@ -105,6 +111,26 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *Bold, TTF_Font *Bold2,
         Return_Key = false;
         DownButton = false;
         UpButton = false;
+        //-------------------Getting Resource usage---------------------------------------------------------------------
+        //
+        //                  ------- RAM -------
+        MEMORYSTATUSEX memInfo;
+        memInfo.dwLength = sizeof(MEMORYSTATUSEX);
+        GlobalMemoryStatusEx(&memInfo);
+        DWORDLONG totalVirtualMem = memInfo.ullTotalPageFile;
+        PROCESS_MEMORY_COUNTERS_EX pmc;
+        GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS *)&pmc, sizeof(pmc));
+        SIZE_T virtualMemUsedByMe = pmc.PrivateUsage;
+        DWORDLONG totalPhysMem = memInfo.ullTotalPhys;
+        float totalRAM = (float)(totalPhysMem / 1073741824.0f);
+        SIZE_T physMemUsedByMe = pmc.WorkingSetSize;
+        float currentRAM = (float)(physMemUsedByMe / 1073741824.0f * 1024.0f);
+        //--------------------------------------------------------------------------------------------------------------
+        //FPS------------------------------------------------------
+        const int FPS = 60;
+        const int frameDelay = 1000 / FPS;
+        Uint32 frameStart = SDL_GetTicks();
+        //---------------------------------------------------------
 
         while (SDL_PollEvent(&Event))
         {
@@ -181,14 +207,14 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *Bold, TTF_Font *Bold2,
         //-----------------------Update---------------------------------
         if (Player->ChattingAhole == true)
         {
-            AholeDialogue(Dialogue, Player);
+            AholeDialogue(Dialogue, Player, &Ahole);
         }
 
         for (int i = 0; i < Dialogue->MaxOptions; i++)
         {
-            OptionText[i] = (char *)malloc(1 + strlen(o[i]) + strlen(Dialogue->OptionText[i]));
+            OptionText[i] = (char *)malloc(1 + strlen(o[i]) + strlen(Dialogue->Option[i].Text));
             strcpy(OptionText[i], o[i]);
-            strcat(OptionText[i], Dialogue->OptionText[i]);
+            strcat(OptionText[i], Dialogue->Option[i].Text);
 
             OptionSurface[i] = TTF_RenderText_Blended_Wrapped(Regular, OptionText[i], DialogueColor, (*WindowWidth - 40));
             SelectedOptionSurface[i] = TTF_RenderText_Blended_Wrapped(Bold, OptionText[i], DialogueColor, (*WindowWidth - 40));
@@ -244,10 +270,6 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *Bold, TTF_Font *Bold2,
         int B = 50;
         int A = 255;
 
-        printf(Return_Key ? "Enter = true  " : "Enter = false  ");
-        printf(E_Key ? "E = true  " : "E = false  ");
-        printf(Dialogue->SelectedOption[2] ? "SelectedOption = true\n" : "SelectedOption = false\n");
-
         SDL_FillRect(WindowSurface, 0, (A << 24) | (R << 16) | (G << 8) | (B));
 
         SDL_FillRect(WindowSurface, &Options, (255 << 24) | (75 << 16) | (100 << 8) | (75));
@@ -282,7 +304,7 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *Bold, TTF_Font *Bold2,
         SDL_FillRect(WindowSurface, &NPCtextRect, (255 << 24) | (255 << 16) | (150 << 8) | (150));
         SDL_FillRect(WindowSurface, &PlayerTextRect, (255 << 24) | (150 << 16) | (150 << 8) | (255));
 
-        if (PQTt++ % 50 == 0) //idle movement
+        if (PQTt++ % 50 == 0) //idle movement, yeah it's slow.
         {
             if (PQT >= 1 && PQT < 6)
             {
@@ -309,6 +331,36 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *Bold, TTF_Font *Bold2,
 
         RenderText(Regular, "Press Tab to exit Dialogue mode", 255, 255, 255, 0, 0, TextSurface, WindowSurface, *WindowWidth, *WindowHight);
 
+        //FPS and Resources------------------------------------------------------
+        {
+            char NowFPS[10];
+            int frameEnd = SDL_GetTicks();
+            int frameTime = frameEnd - frameStart;
+            if (frameTime < frameDelay)
+            {
+                SDL_Delay(frameDelay - frameTime);
+            }
+            int actualFrameEnd = SDL_GetTicks();
+            if (frameIndex++ % 10 == 0)
+            {
+                int CurrentFPS = (float)(1000.0f / (actualFrameEnd - frameStart));
+                sprintf(NowFPS, "FPS: %i", CurrentFPS);
+            }
+            char NowRAM[50];
+            sprintf(NowRAM, "RAM usage: %.2f MB/ %.1f GB", currentRAM, totalRAM);
+
+            RenderText(Regular, NowFPS, 255, 255, 255, *WindowWidth - 70, 0, TextSurface, WindowSurface, *WindowWidth, *WindowHight);
+            RenderText(Regular, NowRAM, 255, 255, 255, *WindowWidth - 340, 0, TextSurface, WindowSurface, *WindowWidth, *WindowHight);
+        } //------------------------------------------------------
+
+
         SDL_UpdateWindowSurface(Window);
+
+        for (int i = 0; i < Dialogue->MaxOptions; i++) //plugging dem memory leaks
+        {
+            free(OptionText[i]);
+            SDL_FreeSurface(OptionSurface[i]);
+            SDL_FreeSurface(SelectedOptionSurface[i]);
+        }
     };
 }
