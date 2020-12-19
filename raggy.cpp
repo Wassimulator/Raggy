@@ -80,6 +80,7 @@ int main(int argc, char **argv)
     //load fonts------------------------
     TTF_Init();
     TTF_Font *Regular = TTF_OpenFont("data/fonts/PTSans-Regular.ttf", 20);
+    TTF_Font *RegularS = TTF_OpenFont("data/fonts/PTSans-Regular.ttf", 17);
     TTF_Font *Bold = TTF_OpenFont("data/fonts/PTSans-Bold.ttf", 20);
     TTF_Font *Bold2 = TTF_OpenFont("data/fonts/PTSans-Bold.ttf", 24);
     SDL_Surface *TextSurface;
@@ -254,7 +255,7 @@ int main(int argc, char **argv)
             Tab_Key = false;
             Space_Key = false;
 
-            DialogueMode(Regular, Bold, Bold2, TextSurface, WindowSurface, Window, &WindowWidth, &WindowHight, &Player, &Dialogue);
+            DialogueMode(Regular, RegularS, Bold, Bold2, TextSurface, WindowSurface, Window, &WindowWidth, &WindowHight, &Player, &Dialogue);
         }
         //----------------------------LOAD RECTS HERE------------------------------------------
         //          IMPORTANT: make sure you update this function here and in rect.cpp
@@ -340,8 +341,8 @@ int main(int argc, char **argv)
             char NowRAM[50];
             sprintf(NowRAM, "RAM usage: %.2f MB/ %.1f GB", currentRAM, totalRAM);
 
-            RenderText(Regular, NowFPS, 255, 255, 255, WindowWidth - 70, 0, TextSurface, WindowSurface, WindowWidth, WindowHight);
-            RenderText(Regular, NowRAM, 255, 255, 255, WindowWidth - 340, 0, TextSurface, WindowSurface, WindowWidth, WindowHight);
+            RenderText(RegularS, NowFPS, 170, 170, 255, WindowWidth - 60, 0, TextSurface, WindowSurface, WindowWidth, WindowHight);
+            RenderText(RegularS, NowRAM, 255, 255, 150, WindowWidth - 300, 0, TextSurface, WindowSurface, WindowWidth, WindowHight);
         } //------------------------------------------------------
         SDL_UpdateWindowSurface(Window);
     };

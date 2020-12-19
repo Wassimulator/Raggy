@@ -5,13 +5,17 @@
 #include "stb_image.h"
 #include <SDL_mixer.h>
 #include <SDL_ttf.h>
+#include <string.h>
+#include <fstream>
+#include <sstream>
 
-#include <vld.h>
 
 //these are for resource monitoring on Windows:-------------------------------------------------
 #include "windows.h"
 #include "psapi.h"
 //--------------------
+
+using namespace std;
 
 //-----------------array indeces---------------------------
 

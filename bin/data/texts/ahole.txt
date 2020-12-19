@@ -1,0 +1,7 @@
+NPCtext,MaxOptions,0,0n,1,1n,2,2n,3,3n,4,4n,5,5n,6,6n,7,7n,8,8n,9,9n,10,10n,11,11n
+Hey there champ! Amazing day isn't it? and what a good day it is to be me! how're you doing? I'm sure fine. Why wouldn't you be?,5,Fuck off Prickard.,3,And a good day to you too!,4,Would you take a breath and let me answer your fucking question?,5,I'm fine. Why wouldn't I be indeed! I just got fired from my fucking job,6,(Say nothing),7,,,,,,,,,,,,,,
+Haha that's the spirit of the fighter in me that I love to see in others!,2,You're the reason I'm leaving. (turn away and leave),2,it is fascinating how you managed to turn that into a compliment of yourself.,2,,,,,,,,,,,,,,,,,,,,
+How are things?,3,They suck ass I'm leaving the job here.,2,Never been better,2,Does it matter?,2,,,,,,,,,,,,,,,,,,
+Woah! someone's crancky today! is everythinh alright? of course they are! why wouldn't they be?,2,I will punch you in the throat if you don't stop answering your own questions.,2,you're useless. (turn away and leave),2,,,,,,,,,,,,,,,,,,,,
+Oh bummer. good thing I still have a job haha!,2,You're a major douche.,2,Talk more and you won't have kneecaps.,2,,,,,,,,,,,,,,,,,,,,
+I am so amazing! aren't I?,5,No you are not.,2,Suck a dick Ahole.,2,Suck MY dick Ahole. (Romance),2,Suck a bag of dicks Ahole. (Kinky),2,Suck a vagina Ahole. (LGBTQ),2,,,,,,,,,,,,,,

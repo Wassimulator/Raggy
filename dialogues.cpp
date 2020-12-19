@@ -3,7 +3,7 @@
 #include "source.cpp"
 #include "Ahole.cpp"
 
-void DialogueMode(TTF_Font *Regular, TTF_Font *Bold, TTF_Font *Bold2,
+void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *Bold2,
                   SDL_Surface *TextSurface,
                   SDL_Surface *WindowSurface,
                   SDL_Window *Window,
@@ -64,18 +64,18 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *Bold, TTF_Font *Bold2,
     char *o[12];
     char *OptionText[12];
 
-    Dialogue->OptionText[0] = "Never gonna give you up Never gonna let you down Never gonna run around and desert you Never gonna make you cry Never gonna say goodbye Never gonna tell a lie and hurt you ";
-    Dialogue->OptionText[1] = "NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA BATMAAAAAN";
-    Dialogue->OptionText[2] = "Bzzzzt Static........ bzzzzzt Dynamic.......";
-    Dialogue->OptionText[3] = "I'm in love with the shape of you, and that shape is a four dimentional polychoron in a non eucledian plane. sexy.";
-    Dialogue->OptionText[4] = "THIS IS NOT SPARTAAAAA and I cannot stress this enough. I am very stressed. what am I doing with my life. is this sparta? morelike, WHAT is sparta? how and when can I know? but wait a minute, if I can't see sparta... do I exist?";
-    Dialogue->OptionText[5] = "Place your ad here";
-    Dialogue->OptionText[6] = "Place your ad above. how many adspaces do you want asshole?";
-    Dialogue->OptionText[7] = "Cyberpunk sucks major ass, my disappointment in that game is immense and my day was ruined";
-    Dialogue->OptionText[8] = "God how many of these do you expectg me to write?";
-    Dialogue->OptionText[9] = "Site is under construction. Error 404, 501, bad gateway, connection timeout. just fuck off";
-    Dialogue->OptionText[10] = "I have information that could lead to hillary's arrest.";
-    Dialogue->OptionText[11] = "DO YOU KNOW DE WAE? who does... who does... what is life worth anymore? nothing. goodbye cruel world..... no I'm just going to sleep. tell me what yhou fink!";
+    Dialogue->Option[0].Text = "Never gonna give you up Never gonna let you down Never gonna run around and desert you Never gonna make you cry Never gonna say goodbye Never gonna tell a lie and hurt you ";
+    Dialogue->Option[1].Text = "NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA BATMAAAAAN";
+    Dialogue->Option[2].Text = "Bzzzzt Static........ bzzzzzt Dynamic.......";
+    Dialogue->Option[3].Text = "I'm in love with the shape of you, and that shape is a four dimentional polychoron in a non eucledian plane. sexy.";
+    Dialogue->Option[4].Text = "THIS IS NOT SPARTAAAAA and I cannot stress this enough. I am very stressed. what am I doing with my life. is this sparta? morelike, WHAT is sparta? how and when can I know? but wait a minute, if I can't see sparta... do I exist?";
+    Dialogue->Option[5].Text = "Place your ad here";
+    Dialogue->Option[6].Text = "Place your ad above. how many adspaces do you want asshole?";
+    Dialogue->Option[7].Text = "Cyberpunk sucks major ass, my disappointment in that game is immense and my day was ruined";
+    Dialogue->Option[8].Text = "God how many of these do you expectg me to write?";
+    Dialogue->Option[9].Text = "Site is under construction. Error 404, 501, bad gateway, connection timeout. just fuck off";
+    Dialogue->Option[10].Text = "I have information that could lead to hillary's arrest.";
+    Dialogue->Option[11].Text = "DO YOU KNOW DE WAE? who does... who does... what is life worth anymore? nothing. goodbye cruel world..... no I'm just going to sleep. tell me what yhou fink!";
 
     o[0] = "1) ";
     o[1] = "2) ";
@@ -103,6 +103,7 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *Bold, TTF_Font *Bold2,
     dialogueNPC Ahole;
     Ahole.IdleView = LoadSprite("data/textures/ahole_dialogue_idle_anim.png");
     //----------------------------------------------------------------
+    bool firstrun = true;
 
     while (DialogueRunning)
     {
@@ -202,12 +203,13 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *Bold, TTF_Font *Bold2,
             if (Dialogue->HighlightedOption[i] == true && Return_Key == true)
             {
                 Dialogue->SelectedOption[i] = true;
+                firstrun = true;
             }
         }
         //-----------------------Update---------------------------------
         if (Player->ChattingAhole == true)
         {
-            AholeDialogue(Dialogue, Player, &Ahole);
+            //    AholeDialogue(Dialogue, Player, &Ahole);
         }
 
         for (int i = 0; i < Dialogue->MaxOptions; i++)
@@ -222,19 +224,11 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *Bold, TTF_Font *Bold2,
             Option[i].w = OptionSurface[i]->w;
             Option[i].x = 20;
         }
-        Option[0].y = Options.y + 10;
-        Option[1].y = Options.y + 10 + Option[0].h;
-        Option[2].y = Options.y + 10 + Option[0].h + Option[1].h;
-        Option[3].y = Options.y + 10 + Option[0].h + Option[1].h + Option[2].h;
-        Option[4].y = Options.y + 10 + Option[0].h + Option[1].h + Option[2].h + Option[3].h;
-        Option[5].y = Options.y + 10 + Option[0].h + Option[1].h + Option[2].h + Option[3].h + Option[4].h;
-        Option[6].y = Options.y + 10 + Option[0].h + Option[1].h + Option[2].h + Option[3].h + Option[4].h + Option[5].h;
-        Option[7].y = Options.y + 10 + Option[0].h + Option[1].h + Option[2].h + Option[3].h + Option[4].h + Option[5].h + Option[6].h;
-        Option[8].y = Options.y + 10 + Option[0].h + Option[1].h + Option[2].h + Option[3].h + Option[4].h + Option[5].h + Option[6].h + Option[7].h;
-        Option[9].y = Options.y + 10 + Option[0].h + Option[1].h + Option[2].h + Option[3].h + Option[4].h + Option[5].h + Option[6].h + Option[7].h + Option[8].h;
-        Option[10].y = Options.y + 10 + Option[0].h + Option[1].h + Option[2].h + Option[3].h + Option[4].h + Option[5].h + Option[6].h + Option[7].h + Option[8].h + Option[9].h;
-        Option[11].y = Options.y + 10 + Option[0].h + Option[1].h + Option[2].h + Option[3].h + Option[4].h + Option[5].h + Option[6].h + Option[7].h + Option[8].h + Option[9].h + Option[10].h;
-
+        if (firstrun)
+        {
+            UpdateOptionRects(Option, Options);
+        }
+        firstrun = false;
         //--------------------------------------------------------------
         for (int i = 0; i < 12; i++)
         {
@@ -349,10 +343,9 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *Bold, TTF_Font *Bold2,
             char NowRAM[50];
             sprintf(NowRAM, "RAM usage: %.2f MB/ %.1f GB", currentRAM, totalRAM);
 
-            RenderText(Regular, NowFPS, 255, 255, 255, *WindowWidth - 70, 0, TextSurface, WindowSurface, *WindowWidth, *WindowHight);
-            RenderText(Regular, NowRAM, 255, 255, 255, *WindowWidth - 340, 0, TextSurface, WindowSurface, *WindowWidth, *WindowHight);
+            RenderText(RegularS, NowFPS, 170, 170, 255, *WindowWidth - 60, 0, TextSurface, WindowSurface, *WindowWidth, *WindowHight);
+            RenderText(RegularS, NowRAM, 255, 255, 150, *WindowWidth - 300, 0, TextSurface, WindowSurface, *WindowWidth, *WindowHight);
         } //------------------------------------------------------
-
 
         SDL_UpdateWindowSurface(Window);
 
