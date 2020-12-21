@@ -8,8 +8,10 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
                   SDL_Surface *WindowSurface,
                   SDL_Window *Window,
                   int *WindowWidth, int *WindowHight,
-                  player *Player, dialogues *Dialogue)
+                  player *Player)
 {
+    dialogues Dialogue;
+
     int frameIndex = 0;
     bool DialogueRunning = true;
 
@@ -22,6 +24,12 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
     bool H_Key = false;
     bool E_Key = false;
     bool Return_Key = false;
+
+    SDL_Rect HeaderRect;
+    HeaderRect.w = *WindowWidth;
+    HeaderRect.h = 60;
+    HeaderRect.x = 0;
+    HeaderRect.y = 0;
 
     SDL_Rect ViewRect;
     ViewRect.w = *WindowWidth;
@@ -51,12 +59,12 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
 
     //---------Options------------
 
-    for (int i = 0; i < Dialogue->MaxOptions; i++)
+    for (int i = 0; i < 12; i++)
     {
-        Dialogue->HighlightedOption[i] = false;
+        Dialogue.HighlightedOption[i] = false;
     }
 
-    Dialogue->HighlightedOption[0] = true;
+    Dialogue.HighlightedOption[0] = true;
 
     SDL_Color DialogueColor = {255, 255, 255};
 
@@ -64,35 +72,38 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
     char *o[12];
     char *OptionText[12];
 
-    Dialogue->Option[0].Text = "Never gonna give you up Never gonna let you down Never gonna run around and desert you Never gonna make you cry Never gonna say goodbye Never gonna tell a lie and hurt you ";
-    Dialogue->Option[1].Text = "NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA BATMAAAAAN";
-    Dialogue->Option[2].Text = "Bzzzzt Static........ bzzzzzt Dynamic.......";
-    Dialogue->Option[3].Text = "I'm in love with the shape of you, and that shape is a four dimentional polychoron in a non eucledian plane. sexy.";
-    Dialogue->Option[4].Text = "THIS IS NOT SPARTAAAAA and I cannot stress this enough. I am very stressed. what am I doing with my life. is this sparta? morelike, WHAT is sparta? how and when can I know? but wait a minute, if I can't see sparta... do I exist?";
-    Dialogue->Option[5].Text = "Place your ad here";
-    Dialogue->Option[6].Text = "Place your ad above. how many adspaces do you want asshole?";
-    Dialogue->Option[7].Text = "Cyberpunk sucks major ass, my disappointment in that game is immense and my day was ruined";
-    Dialogue->Option[8].Text = "God how many of these do you expectg me to write?";
-    Dialogue->Option[9].Text = "Site is under construction. Error 404, 501, bad gateway, connection timeout. just fuck off";
-    Dialogue->Option[10].Text = "I have information that could lead to hillary's arrest.";
-    Dialogue->Option[11].Text = "DO YOU KNOW DE WAE? who does... who does... what is life worth anymore? nothing. goodbye cruel world..... no I'm just going to sleep. tell me what yhou fink!";
+    OptionText[0] = "Never gonna give you up Never gonna let you down Never gonna run around and desert you Never gonna make you cry Never gonna say goodbye Never gonna tell a lie and hurt you ";
+    OptionText[1] = "NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA BATMAAAAAN";
+    OptionText[2] = "Bzzzzt Static........ bzzzzzt Dynamic.......";
+    OptionText[3] = "I'm in love with the shape of you, and that shape is a four dimentional polychoron in a non eucledian plane. sexy.";
+    OptionText[4] = "THIS IS NOT SPARTAAAAA and I cannot stress this enough. I am very stressed. what am I doing with my life. is this sparta? morelike, WHAT is sparta? how and when can I know? but wait a minute, if I can't see sparta... do I exist?";
+    OptionText[5] = "Place your ad here";
+    OptionText[6] = "Place your ad above. how many adspaces do you want asshole?";
+    OptionText[7] = "Cyberpunk sucks major ass, my disappointment in that game is immense and my day was ruined";
+    OptionText[8] = "God how many of these do you expectg me to write?";
+    OptionText[9] = "Site is under construction. Error 404, 501, bad gateway, connection timeout. just fuck off";
+    OptionText[10] = "I have information that could lead to hillary's arrest.";
+    OptionText[11] = "DO YOU KNOW DE WAE? who does... who does... what is life worth anymore? nothing. goodbye cruel world..... no I'm just going to sleep. tell me what yhou fink!";
 
-    o[0] = "1) ";
-    o[1] = "2) ";
-    o[2] = "3) ";
-    o[3] = "4) ";
-    o[4] = "5) ";
-    o[5] = "6) ";
-    o[6] = "7) ";
-    o[7] = "8) ";
-    o[8] = "9) ";
+    o[0] = "  1) ";
+    o[1] = "  2) ";
+    o[2] = "  3) ";
+    o[3] = "  4) ";
+    o[4] = "  5) ";
+    o[5] = "  6) ";
+    o[6] = "  7) ";
+    o[7] = "  8) ";
+    o[8] = "  9) ";
     o[9] = "10) ";
     o[10] = "11) ";
     o[11] = "12) ";
 
     SDL_Surface *OptionSurface[12];
+    SDL_Surface *OptionNumSurface[12];
     SDL_Surface *SelectedOptionSurface[12];
-    SDL_Rect Option[12];
+    SDL_Surface *SelectedOptionNumSurface[12];
+    SDL_Rect OptionRect[12];
+    SDL_Rect OptionNumRect[12];
 
     SDL_Event Event;
 
@@ -198,62 +209,75 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
             }
         }
         //--------------------------------------------------------------
-        for (int i = 0; i < Dialogue->MaxOptions; i++)
+        for (int i = 0; i < Dialogue.MaxOptions; i++)
         {
-            if (Dialogue->HighlightedOption[i] == true && Return_Key == true)
+            if (Dialogue.HighlightedOption[i] == true && Return_Key == true)
             {
-                Dialogue->SelectedOption[i] = true;
+                Dialogue.SelectedOption[i] = true;
                 firstrun = true;
             }
         }
         //-----------------------Update---------------------------------
         if (Player->ChattingAhole == true)
         {
-            //    AholeDialogue(Dialogue, Player, &Ahole);
+            AholeDialogue(&Dialogue, Player, &Ahole);
         }
-
-        for (int i = 0; i < Dialogue->MaxOptions; i++)
+        for (int i = 0; i < Dialogue.MaxOptions; i++)
         {
-            OptionText[i] = (char *)malloc(1 + strlen(o[i]) + strlen(Dialogue->Option[i].Text));
+            OptionText[i] =  Dialogue.Option[i].Text;
+        }
+        for (int i = 0; i < Dialogue.MaxOptions; i++)
+        {
+            /*OptionText[i] = (char *)malloc(1 + strlen(o[i]) + strlen(Dialogue.Option[i].Text));
             strcpy(OptionText[i], o[i]);
-            strcat(OptionText[i], Dialogue->Option[i].Text);
+            strcat(OptionText[i], Dialogue.Option[i].Text);*/
 
-            OptionSurface[i] = TTF_RenderText_Blended_Wrapped(Regular, OptionText[i], DialogueColor, (*WindowWidth - 40));
-            SelectedOptionSurface[i] = TTF_RenderText_Blended_Wrapped(Bold, OptionText[i], DialogueColor, (*WindowWidth - 40));
-            Option[i].h = OptionSurface[i]->h;
-            Option[i].w = OptionSurface[i]->w;
-            Option[i].x = 20;
+            OptionSurface[i] = TTF_RenderText_Blended_Wrapped(Regular, OptionText[i], DialogueColor, (*WindowWidth - 60));
+            OptionNumSurface[i] = TTF_RenderText_Blended_Wrapped(Regular, o[i], DialogueColor, 30);
+            SelectedOptionSurface[i] = TTF_RenderText_Blended_Wrapped(Bold, OptionText[i], DialogueColor, (*WindowWidth - 60));
+            SelectedOptionNumSurface[i] = TTF_RenderText_Blended_Wrapped(Bold, o[i], DialogueColor, 30);
+
+            OptionRect[i].h = OptionSurface[i]->h;
+            OptionRect[i].w = OptionSurface[i]->w;
+            OptionNumRect[i].h = OptionNumSurface[i]->h;
+            OptionNumRect[i].w = OptionNumSurface[i]->w;
         }
         if (firstrun)
         {
-            UpdateOptionRects(Option, Options);
+            UpdateOptionRects(OptionRect, Options, OptionNumRect);
         }
         firstrun = false;
+        for (int i = 0; i < 12; i++)
+        {
+            OptionRect[i].x = 40;
+            OptionNumRect[i].y = OptionRect[i].y;
+            OptionNumRect[i].x = 0;
+        }
         //--------------------------------------------------------------
         for (int i = 0; i < 12; i++)
         {
-            Dialogue->SelectedOption[i] = false;
+            Dialogue.SelectedOption[i] = false;
         }
         if (DownButton)
         {
-            for (int i = 0; i < Dialogue->MaxOptions; i++)
+            for (int i = 0; i < Dialogue.MaxOptions; i++)
             {
-                if (Dialogue->HighlightedOption[i] == true && i < (Dialogue->MaxOptions - 1) && i >= 0)
+                if (Dialogue.HighlightedOption[i] == true && i < (Dialogue.MaxOptions - 1) && i >= 0)
                 {
-                    Dialogue->HighlightedOption[i + 1] = true;
-                    Dialogue->HighlightedOption[i] = false;
+                    Dialogue.HighlightedOption[i + 1] = true;
+                    Dialogue.HighlightedOption[i] = false;
                     break;
                 }
             }
         }
         if (UpButton)
         {
-            for (int i = 0; i < Dialogue->MaxOptions; i++)
+            for (int i = 0; i < Dialogue.MaxOptions; i++)
             {
-                if (Dialogue->HighlightedOption[i] == true && i <= (Dialogue->MaxOptions - 1) && i > 0)
+                if (Dialogue.HighlightedOption[i] == true && i <= (Dialogue.MaxOptions - 1) && i > 0)
                 {
-                    Dialogue->HighlightedOption[i - 1] = true;
-                    Dialogue->HighlightedOption[i] = false;
+                    Dialogue.HighlightedOption[i - 1] = true;
+                    Dialogue.HighlightedOption[i] = false;
                     break;
                 }
             }
@@ -268,32 +292,36 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
 
         SDL_FillRect(WindowSurface, &Options, (255 << 24) | (75 << 16) | (100 << 8) | (75));
 
-        for (int i = 0; i < Dialogue->MaxOptions; i++)
+        for (int i = 0; i < Dialogue.MaxOptions; i++)
         {
-
-            if (Dialogue->HighlightedOption[i] == false)
+            if (Dialogue.HighlightedOption[i] == false)
             {
-                SDL_BlitSurface(OptionSurface[i], 0, WindowSurface, &Option[i]);
+                SDL_BlitSurface(OptionSurface[i], 0, WindowSurface, &OptionRect[i]);
+                SDL_BlitSurface(OptionNumSurface[i], 0, WindowSurface, &OptionNumRect[i]);
             }
-            if (Dialogue->HighlightedOption[i] == true)
+            if (Dialogue.HighlightedOption[i] == true)
             {
-                if ((Option[i].y + OptionSurface[i]->h) > *WindowHight)
+                if ((OptionRect[i].y + OptionSurface[i]->h) > *WindowHight)
                 {
-                    for (int t = 0; t < Dialogue->MaxOptions; t++)
+                    for (int t = 0; t < Dialogue.MaxOptions; t++)
                     {
-                        Option[t].y = Option[t].y - OptionSurface[i]->h;
+                        OptionRect[t].y = OptionRect[t].y - OptionSurface[i]->h;
+                        //OptionNumRect[t].y = OptionRect[t].y - OptionSurface[i]->h;
                     }
                 }
-                if ((Option[i].y) < (PlayerTextRect.y + PlayerTextRect.h))
+                if ((OptionRect[i].y) < (PlayerTextRect.y + PlayerTextRect.h))
                 {
-                    for (int t = 0; t < Dialogue->MaxOptions; t++)
+                    for (int t = 0; t < Dialogue.MaxOptions; t++)
                     {
-                        Option[t].y = Option[t].y + OptionSurface[i]->h;
+                        OptionRect[t].y = OptionRect[t].y + OptionSurface[i]->h;
+                        //OptionNumRect[t].y = OptionRect[t].y + OptionSurface[i]->h;
                     }
                 }
-                SDL_BlitSurface(SelectedOptionSurface[i], 0, WindowSurface, &Option[i]);
+                SDL_BlitSurface(SelectedOptionSurface[i], 0, WindowSurface, &OptionRect[i]);
+                SDL_BlitSurface(SelectedOptionNumSurface[i], 0, WindowSurface, &OptionNumRect[i]);
             }
         }
+        SDL_FillRect(WindowSurface, &HeaderRect, (200 << 24) | (50 << 16) | (50 << 8) | (50));
         SDL_FillRect(WindowSurface, &ViewRect, (255 << 24) | (200 << 16) | (200 << 8) | (200));
         SDL_FillRect(WindowSurface, &NPCtextRect, (255 << 24) | (255 << 16) | (150 << 8) | (150));
         SDL_FillRect(WindowSurface, &PlayerTextRect, (255 << 24) | (150 << 16) | (150 << 8) | (255));
@@ -316,12 +344,12 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
         ViewActiveRect.w = 256;
         ViewActiveRect.h = 64;
 
-        SDL_BlitScaled(Dialogue->View.Surface, &ViewActiveRect, WindowSurface, &ViewRect);
+        SDL_BlitScaled(Dialogue.View.Surface, &ViewActiveRect, WindowSurface, &ViewRect);
 
-        RenderTextCenteredX(Bold2, Dialogue->DialogueTitle, 255, 255, 255, 0, 10, TextSurface, WindowSurface, *WindowWidth, *WindowHight);
+        RenderTextCenteredX(Bold2, Dialogue.DialogueTitle, 255, 255, 255, 0, 10, TextSurface, WindowSurface, *WindowWidth, *WindowHight);
 
-        RenderTextDialogue(Regular, Dialogue->NPCtext, 255, 255, 255, 20, (NPCtextRect.y + 10), TextSurface, WindowSurface, *WindowWidth, *WindowHight, (*WindowWidth - 40));
-        RenderTextDialogue(Regular, Dialogue->PlayerText, 255, 255, 255, 20, (PlayerTextRect.y + 10), TextSurface, WindowSurface, *WindowWidth, *WindowHight, (*WindowWidth - 40));
+        RenderTextDialogue(Regular, Dialogue.NPCtext, 255, 255, 255, 20, (NPCtextRect.y + 10), TextSurface, WindowSurface, *WindowWidth, *WindowHight, (*WindowWidth - 40));
+        RenderTextDialogue(Regular, Dialogue.PlayerText, 255, 255, 255, 20, (PlayerTextRect.y + 10), TextSurface, WindowSurface, *WindowWidth, *WindowHight, (*WindowWidth - 40));
 
         RenderText(Regular, "Press Tab to exit Dialogue mode", 255, 255, 255, 0, 0, TextSurface, WindowSurface, *WindowWidth, *WindowHight);
 
@@ -349,11 +377,13 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
 
         SDL_UpdateWindowSurface(Window);
 
-        for (int i = 0; i < Dialogue->MaxOptions; i++) //plugging dem memory leaks
+        for (int i = 0; i < Dialogue.MaxOptions; i++) //plugging dem memory leaks
         {
-            free(OptionText[i]);
+            //free(OptionText[i]);
             SDL_FreeSurface(OptionSurface[i]);
+            SDL_FreeSurface(OptionNumSurface[i]);
             SDL_FreeSurface(SelectedOptionSurface[i]);
+            SDL_FreeSurface(SelectedOptionNumSurface[i]);
         }
     };
 }

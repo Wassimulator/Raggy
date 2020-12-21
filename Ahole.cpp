@@ -7,7 +7,23 @@ dialogues Node[100];
 
 void AholeDialogue(dialogues *Dialogue, player *Player, dialogueNPC *Ahole)
 {
-    Dialogue->DialogueTitle = "Pricksoin Ahole";
+    string FileName = "data/texts/ahole.txt";
+    ifstream Input;
+
+    Input.open(FileName);
+
+    string buffer;
+    getline(Input, buffer, ',');
+
+
+
+    //
+
+
+
+
+
+    /*Dialogue->DialogueTitle = "Pricksoin Ahole";
     Dialogue->View = Ahole->IdleView;
 
     FILE *TextFile;
@@ -51,7 +67,6 @@ void AholeDialogue(dialogues *Dialogue, player *Player, dialogueNPC *Ahole)
             NoneSelected = true;
         }
     }
-    
 
     if (NoneSelected = true)
     {
@@ -120,5 +135,5 @@ void AholeDialogue(dialogues *Dialogue, player *Player, dialogueNPC *Ahole)
         }
     }
 
-    fclose(TextFile);
+    fclose(TextFile);*/
 }

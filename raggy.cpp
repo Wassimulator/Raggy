@@ -9,8 +9,8 @@ int main(int argc, char **argv)
     SDL_Init(SDL_INIT_EVERYTHING);
     SDL_Window *Window;
 
-    int WindowWidth = 1024;
-    int WindowHight = 768;
+    int WindowWidth = 800;
+    int WindowHight = 600;
 
     Window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WindowWidth, WindowHight, 0);
     SDL_Surface *WindowSurface = SDL_GetWindowSurface(Window);
@@ -113,7 +113,6 @@ int main(int argc, char **argv)
     SDL_Rect DTRect[10];
     SDL_Rect AholeRect;
 
-    dialogues Dialogue;
 
     //Game Loop-----------------------------------------------------------------
     while (GameIsRunning)
@@ -255,7 +254,7 @@ int main(int argc, char **argv)
             Tab_Key = false;
             Space_Key = false;
 
-            DialogueMode(Regular, RegularS, Bold, Bold2, TextSurface, WindowSurface, Window, &WindowWidth, &WindowHight, &Player, &Dialogue);
+            DialogueMode(Regular, RegularS, Bold, Bold2, TextSurface, WindowSurface, Window, &WindowWidth, &WindowHight, &Player);
         }
         //----------------------------LOAD RECTS HERE------------------------------------------
         //          IMPORTANT: make sure you update this function here and in rect.cpp

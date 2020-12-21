@@ -580,19 +580,20 @@ struct dialogues
     sprite View;
 };
 
-void UpdateOptionRects(SDL_Rect Option[12], SDL_Rect Options)
+void UpdateOptionRects(SDL_Rect OptionRect[12], SDL_Rect Options, SDL_Rect OptionNumRect[12])
 {
-    Option[0].y = Options.y + 10;
-    Option[1].y = Options.y + 10 + Option[0].h;
-    Option[2].y = Options.y + 10 + Option[0].h + Option[1].h;
-    Option[3].y = Options.y + 10 + Option[0].h + Option[1].h + Option[2].h;
-    Option[4].y = Options.y + 10 + Option[0].h + Option[1].h + Option[2].h + Option[3].h;
-    Option[5].y = Options.y + 10 + Option[0].h + Option[1].h + Option[2].h + Option[3].h + Option[4].h;
-    Option[6].y = Options.y + 10 + Option[0].h + Option[1].h + Option[2].h + Option[3].h + Option[4].h + Option[5].h;
-    Option[7].y = Options.y + 10 + Option[0].h + Option[1].h + Option[2].h + Option[3].h + Option[4].h + Option[5].h + Option[6].h;
-    Option[8].y = Options.y + 10 + Option[0].h + Option[1].h + Option[2].h + Option[3].h + Option[4].h + Option[5].h + Option[6].h + Option[7].h;
-    Option[9].y = Options.y + 10 + Option[0].h + Option[1].h + Option[2].h + Option[3].h + Option[4].h + Option[5].h + Option[6].h + Option[7].h + Option[8].h;
-    Option[10].y = Options.y + 10 + Option[0].h + Option[1].h + Option[2].h + Option[3].h + Option[4].h + Option[5].h + Option[6].h + Option[7].h + Option[8].h + Option[9].h;
-    Option[11].y = Options.y + 10 + Option[0].h + Option[1].h + Option[2].h + Option[3].h + Option[4].h + Option[5].h + Option[6].h + Option[7].h + Option[8].h + Option[9].h + Option[10].h;
+    OptionRect[0].y = Options.y + 10;
+    OptionRect[1].y = Options.y + 10 + OptionRect[0].h;
+    OptionRect[2].y = Options.y + 10 + OptionRect[0].h + OptionRect[1].h;
+    OptionRect[3].y = Options.y + 10 + OptionRect[0].h + OptionRect[1].h + OptionRect[2].h;
+    OptionRect[4].y = Options.y + 10 + OptionRect[0].h + OptionRect[1].h + OptionRect[2].h + OptionRect[3].h;
+    OptionRect[5].y = Options.y + 10 + OptionRect[0].h + OptionRect[1].h + OptionRect[2].h + OptionRect[3].h + OptionRect[4].h;
+    OptionRect[6].y = Options.y + 10 + OptionRect[0].h + OptionRect[1].h + OptionRect[2].h + OptionRect[3].h + OptionRect[4].h + OptionRect[5].h;
+    OptionRect[7].y = Options.y + 10 + OptionRect[0].h + OptionRect[1].h + OptionRect[2].h + OptionRect[3].h + OptionRect[4].h + OptionRect[5].h + OptionRect[6].h;
+    OptionRect[8].y = Options.y + 10 + OptionRect[0].h + OptionRect[1].h + OptionRect[2].h + OptionRect[3].h + OptionRect[4].h + OptionRect[5].h + OptionRect[6].h + OptionRect[7].h;
+    OptionRect[9].y = Options.y + 10 + OptionRect[0].h + OptionRect[1].h + OptionRect[2].h + OptionRect[3].h + OptionRect[4].h + OptionRect[5].h + OptionRect[6].h + OptionRect[7].h + OptionRect[8].h;
+    OptionRect[10].y = Options.y + 10 + OptionRect[0].h + OptionRect[1].h + OptionRect[2].h + OptionRect[3].h + OptionRect[4].h + OptionRect[5].h + OptionRect[6].h + OptionRect[7].h + OptionRect[8].h + OptionRect[9].h;
+    OptionRect[11].y = Options.y + 10 + OptionRect[0].h + OptionRect[1].h + OptionRect[2].h + OptionRect[3].h + OptionRect[4].h + OptionRect[5].h + OptionRect[6].h + OptionRect[7].h + OptionRect[8].h + OptionRect[9].h + OptionRect[10].h;
+
 }
 //--------------------------------------------------------
