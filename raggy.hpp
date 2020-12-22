@@ -7,6 +7,7 @@
 #include <SDL_ttf.h>
 #include <fstream>
 #include <string>
+#include <iostream>
 
 
 
@@ -15,7 +16,7 @@
 #include "psapi.h"
 //--------------------
 
-using namespace std;
+
 
 //-----------------array indeces---------------------------
 
@@ -25,3 +26,4 @@ int FCiw = 0;
 int FClength = 0;
 
 bool GameIsRunning = true;
+bool RAMleak = false;

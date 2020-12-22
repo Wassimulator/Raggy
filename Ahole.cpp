@@ -2,26 +2,72 @@
 #include "raggy.hpp"
 #include "source.cpp"
 #include "dialogues.cpp"
+using namespace std;
 
-dialogues Node[100];
-
-void AholeDialogue(dialogues *Dialogue, player *Player, dialogueNPC *Ahole)
+void AholeDialogue(dialogues *Dialogue, player *Player, dialogueNPC *Ahole, bool *firstrun)
 {
     string FileName = "data/texts/ahole.txt";
     ifstream Input;
 
-    Input.open(FileName);
+    if (firstrun)
+    {
+        bool NoneSelected = true;
+        for (int i = 0; i < 12; i++)
+        {
+            if (Dialogue->SelectedOption[i] == true)
+            {
+            }
+            else
+            {
+                NoneSelected = true;
+            }
+        }
+        if (NoneSelected = true)
+        {
+            Input.open(FileName);
 
-    string buffer;
-    getline(Input, buffer, ',');
+            string buffer;
+            getline(Input, buffer, '\n'); //skip first line
+            getline(Input, buffer, ',');
+            char *charbuffer = new char[buffer.length() + 1];
+            strcpy(charbuffer, buffer.c_str());
+            Dialogue->NPCtext = charbuffer;
+            //delete[] charbuffer;
 
+            getline(Input, buffer, ',');
+            Dialogue->MaxOptions = stoi(buffer);
 
+            for (int i = 0; i < Dialogue->MaxOptions; i++)
+            {
+                getline(Input, buffer, ',');
+                if (buffer.empty() == false)
+                {
+                    char *charbuffer = new char[buffer.length() + 1];
+                    strcpy(charbuffer, buffer.c_str());
+                    Dialogue->Option[i].Text = charbuffer;
+                    //delete[] charbuffer;
+                }
+
+                getline(Input, buffer, ',');
+                if (buffer.empty() == false)
+                {
+                    Dialogue->Option[i].NextNodeID = stoi(buffer);
+                }
+
+                if (i == (Dialogue->MaxOptions - 1))
+                {
+                    delete[] charbuffer;
+                }
+            }
+            buffer.clear();
+            firstrun = false;
+            Input.close();
+        }
+    }
+
+    //cout << Dialogue->Option[0].Text << " firstrun = " << firstrun << endl;
 
     //
-
-
-
-
 
     /*Dialogue->DialogueTitle = "Pricksoin Ahole";
     Dialogue->View = Ahole->IdleView;

@@ -220,11 +220,11 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
         //-----------------------Update---------------------------------
         if (Player->ChattingAhole == true)
         {
-            AholeDialogue(&Dialogue, Player, &Ahole);
+            AholeDialogue(&Dialogue, Player, &Ahole, &firstrun);
         }
         for (int i = 0; i < Dialogue.MaxOptions; i++)
         {
-            OptionText[i] =  Dialogue.Option[i].Text;
+            OptionText[i] = Dialogue.Option[i].Text;
         }
         for (int i = 0; i < Dialogue.MaxOptions; i++)
         {
@@ -369,7 +369,44 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
                 sprintf(NowFPS, "FPS: %i", CurrentFPS);
             }
             char NowRAM[50];
-            sprintf(NowRAM, "RAM usage: %.2f MB/ %.1f GB", currentRAM, totalRAM);
+            sprintf(NowRAM, "RAM usage: %.3f MB/ %.1f GB", currentRAM, totalRAM);
+            //---------------------leak detector-------------------------------
+            float RAM1, RAM2;
+            if (frameIndex == 60)
+            {
+                RAM1 = currentRAM;
+            }
+            if (frameIndex % 60 == 0)
+            {
+                RAM2 = currentRAM;
+            }
+            if (frameIndex > 120 && (RAM2 - RAM1) > 0.1)
+            {
+                RAMleak = true;
+            }
+            if (RAMleak)
+            {
+                bool on;
+                int count;
+                if (frameIndex % 60 == 0)
+                {
+                    on = true;
+                    count = 0;
+                }
+                if (count == 30)
+                {
+                    on = false;
+                }
+                if (on)
+                {
+                    RenderText(Bold, "Memory Leak Detected!", 255, 255, 0, *WindowWidth - 300, 25, TextSurface, WindowSurface, *WindowWidth, *WindowHight);
+                }
+                if (on == false)
+                {
+                    RenderText(Bold, "Memory Leak Detected!", 255, 0, 0, *WindowWidth - 300, 25, TextSurface, WindowSurface, *WindowWidth, *WindowHight);
+                }
+                count++;
+            }
 
             RenderText(RegularS, NowFPS, 170, 170, 255, *WindowWidth - 60, 0, TextSurface, WindowSurface, *WindowWidth, *WindowHight);
             RenderText(RegularS, NowRAM, 255, 255, 150, *WindowWidth - 300, 0, TextSurface, WindowSurface, *WindowWidth, *WindowHight);
