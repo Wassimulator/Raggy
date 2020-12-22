@@ -59,8 +59,6 @@ int main(int argc, char **argv)
     Map.ActiveMap.h = Map.ActiveMap.h * 3;
     Map.ActiveMap.w = Map.ActiveMap.w * 3;
 
-
-
     int InitialMapPosX = Map.PosX;
     int InitialPlayerPosX = Player.PosX;
 
@@ -292,7 +290,8 @@ int main(int argc, char **argv)
             Tab_Key = false;
             Space_Key = false;
 
-            DialogueMode(Regular, RegularS, Bold, Bold2, TextSurface, WindowSurface, Window, &WindowWidth, &WindowHight, &Player, BackgroundMusic);
+            DialogueMode(Regular, RegularS, Bold, Bold2, Title1, Title2, Title1B, Title2B, Title3, Title3B,
+                         TextSurface, &WindowSurface, &Window, &WindowWidth, &WindowHight, &Player, BackgroundMusic);
         }
         //----------------------------LOAD RECTS HERE------------------------------------------
         //          IMPORTANT: make sure you update this function here and in rect.cpp

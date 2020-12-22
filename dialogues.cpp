@@ -2,11 +2,14 @@
 #include "raggy.hpp"
 #include "source.cpp"
 #include "Ahole.cpp"
+#include "menus.cpp"
 
 void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *Bold2,
+                  TTF_Font *Title1, TTF_Font *Title2, TTF_Font *Title1B, TTF_Font *Title2B,
+                  TTF_Font *Title3, TTF_Font *Title3B,
                   SDL_Surface *TextSurface,
-                  SDL_Surface *WindowSurface,
-                  SDL_Window *Window,
+                  SDL_Surface **WindowSurface,
+                  SDL_Window **Window,
                   int *WindowWidth, int *WindowHight,
                   player *Player, Mix_Music *BackgroundMusic)
 {
@@ -26,34 +29,10 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
     bool Return_Key = false;
 
     SDL_Rect HeaderRect;
-    HeaderRect.w = *WindowWidth;
-    HeaderRect.h = 60;
-    HeaderRect.x = 0;
-    HeaderRect.y = 0;
-
     SDL_Rect ViewRect;
-    ViewRect.w = *WindowWidth;
-    ViewRect.h = (*WindowHight / 3);
-    ViewRect.x = 0;
-    ViewRect.y = 60;
-
     SDL_Rect NPCtextRect;
-    NPCtextRect.w = *WindowWidth;
-    NPCtextRect.h = 75;
-    NPCtextRect.x = 0;
-    NPCtextRect.y = 60 + ViewRect.h;
-
     SDL_Rect PlayerTextRect;
-    PlayerTextRect.w = *WindowWidth;
-    PlayerTextRect.h = 75;
-    PlayerTextRect.x = 0;
-    PlayerTextRect.y = 60 + ViewRect.h + NPCtextRect.h;
-
     SDL_Rect Options;
-    Options.w = *WindowWidth;
-    Options.h = *WindowHight - (60 + ViewRect.h + NPCtextRect.h + PlayerTextRect.h);
-    Options.x = 0;
-    Options.y = 60 + ViewRect.h + NPCtextRect.h + PlayerTextRect.h;
 
     SDL_Rect ViewActiveRect;
 
@@ -133,9 +112,14 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
         Dialogue.SelectedOption[i] = false;
     }
 
+    bool Playing = true;
+
     while (DialogueRunning)
     {
-        
+        if(GameIsRunning==false)
+        {
+            break;
+        }
         E_Key = false;
         F_Key = false;
         Return_Key = false;
@@ -161,6 +145,13 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
         const int frameDelay = 1000 / FPS;
         Uint32 frameStart = SDL_GetTicks();
         //---------------------------------------------------------
+
+        if (Playing == false)
+        {
+            MainMenu(Regular, RegularS, Bold, Bold2, Title1, Title2, Title1B, Title2B, Title3,
+                     Title3B, TextSurface, WindowSurface, Window, WindowWidth, WindowHight, &Playing);
+        }
+
         if (Mix_PlayingMusic() == 0)
         {
             Mix_PlayMusic(BackgroundMusic, 3);
@@ -202,6 +193,12 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
                 if (Event.key.keysym.sym == SDLK_UP && Event.key.repeat == false)
                 {
                     UpButton = true;
+                }
+                if (Event.key.keysym.sym == SDLK_ESCAPE && Event.key.repeat == false)
+                {
+                    Playing = false;
+                    Mix_PauseMusic();
+                    Mix_Pause(2);
                 }
             }
 
@@ -274,6 +271,7 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
             OptionNumRect[i].h = OptionNumSurface[i]->h;
             OptionNumRect[i].w = OptionNumSurface[i]->w;
         }
+
         if (refresh)
         {
             UpdateOptionRects(OptionRect, Options, OptionNumRect);
@@ -315,21 +313,46 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
             }
         }
         //--------------------------------------------------------------
+        HeaderRect.w = *WindowWidth;
+        HeaderRect.h = 60;
+        HeaderRect.x = 0;
+        HeaderRect.y = 0;
+
+        ViewRect.w = *WindowWidth;
+        ViewRect.h = (*WindowHight / 3);
+        ViewRect.x = 0;
+        ViewRect.y = 60;
+
+        NPCtextRect.w = *WindowWidth;
+        NPCtextRect.h = 75;
+        NPCtextRect.x = 0;
+        NPCtextRect.y = 60 + ViewRect.h;
+
+        PlayerTextRect.w = *WindowWidth;
+        PlayerTextRect.h = 75;
+        PlayerTextRect.x = 0;
+        PlayerTextRect.y = 60 + ViewRect.h + NPCtextRect.h;
+
+        Options.w = *WindowWidth;
+        Options.h = *WindowHight - (60 + ViewRect.h + NPCtextRect.h + PlayerTextRect.h);
+        Options.x = 0;
+        Options.y = 60 + ViewRect.h + NPCtextRect.h + PlayerTextRect.h;
+
         int R = 50;
         int G = 50;
         int B = 50;
         int A = 255;
 
-        SDL_FillRect(WindowSurface, 0, (A << 24) | (R << 16) | (G << 8) | (B));
+        SDL_FillRect(*WindowSurface, 0, (A << 24) | (R << 16) | (G << 8) | (B));
 
-        SDL_FillRect(WindowSurface, &Options, (255 << 24) | (75 << 16) | (100 << 8) | (75));
+        SDL_FillRect(*WindowSurface, &Options, (255 << 24) | (75 << 16) | (100 << 8) | (75));
 
         for (int i = 0; i < Dialogue.MaxOptions; i++)
         {
             if (Dialogue.HighlightedOption[i] == false)
             {
-                SDL_BlitSurface(OptionSurface[i], 0, WindowSurface, &OptionRect[i]);
-                SDL_BlitSurface(OptionNumSurface[i], 0, WindowSurface, &OptionNumRect[i]);
+                SDL_BlitSurface(OptionSurface[i], 0, *WindowSurface, &OptionRect[i]);
+                SDL_BlitSurface(OptionNumSurface[i], 0, *WindowSurface, &OptionNumRect[i]);
             }
             if (Dialogue.HighlightedOption[i] == true)
             {
@@ -349,14 +372,14 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
                         //OptionNumRect[t].y = OptionRect[t].y + OptionSurface[i]->h;
                     }
                 }
-                SDL_BlitSurface(SelectedOptionSurface[i], 0, WindowSurface, &OptionRect[i]);
-                SDL_BlitSurface(SelectedOptionNumSurface[i], 0, WindowSurface, &OptionNumRect[i]);
+                SDL_BlitSurface(SelectedOptionSurface[i], 0, *WindowSurface, &OptionRect[i]);
+                SDL_BlitSurface(SelectedOptionNumSurface[i], 0, *WindowSurface, &OptionNumRect[i]);
             }
         }
-        SDL_FillRect(WindowSurface, &HeaderRect, (200 << 24) | (50 << 16) | (50 << 8) | (50));
-        SDL_FillRect(WindowSurface, &ViewRect, (255 << 24) | (200 << 16) | (200 << 8) | (200));
-        SDL_FillRect(WindowSurface, &NPCtextRect, (255 << 24) | (255 << 16) | (150 << 8) | (150));
-        SDL_FillRect(WindowSurface, &PlayerTextRect, (255 << 24) | (150 << 16) | (150 << 8) | (255));
+        SDL_FillRect(*WindowSurface, &HeaderRect, (200 << 24) | (50 << 16) | (50 << 8) | (50));
+        SDL_FillRect(*WindowSurface, &ViewRect, (255 << 24) | (200 << 16) | (200 << 8) | (200));
+        SDL_FillRect(*WindowSurface, &NPCtextRect, (255 << 24) | (255 << 16) | (150 << 8) | (150));
+        SDL_FillRect(*WindowSurface, &PlayerTextRect, (255 << 24) | (150 << 16) | (150 << 8) | (255));
 
         if (isTalking == false)
         {
@@ -396,14 +419,14 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
         ViewActiveRect.w = 256;
         ViewActiveRect.h = 64;
 
-        SDL_BlitScaled(Dialogue.View.Surface, &ViewActiveRect, WindowSurface, &ViewRect);
+        SDL_BlitScaled(Dialogue.View.Surface, &ViewActiveRect, *WindowSurface, &ViewRect);
 
-        RenderTextCenteredX(Bold2, Dialogue.DialogueTitle, 255, 255, 255, 0, 10, TextSurface, WindowSurface, *WindowWidth, *WindowHight);
+        RenderTextCenteredX(Bold2, Dialogue.DialogueTitle, 255, 255, 255, 0, 10, TextSurface, *WindowSurface, *WindowWidth, *WindowHight);
 
-        RenderTextDialogue(Regular, Dialogue.NPCtext, 255, 255, 255, 20, (NPCtextRect.y + 10), TextSurface, WindowSurface, *WindowWidth, *WindowHight, (*WindowWidth - 40));
-        RenderTextDialogue(Regular, Dialogue.PlayerText, 255, 255, 255, 20, (PlayerTextRect.y + 10), TextSurface, WindowSurface, *WindowWidth, *WindowHight, (*WindowWidth - 40));
+        RenderTextDialogue(Regular, Dialogue.NPCtext, 255, 255, 255, 20, (NPCtextRect.y + 10), TextSurface, *WindowSurface, *WindowWidth, *WindowHight, (*WindowWidth - 40));
+        RenderTextDialogue(Regular, Dialogue.PlayerText, 255, 255, 255, 20, (PlayerTextRect.y + 10), TextSurface, *WindowSurface, *WindowWidth, *WindowHight, (*WindowWidth - 40));
 
-        RenderText(Regular, "Press Tab to exit Dialogue mode", 255, 255, 255, 0, 0, TextSurface, WindowSurface, *WindowWidth, *WindowHight);
+        RenderText(Regular, "Press Tab to exit Dialogue mode", 255, 255, 255, 0, 0, TextSurface, *WindowSurface, *WindowWidth, *WindowHight);
 
         //FPS and Resources------------------------------------------------------
         {
@@ -452,20 +475,20 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
                 }
                 if (on)
                 {
-                    RenderText(Bold, "Memory Leak Detected!", 255, 255, 0, *WindowWidth - 300, 25, TextSurface, WindowSurface, *WindowWidth, *WindowHight);
+                    RenderText(Bold, "Memory Leak Detected!", 255, 255, 0, *WindowWidth - 300, 25, TextSurface, *WindowSurface, *WindowWidth, *WindowHight);
                 }
                 if (on == false)
                 {
-                    RenderText(Bold, "Memory Leak Detected!", 255, 0, 0, *WindowWidth - 300, 25, TextSurface, WindowSurface, *WindowWidth, *WindowHight);
+                    RenderText(Bold, "Memory Leak Detected!", 255, 0, 0, *WindowWidth - 300, 25, TextSurface, *WindowSurface, *WindowWidth, *WindowHight);
                 }
                 count++;
             }
 
-            RenderText(RegularS, NowFPS, 170, 170, 255, *WindowWidth - 60, 0, TextSurface, WindowSurface, *WindowWidth, *WindowHight);
-            RenderText(RegularS, NowRAM, 255, 255, 150, *WindowWidth - 300, 0, TextSurface, WindowSurface, *WindowWidth, *WindowHight);
+            RenderText(RegularS, NowFPS, 170, 170, 255, *WindowWidth - 60, 0, TextSurface, *WindowSurface, *WindowWidth, *WindowHight);
+            RenderText(RegularS, NowRAM, 255, 255, 150, *WindowWidth - 300, 0, TextSurface, *WindowSurface, *WindowWidth, *WindowHight);
         } //------------------------------------------------------
 
-        SDL_UpdateWindowSurface(Window);
+        SDL_UpdateWindowSurface(*Window);
 
         for (int i = 0; i < Dialogue.MaxOptions; i++) //plugging dem memory leaks
         {

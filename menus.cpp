@@ -801,4 +801,5 @@ void MainMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *B
         SDL_FreeSurface(osPLAY);
     }
     Mix_ResumeMusic();
+    Mix_Resume(2);
 }
