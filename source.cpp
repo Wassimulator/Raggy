@@ -34,6 +34,11 @@ sounds LoadSound()
     return Sound;
 }
 
+struct NPCsounds
+{
+    Mix_Chunk *Node[10];
+};
+
 //---------FONTS-------------
 struct font
 {
@@ -555,6 +560,7 @@ void MapUpdate(float *CamPosX, player *Player)
 struct dialogueNPC
 {
     sprite IdleView;
+    sprite TalkView;
 };
 
 struct dialogues

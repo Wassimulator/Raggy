@@ -73,6 +73,8 @@ int main(int argc, char **argv)
     Mix_OpenAudio(44800, MIX_DEFAULT_FORMAT, 2, 4096);
     sounds Sound = LoadSound();
 
+    Mix_Music *BackgroundMusic = Mix_LoadMUS("data/sounds/music/background.WAV");
+
     printf("Press H to say hello\nPress F to pay respects\nPress Space to Enter Dialogue mode, use arrows to navigate and press Tab to exit Dialogue mode\n");
 
     float CamPosX = 0;
@@ -140,6 +142,10 @@ int main(int argc, char **argv)
         const int frameDelay = 1000 / FPS;
         Uint32 frameStart = SDL_GetTicks();
         //---------------------------------------------------------
+        if (Mix_PlayingMusic() == 0)
+        {
+            Mix_PlayMusic(BackgroundMusic, 3);
+        }
 
         SDL_Event Event;
         while (SDL_PollEvent(&Event)) //if pPollEvent returns 1 then we enter the while loop this
@@ -253,7 +259,7 @@ int main(int argc, char **argv)
             Tab_Key = false;
             Space_Key = false;
 
-            DialogueMode(Regular, RegularS, Bold, Bold2, TextSurface, WindowSurface, Window, &WindowWidth, &WindowHight, &Player);
+            DialogueMode(Regular, RegularS, Bold, Bold2, TextSurface, WindowSurface, Window, &WindowWidth, &WindowHight, &Player, BackgroundMusic);
         }
         //----------------------------LOAD RECTS HERE------------------------------------------
         //          IMPORTANT: make sure you update this function here and in rect.cpp
@@ -348,7 +354,8 @@ int main(int argc, char **argv)
             {
                 RAM2 = currentRAM;
             }
-            if (frameIndex > 120 && (RAM2 - RAM1) > 0.1)
+            float sensetivity = 0.5;
+            if (frameIndex > 120 && (RAM2 - RAM1) > sensetivity)
             {
                 RAMleak = true;
             }

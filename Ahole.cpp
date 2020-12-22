@@ -4,67 +4,151 @@
 #include "dialogues.cpp"
 using namespace std;
 
-void AholeDialogue(dialogues *Dialogue, player *Player, dialogueNPC *Ahole, bool *firstrun)
+void AholeDialogue(dialogues *Dialogue, player *Player, dialogueNPC *Ahole, NPCsounds *AholeS, bool *firstrun, bool *refresh, bool *isTalking)
 {
-    string FileName = "data/texts/ahole.txt";
-    ifstream Input;
 
-    if (firstrun)
+    if (Mix_Playing(2) == 0)
     {
+        *isTalking = false;
+    }
+    if (*isTalking == false)
+    {
+        Dialogue->View = Ahole->IdleView;
+    }
+
+    if (*refresh)
+    {
+        string FileName = "data/texts/ahole.txt";
+        ifstream Input;
+        Dialogue->DialogueTitle = "Pricksoin Ahole";
+        int TargetNode;
+        int count = 0;
+
         bool NoneSelected = true;
+        Input.open(FileName);
         for (int i = 0; i < 12; i++)
         {
             if (Dialogue->SelectedOption[i] == true)
             {
-            }
-            else
-            {
-                NoneSelected = true;
+                NoneSelected = false;
             }
         }
-        if (NoneSelected = true)
+        if (firstrun)
         {
-            Input.open(FileName);
-
-            string buffer;
-            getline(Input, buffer, '\n'); //skip first line
-            getline(Input, buffer, ',');
-            char *charbuffer = new char[buffer.length() + 1];
-            strcpy(charbuffer, buffer.c_str());
-            Dialogue->NPCtext = charbuffer;
-            //delete[] charbuffer;
-
-            getline(Input, buffer, ',');
-            Dialogue->MaxOptions = stoi(buffer);
-
-            for (int i = 0; i < Dialogue->MaxOptions; i++)
+            if (NoneSelected == true)
             {
-                getline(Input, buffer, ',');
-                if (buffer.empty() == false)
+                Mix_PlayChannel(2, AholeS->Node[2], 0); //use Mix_Haltchannel() to stop, also, Player uses channel 1, NPCs on channel 2.
+                Dialogue->View = Ahole->TalkView;
+                *isTalking = true;
+
+                for (int i = 0; i < 12; i++)
                 {
-                    char *charbuffer = new char[buffer.length() + 1];
-                    strcpy(charbuffer, buffer.c_str());
-                    Dialogue->Option[i].Text = charbuffer;
-                    //delete[] charbuffer;
+                    Dialogue->SelectedOption[i] = false;
                 }
+                Dialogue->PlayerText = " ";
+
+                string buffer;
+                getline(Input, buffer, '\n'); //skip first line
+                getline(Input, buffer, ',');
+                char *charbuffer = new char[buffer.length() + 1];
+                strcpy(charbuffer, buffer.c_str());
+                Dialogue->NPCtext = charbuffer;
 
                 getline(Input, buffer, ',');
-                if (buffer.empty() == false)
+                Dialogue->MaxOptions = stoi(buffer);
+
+                for (int i = 0; i < Dialogue->MaxOptions; i++)
                 {
-                    Dialogue->Option[i].NextNodeID = stoi(buffer);
+                    getline(Input, buffer, ',');
+                    if (buffer.empty() == false)
+                    {
+                        char *charbuffer = new char[buffer.length() + 1];
+                        strcpy(charbuffer, buffer.c_str());
+                        Dialogue->Option[i].Text = charbuffer;
+                    }
+
+                    getline(Input, buffer, ',');
+                    if (buffer.empty() == false)
+                    {
+                        Dialogue->Option[i].NextNodeID = stoi(buffer);
+                    }
+
+                    if (i == (Dialogue->MaxOptions - 1))
+                    {
+                        delete[] charbuffer;
+                    }
                 }
 
-                if (i == (Dialogue->MaxOptions - 1))
+                buffer.clear();
+                Input.clear();
+                Input.seekg(0, ios_base::beg);
+            }
+            *firstrun = false;
+        }
+
+        if (NoneSelected == false)
+        {
+            for (int i = 0; i < 12; i++)
+            {
+                if (Dialogue->SelectedOption[i] == true)
                 {
-                    delete[] charbuffer;
+                    while (1)
+                    {
+                        TargetNode = Dialogue->Option[i].NextNodeID;
+                        Dialogue->ID = TargetNode;
+                        Dialogue->PlayerText = Dialogue->Option[i].Text;
+                        
+                        string buffer;
+                        if ((count + 1) == TargetNode)
+                        {
+                            getline(Input, buffer, ',');
+                            char *charbuffer = new char[buffer.length() + 1];
+                            strcpy(charbuffer, buffer.c_str());
+                            Dialogue->NPCtext = charbuffer;
+
+                            getline(Input, buffer, ',');
+                            Dialogue->MaxOptions = stoi(buffer);
+
+                            for (int i = 0; i < Dialogue->MaxOptions; i++)
+                            {
+                                getline(Input, buffer, ',');
+                                if (buffer.empty() == false)
+                                {
+                                    char *charbuffer = new char[buffer.length() + 1];
+                                    strcpy(charbuffer, buffer.c_str());
+                                    Dialogue->Option[i].Text = charbuffer;
+                                }
+
+                                getline(Input, buffer, ',');
+                                if (buffer.empty() == false)
+                                {
+                                    Dialogue->Option[i].NextNodeID = stoi(buffer);
+                                }
+
+                                if (i == (Dialogue->MaxOptions - 1))
+                                {
+                                    delete[] charbuffer;
+                                }
+                            }
+                            break;
+                            count = 0;
+                        }
+                        else
+                        {
+                            getline(Input, buffer, '\n');
+                            count++;
+                        }
+                    }
+
+                    Mix_PlayChannel(2, AholeS->Node[TargetNode], 0); //use Mix_Haltchannel() to stop, also, Player uses channel 1, NPCs on channel 2.
+                    Dialogue->View = Ahole->TalkView;
+                    *isTalking = true;
                 }
             }
-            buffer.clear();
-            firstrun = false;
-            Input.close();
         }
+        refresh = false;
+        Input.close();
     }
-
     //cout << Dialogue->Option[0].Text << " firstrun = " << firstrun << endl;
 
     //

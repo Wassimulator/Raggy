@@ -8,7 +8,7 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
                   SDL_Surface *WindowSurface,
                   SDL_Window *Window,
                   int *WindowWidth, int *WindowHight,
-                  player *Player)
+                  player *Player, Mix_Music *BackgroundMusic)
 {
     dialogues Dialogue;
 
@@ -112,12 +112,30 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
 
     //--------------------------define NPCs here----------------------
     dialogueNPC Ahole;
+    NPCsounds AholeS;
+    AholeS.Node[2] = Mix_LoadWAV("data/sounds/ahole/2.WAV");
+    AholeS.Node[3] = Mix_LoadWAV("data/sounds/ahole/3.WAV");
+    AholeS.Node[4] = Mix_LoadWAV("data/sounds/ahole/4.WAV");
+    AholeS.Node[5] = Mix_LoadWAV("data/sounds/ahole/5.WAV");
+    AholeS.Node[6] = Mix_LoadWAV("data/sounds/ahole/6.WAV");
+    AholeS.Node[7] = Mix_LoadWAV("data/sounds/ahole/7.WAV");
+
     Ahole.IdleView = LoadSprite("data/textures/ahole_dialogue_idle_anim.png");
+    Ahole.TalkView = LoadSprite("data/textures/ahole_dialogue_talk_anim.png");
     //----------------------------------------------------------------
+
     bool firstrun = true;
+    bool refresh = true;
+    bool isTalking = false;
+
+    for (int i = 0; i < 12; i++)
+    {
+        Dialogue.SelectedOption[i] = false;
+    }
 
     while (DialogueRunning)
     {
+        
         E_Key = false;
         F_Key = false;
         Return_Key = false;
@@ -143,6 +161,10 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
         const int frameDelay = 1000 / FPS;
         Uint32 frameStart = SDL_GetTicks();
         //---------------------------------------------------------
+        if (Mix_PlayingMusic() == 0)
+        {
+            Mix_PlayMusic(BackgroundMusic, 3);
+        }
 
         while (SDL_PollEvent(&Event))
         {
@@ -167,6 +189,7 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
                     DialogueRunning = false;
                     Player->Chatting = false;
                     Player->AholeLevel = 0;
+                    Mix_HaltChannel(2); //stop the NPC talking
                 }
                 if (Event.key.keysym.sym == SDLK_RETURN && Event.key.repeat == false)
                 {
@@ -214,23 +237,32 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
             if (Dialogue.HighlightedOption[i] == true && Return_Key == true)
             {
                 Dialogue.SelectedOption[i] = true;
-                firstrun = true;
+                refresh = true;
             }
         }
         //-----------------------Update---------------------------------
         if (Player->ChattingAhole == true)
         {
-            AholeDialogue(&Dialogue, Player, &Ahole, &firstrun);
+            AholeDialogue(&Dialogue, Player, &Ahole, &AholeS, &firstrun, &refresh, &isTalking);
         }
-        for (int i = 0; i < Dialogue.MaxOptions; i++)
+        if (refresh)
         {
-            OptionText[i] = Dialogue.Option[i].Text;
+            for (int i = 0; i < Dialogue.MaxOptions; i++)
+            {
+                OptionText[i] = Dialogue.Option[i].Text;
+            }
+            for (int i = 0; i < 12; i++)
+            {
+                Dialogue.HighlightedOption[i] = false;
+            }
+            Dialogue.HighlightedOption[0] = true;
         }
         for (int i = 0; i < Dialogue.MaxOptions; i++)
         {
             /*OptionText[i] = (char *)malloc(1 + strlen(o[i]) + strlen(Dialogue.Option[i].Text));
             strcpy(OptionText[i], o[i]);
             strcat(OptionText[i], Dialogue.Option[i].Text);*/
+            //TODO: leave this to show to Said, this is the reason I had memory corruption.
 
             OptionSurface[i] = TTF_RenderText_Blended_Wrapped(Regular, OptionText[i], DialogueColor, (*WindowWidth - 60));
             OptionNumSurface[i] = TTF_RenderText_Blended_Wrapped(Regular, o[i], DialogueColor, 30);
@@ -242,11 +274,11 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
             OptionNumRect[i].h = OptionNumSurface[i]->h;
             OptionNumRect[i].w = OptionNumSurface[i]->w;
         }
-        if (firstrun)
+        if (refresh)
         {
             UpdateOptionRects(OptionRect, Options, OptionNumRect);
         }
-        firstrun = false;
+        refresh = false;
         for (int i = 0; i < 12; i++)
         {
             OptionRect[i].x = 40;
@@ -326,17 +358,37 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
         SDL_FillRect(WindowSurface, &NPCtextRect, (255 << 24) | (255 << 16) | (150 << 8) | (150));
         SDL_FillRect(WindowSurface, &PlayerTextRect, (255 << 24) | (150 << 16) | (150 << 8) | (255));
 
-        if (PQTt++ % 50 == 0) //idle movement, yeah it's slow.
+        if (isTalking == false)
         {
-            if (PQT >= 1 && PQT < 6)
+
+            if (PQTt++ % 30 == 0) //idle movement, yeah it's slow.
             {
-                PQT++;
-            }
-            else
-            {
-                PQT = 1;
+                if (PQT >= 1 && PQT < 6)
+                {
+                    PQT++;
+                }
+                else
+                {
+                    PQT = 1;
+                }
             }
         }
+        if (isTalking == true)
+        {
+
+            if (PQTt++ % 5 == 0) //talk movement, it be fast.
+            {
+                if (PQT >= 1 && PQT < 6)
+                {
+                    PQT++;
+                }
+                else
+                {
+                    PQT = 1;
+                }
+            }
+        }
+
         int SixCounterP = (PQT - 1) % 3;
         int SixCounterQ = (PQT - 1) / 3;
         ViewActiveRect.x = SixCounterP * 256;
@@ -380,7 +432,8 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
             {
                 RAM2 = currentRAM;
             }
-            if (frameIndex > 120 && (RAM2 - RAM1) > 0.1)
+            float sensetivity = 0.5;
+            if (frameIndex > 120 && (RAM2 - RAM1) > sensetivity)
             {
                 RAMleak = true;
             }
