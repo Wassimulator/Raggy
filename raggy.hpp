@@ -9,14 +9,10 @@
 #include <string>
 #include <iostream>
 
-
-
 //these are for resource monitoring on Windows:-------------------------------------------------
 #include "windows.h"
 #include "psapi.h"
 //--------------------
-
-
 
 //-----------------array indeces---------------------------
 
@@ -27,3 +23,5 @@ int FClength = 0;
 
 bool GameIsRunning = true;
 bool RAMleak = false;
+bool MainMenuRunning = true;
+

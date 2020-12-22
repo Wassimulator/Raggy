@@ -2,18 +2,20 @@
 #include "source.cpp"
 #include "rects.cpp"
 #include "dialogues.cpp"
+#include "menus.cpp"
+
+SDL_Surface *WindowSurface;
+
+SDL_Window *Window;
 
 int main(int argc, char **argv)
 {
-
     SDL_Init(SDL_INIT_EVERYTHING);
-    SDL_Window *Window;
 
     int WindowWidth = 800;
     int WindowHight = 600;
-
     Window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WindowWidth, WindowHight, 0);
-    SDL_Surface *WindowSurface = SDL_GetWindowSurface(Window);
+    WindowSurface = SDL_GetWindowSurface(Window);
 
     int frameIndex = 0;
 
@@ -57,9 +59,7 @@ int main(int argc, char **argv)
     Map.ActiveMap.h = Map.ActiveMap.h * 3;
     Map.ActiveMap.w = Map.ActiveMap.w * 3;
 
-    //putting the map in the center of the screen:
-    Map.PosX = -(Map.ActiveMap.w - WindowWidth) / 2; // -1000 + 800 / 2 = -100
-    Map.PosY = -(Map.ActiveMap.h - WindowHight) / 2;
+
 
     int InitialMapPosX = Map.PosX;
     int InitialPlayerPosX = Player.PosX;
@@ -85,6 +85,13 @@ int main(int argc, char **argv)
     TTF_Font *RegularS = TTF_OpenFont("data/fonts/PTSans-Regular.ttf", 17);
     TTF_Font *Bold = TTF_OpenFont("data/fonts/PTSans-Bold.ttf", 20);
     TTF_Font *Bold2 = TTF_OpenFont("data/fonts/PTSans-Bold.ttf", 24);
+    TTF_Font *Title1B = TTF_OpenFont("data/fonts/PTSans-Bold.ttf", 60);
+    TTF_Font *Title1 = TTF_OpenFont("data/fonts/PTSans-Regular.ttf", 60);
+    TTF_Font *Title2B = TTF_OpenFont("data/fonts/PTSans-Bold.ttf", 40);
+    TTF_Font *Title2 = TTF_OpenFont("data/fonts/PTSans-Regular.ttf", 40);
+    TTF_Font *Title3B = TTF_OpenFont("data/fonts/PTSans-Bold.ttf", 30);
+    TTF_Font *Title3 = TTF_OpenFont("data/fonts/PTSans-Regular.ttf", 30);
+
     SDL_Surface *TextSurface;
     //----------------------------------
 
@@ -115,9 +122,20 @@ int main(int argc, char **argv)
     SDL_Rect DTRect[10];
     SDL_Rect AholeRect;
 
+    bool Playing = false;
+
     //Game Loop-----------------------------------------------------------------
     while (GameIsRunning)
     {
+        if (Playing == false)
+        {
+            MainMenu(Regular, RegularS, Bold, Bold2, Title1, Title2, Title1B, Title2B, Title3,
+                     Title3B, TextSurface, &WindowSurface, &Window, &WindowWidth, &WindowHight, &Playing);
+        }
+        if (GameIsRunning == false)
+        {
+            break;
+        }
         //leave these here. they're necessary for the "pressable once" system.
         E_Key = false;
         F_Key = false;
@@ -177,6 +195,21 @@ int main(int argc, char **argv)
                 if (Event.key.keysym.sym == SDLK_SPACE && Event.key.repeat == false)
                 {
                     Space_Key = true;
+                }
+                if (Event.key.keysym.sym == SDLK_ESCAPE && Event.key.repeat == false)
+                {
+                    RightButton = false;
+                    LeftButton = false;
+                    UpButton = false;
+                    DownButton = false;
+                    Shift = false;
+                    F_Key = false;
+                    H_Key = false;
+                    E_Key = false;
+                    Tab_Key = false;
+                    Space_Key = false;
+                    Playing = false;
+                    Mix_PauseMusic();
                 }
             }
 
@@ -265,7 +298,7 @@ int main(int argc, char **argv)
         //          IMPORTANT: make sure you update this function here and in rect.cpp
         //                     every time you add a new object! and define the rects
         //                     outside the loop.
-        LoadRects(WindowWidth, WindowHight, CamPosX, &F_Key,
+        LoadRects(&WindowWidth, &WindowHight, CamPosX, &F_Key,
                   &PlayerRect, &Player,
                   &PlayerActiveRectangle,
                   &MapRect, Map,
@@ -287,7 +320,7 @@ int main(int argc, char **argv)
         RenderText(Regular, "Press H to say hello", 255, 255, 255, 0, 0, TextSurface, WindowSurface, WindowWidth, WindowHight);
         RenderText(Regular, "Press F to pay respects", 255, 255, 255, 0, 25, TextSurface, WindowSurface, WindowWidth, WindowHight);
         RenderText(Regular, "Press Q to quit the game", 255, 255, 255, 0, 50, TextSurface, WindowSurface, WindowWidth, WindowHight);
-        RenderText(Regular, "Press Space to enter Dialogue mode", 255, 255, 255, 0, 75, TextSurface, WindowSurface, WindowWidth, WindowHight);
+        RenderText(Regular, "Press Esc to pause the game", 255, 255, 255, 0, 75, TextSurface, WindowSurface, WindowWidth, WindowHight);
 
         SDL_BlitScaled(Door.ActiveTexture->Surface, 0, WindowSurface, &DoorRect);
 
