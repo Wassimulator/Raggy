@@ -4,6 +4,17 @@
 #include "dialogues.cpp"
 using namespace std;
 
+void LoadAholeSound(NPCsounds *AholeS, bool *AholeSLoaded)
+{
+    AholeS->Node[2] = Mix_LoadWAV("data/sounds/ahole/2.WAV");
+    AholeS->Node[3] = Mix_LoadWAV("data/sounds/ahole/3.WAV");
+    AholeS->Node[4] = Mix_LoadWAV("data/sounds/ahole/4.WAV");
+    AholeS->Node[5] = Mix_LoadWAV("data/sounds/ahole/5.WAV");
+    AholeS->Node[6] = Mix_LoadWAV("data/sounds/ahole/6.WAV");
+    AholeS->Node[7] = Mix_LoadWAV("data/sounds/ahole/7.WAV");
+
+    *AholeSLoaded = true;
+}
 void AholeDialogue(dialogues *Dialogue, player *Player, dialogueNPC *Ahole, NPCsounds *AholeS, bool *firstrun, bool *refresh, bool *isTalking)
 {
 
@@ -97,7 +108,7 @@ void AholeDialogue(dialogues *Dialogue, player *Player, dialogueNPC *Ahole, NPCs
                         TargetNode = Dialogue->Option[i].NextNodeID;
                         Dialogue->ID = TargetNode;
                         Dialogue->PlayerText = Dialogue->Option[i].Text;
-                        
+
                         string buffer;
                         if ((count + 1) == TargetNode)
                         {

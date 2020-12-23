@@ -9,7 +9,7 @@ void OptionsMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font
                  SDL_Surface **WindowSurface,
                  SDL_Window **Window,
                  int *WindowWidth, int *WindowHeight,
-                 bool *Playing)
+                 bool *Playing, bool *MusicBool, bool *SoundBool)
 {
     bool OptionsRunning = true;
     int frameIndex = 0;
@@ -91,23 +91,23 @@ void OptionsMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font
         break;
     }
 
-    if (Mix_VolumeMusic(-1) == 128)
+    if (*MusicBool == true)
     {
         HighlightedOnOff[0] = true;
         HighlightedOnOff[1] = false;
     }
-    if (Mix_VolumeMusic(-1) == 0)
+    if (*MusicBool == false)
     {
         HighlightedOnOff[1] = true;
         HighlightedOnOff[0] = false;
     }
 
-    if (Mix_Volume(-1, -1) == 128)
+    if (*SoundBool == true)
     {
         HighlightedOnOff[2] = true;
         HighlightedOnOff[3] = false;
     }
-    if (Mix_Volume(-1, -1) == 0)
+    if (*SoundBool == false)
     {
         HighlightedOnOff[3] = true;
         HighlightedOnOff[2] = false;
@@ -398,19 +398,19 @@ void OptionsMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font
         }
         if (HighlightedOnOff[2])
         {
-            Mix_Volume(-1, 128);
+            *SoundBool = true;
         }
         if (HighlightedOnOff[3])
         {
-            Mix_Volume(-1, 0);
+            *SoundBool = false;
         }
         if (HighlightedOnOff[0])
         {
-            Mix_VolumeMusic(128);
+            *MusicBool = true;
         }
         if (HighlightedOnOff[1])
         {
-            Mix_VolumeMusic(0);
+            *MusicBool = false;
         }
 
         if (HighlightedOption[MaxOptions - 1] == true && Return_Key)
@@ -548,7 +548,7 @@ void MainMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *B
               SDL_Surface **WindowSurface,
               SDL_Window **Window,
               int *WindowWidth, int *WindowHeight,
-              bool *Playing)
+              bool *Playing, bool *MusicBool, bool *SoundBool)
 {
 
     int frameIndex = 0;
@@ -692,7 +692,7 @@ void MainMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *B
         if (OPTIONSselected && Return_Key)
         {
             OptionsMenu(Regular, RegularS, Bold, Bold2, Title1, Title2, Title1B, Title2B, Title3, Title3B,
-                        TextSurface, WindowSurface, Window, WindowWidth, WindowHeight, Playing);
+                        TextSurface, WindowSurface, Window, WindowWidth, WindowHeight, Playing, MusicBool, SoundBool);
         }
         if (GameIsRunning == false)
         {

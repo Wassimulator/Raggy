@@ -106,7 +106,6 @@ int main(int argc, char **argv)
 
     Mix_Music *BackgroundMusic = Mix_LoadMUS("data/sounds/music/background.WAV");
 
-    printf("Press H to say hello\nPress F to pay respects\nPress Space to Enter Dialogue mode, use arrows to navigate and press Tab to exit Dialogue mode\n");
 
     float CamPosX = 0;
 
@@ -162,7 +161,8 @@ int main(int argc, char **argv)
         {
             Mix_PauseMusic();
             MainMenu(Regular, RegularS, Bold, Bold2, Title1, Title2, Title1B, Title2B, Title3,
-                     Title3B, TextSurface, &WindowSurface, &Window, &WindowWidth, &WindowHeight, &Playing);
+                     Title3B, TextSurface, &WindowSurface, &Window, &WindowWidth, &WindowHeight, &Playing,
+                     &MusicBool, &SoundBool);
         }
         if (GameIsRunning == false)
         {
@@ -342,7 +342,7 @@ int main(int argc, char **argv)
             Space_Key = false;
 
             DialogueMode(Regular, RegularS, Bold, Bold2, Title1, Title2, Title1B, Title2B, Title3, Title3B,
-                         TextSurface, &WindowSurface, &Window, &WindowWidth, &WindowHeight, &Player, BackgroundMusic);
+                         TextSurface, &WindowSurface, &Window, &WindowWidth, &WindowHeight, &Player, BackgroundMusic, &MusicBool, &SoundBool);
         }
         //----------------------------LOAD RECTS HERE------------------------------------------
         //          IMPORTANT: make sure you update this function here and in rect.cpp
@@ -476,22 +476,24 @@ int main(int argc, char **argv)
     OutFile << "WindowWidth:" << WindowWidth << endl;
     OutFile << "WindowHeight:" << WindowHeight << endl;
     OutFile << "Music:";
-    if (Mix_VolumeMusic(-1) == 128)
+    if (MusicBool == true)
     {
         OutFile << "ON" << endl;
     }
-    if (Mix_VolumeMusic(-1) == 0)
+    if (MusicBool == false)
     {
         OutFile << "OFF" << endl;
     }
     OutFile << "Sound:";
-    if (Mix_Volume(-1, -1) == 128)
+    if (SoundBool == true)
     {
         OutFile << "ON" << endl;
     }
-    if (Mix_Volume(-1, -1) == 0)
+    if (SoundBool == false)
     {
         OutFile << "OFF" << endl;
     }
+        printf("\n\nSettings saved\nExit successful\n\n");
+    
     return 0;
 }

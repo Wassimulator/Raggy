@@ -11,7 +11,7 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
                   SDL_Surface **WindowSurface,
                   SDL_Window **Window,
                   int *WindowWidth, int *WindowHeight,
-                  player *Player, Mix_Music *BackgroundMusic)
+                  player *Player, Mix_Music *BackgroundMusic, bool *MusicBool, bool *SoundBool)
 {
     dialogues Dialogue;
 
@@ -92,12 +92,7 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
     //--------------------------define NPCs here----------------------
     dialogueNPC Ahole;
     NPCsounds AholeS;
-    AholeS.Node[2] = Mix_LoadWAV("data/sounds/ahole/2.WAV");
-    AholeS.Node[3] = Mix_LoadWAV("data/sounds/ahole/3.WAV");
-    AholeS.Node[4] = Mix_LoadWAV("data/sounds/ahole/4.WAV");
-    AholeS.Node[5] = Mix_LoadWAV("data/sounds/ahole/5.WAV");
-    AholeS.Node[6] = Mix_LoadWAV("data/sounds/ahole/6.WAV");
-    AholeS.Node[7] = Mix_LoadWAV("data/sounds/ahole/7.WAV");
+    bool AholeSLoaded = false;
 
     Ahole.IdleView = LoadSprite("data/textures/ahole_dialogue_idle_anim.png");
     Ahole.TalkView = LoadSprite("data/textures/ahole_dialogue_talk_anim.png");
@@ -116,7 +111,7 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
 
     while (DialogueRunning)
     {
-        if(GameIsRunning==false)
+        if (GameIsRunning == false)
         {
             break;
         }
@@ -149,12 +144,29 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
         if (Playing == false)
         {
             MainMenu(Regular, RegularS, Bold, Bold2, Title1, Title2, Title1B, Title2B, Title3,
-                     Title3B, TextSurface, WindowSurface, Window, WindowWidth, WindowHeight, &Playing);
+                     Title3B, TextSurface, WindowSurface, Window, WindowWidth, WindowHeight, &Playing,
+                     MusicBool, SoundBool);
         }
 
         if (Mix_PlayingMusic() == 0)
         {
             Mix_PlayMusic(BackgroundMusic, 3);
+        }
+        if (*MusicBool == true)
+        {
+            Mix_VolumeMusic(128);
+        }
+        if (*MusicBool == false)
+        {
+            Mix_VolumeMusic(0);
+        }
+        if (*SoundBool == true)
+        {
+            Mix_Volume(-1, 128);
+        }
+        if (*SoundBool == false)
+        {
+            Mix_Volume(-1, 0);
         }
 
         while (SDL_PollEvent(&Event))
@@ -240,6 +252,10 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
         //-----------------------Update---------------------------------
         if (Player->ChattingAhole == true)
         {
+            if (AholeSLoaded == false)
+            {
+                LoadAholeSound(&AholeS, &AholeSLoaded);
+            }
             AholeDialogue(&Dialogue, Player, &Ahole, &AholeS, &firstrun, &refresh, &isTalking);
         }
         if (refresh)
@@ -499,4 +515,10 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
             SDL_FreeSurface(SelectedOptionNumSurface[i]);
         }
     };
+    for (int i = 2; i < 8; i++) //TODO: set max number
+    {
+        Mix_FreeChunk(AholeS.Node[i]);
+    }
+    SDL_FreeSurface(Ahole.IdleView.Surface);
+    SDL_FreeSurface(Ahole.TalkView.Surface);
 }
