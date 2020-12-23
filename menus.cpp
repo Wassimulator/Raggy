@@ -114,6 +114,7 @@ void OptionsMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font
 
     while (OptionsRunning)
     {
+        
         RightButton = false;
         LeftButton = false;
         UpButton = false;
@@ -143,6 +144,7 @@ void OptionsMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font
         while (SDL_PollEvent(&Event)) //if pPollEvent returns 1 then we enter the while loop this
                                       //means thatif we have more than one event, it gathers them all before running
         {
+           
             if (Event.type == SDL_QUIT)
             {
                 GameIsRunning = false;
@@ -329,18 +331,6 @@ void OptionsMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font
             *Window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, *WindowWidth, *WindowHight, 0);
             *WindowSurface = SDL_GetWindowSurface(*Window);
         }
-        /*if (HighlightedResolution[1] == true)
-        {
-            *WindowWidth = 800;
-            *WindowHight = 600;
-            SDL_DestroyWindow(Window);
-            Window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, *WindowWidth, *WindowHight, 0);
-            SDL_GL_MakeCurrent(Window, )
-
-            glViewport()
-            
-            SDL_UpdateWindowSurface(Window);
-        }*/
 
         if (HighlightedOption[1] == true)
         {
@@ -415,7 +405,7 @@ void OptionsMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font
 
         if (HighlightedOption[MaxOptions - 1] == true && Return_Key)
         {
-            break;
+            OptionsRunning = false;
         }
 
         SDL_FillRect(*WindowSurface, 0, (255 << 24) | (50 << 16) | (50 << 8) | (50));
@@ -560,7 +550,7 @@ void MainMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *B
     orPLAY.w = osPLAY->w;
     orPLAY.h = osPLAY->h;
     orPLAY.x = (*WindowWidth - osPLAY->w) / 2;
-    orPLAY.y = *WindowHight / 2 - 100;
+    orPLAY.y = *WindowHight / 2 - 500;
     bool PLAYselected = true;
 
     SDL_Rect orOPTIONS;
@@ -579,6 +569,9 @@ void MainMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *B
     orEXIT.x = (*WindowWidth - osEXIT->w) / 2;
     orEXIT.y = orOPTIONS.y + orOPTIONS.h;
     bool EXITselected = false;
+
+    SDL_Rect LogoRect;
+    sprite Logo = LoadSprite("data/textures/raggy_logo.png");
 
     while (MainMenuRunning)
     {
@@ -703,7 +696,7 @@ void MainMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *B
         orPLAY.w = osPLAY->w;
         orPLAY.h = osPLAY->h;
         orPLAY.x = (*WindowWidth - osPLAY->w) / 2;
-        orPLAY.y = *WindowHight / 2 - 100;
+        orPLAY.y = *WindowHight / 2 ;
 
         if (OPTIONSselected == false)
         {
@@ -731,9 +724,15 @@ void MainMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *B
         orEXIT.x = (*WindowWidth - osEXIT->w) / 2;
         orEXIT.y = orOPTIONS.y + orOPTIONS.h;
 
+        LogoRect.h = Logo.h;
+        LogoRect.w = Logo.w;
+        LogoRect.x = (*WindowWidth - Logo.w) / 2;
+        LogoRect.y = orPLAY.y - Logo.h;
+
         SDL_BlitSurface(osPLAY, 0, *WindowSurface, &orPLAY);
         SDL_BlitSurface(osOPTIONS, 0, *WindowSurface, &orOPTIONS);
         SDL_BlitSurface(osEXIT, 0, *WindowSurface, &orEXIT);
+        SDL_BlitScaled(Logo.Surface, 0, *WindowSurface, &LogoRect);
 
         //FPS and Resources------------------------------------------------------
         {

@@ -14,7 +14,7 @@ int main(int argc, char **argv)
 
     int WindowWidth = 800;
     int WindowHight = 600;
-    Window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WindowWidth, WindowHight, 0);
+    Window = SDL_CreateWindow("Raggy", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WindowWidth, WindowHight, 0);
     WindowSurface = SDL_GetWindowSurface(Window);
 
     int frameIndex = 0;
