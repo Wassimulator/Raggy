@@ -5,7 +5,7 @@
 void OptionsMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *Bold2,
                  TTF_Font *Title1, TTF_Font *Title2, TTF_Font *Title1B, TTF_Font *Title2B,
                  TTF_Font *Title3, TTF_Font *Title3B,
-                 SDL_Surface *TextSurface,
+                 SDL_Surface **TextSurface,
                  SDL_Surface **WindowSurface,
                  SDL_Window **Window,
                  int *WindowWidth, int *WindowHeight,
@@ -454,9 +454,9 @@ void OptionsMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font
             }
         }
 
-        RenderText(Regular, "Press E to Apply", 255, 255, 255, 10, 0, TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
-        RenderText(Regular, "Press Backspace to go back", 255, 255, 255, 10, 25, TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
-        RenderText(Regular, "Press Enter to select", 255, 255, 255, 10, 50, TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
+        RenderText(Regular, "Press E to Apply", 255, 255, 255, 10, 0, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
+        RenderText(Regular, "Press Backspace to go back", 255, 255, 255, 10, 25, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
+        RenderText(Regular, "Press Enter to select", 255, 255, 255, 10, 50, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
 
         //FPS and Resources------------------------------------------------------
         {
@@ -505,17 +505,17 @@ void OptionsMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font
                 }
                 if (on)
                 {
-                    RenderText(Bold, "Memory Leak Detected!", 255, 255, 0, *WindowWidth - 300, 25, TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
+                    RenderText(Bold, "Memory Leak Detected!", 255, 255, 0, *WindowWidth - 300, 25, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
                 }
                 if (on == false)
                 {
-                    RenderText(Bold, "Memory Leak Detected!", 255, 0, 0, *WindowWidth - 300, 25, TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
+                    RenderText(Bold, "Memory Leak Detected!", 255, 0, 0, *WindowWidth - 300, 25, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
                 }
                 count++;
             }
 
-            RenderText(RegularS, NowFPS, 170, 170, 255, *WindowWidth - 60, 0, TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
-            RenderText(RegularS, NowRAM, 255, 255, 150, *WindowWidth - 300, 0, TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
+            RenderText(RegularS, NowFPS, 170, 170, 255, *WindowWidth - 60, 0, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
+            RenderText(RegularS, NowRAM, 255, 255, 150, *WindowWidth - 300, 0, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
         } //------------------------------------------------------
         SDL_UpdateWindowSurface(*Window);
         for (int i = 0; i < MaxOptions; i++)
@@ -544,7 +544,7 @@ void OptionsMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font
 
 void MainMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *Bold2, TTF_Font *Title1, TTF_Font *Title2, TTF_Font *Title1B, TTF_Font *Title2B,
               TTF_Font *Title3, TTF_Font *Title3B,
-              SDL_Surface *TextSurface,
+              SDL_Surface **TextSurface,
               SDL_Surface **WindowSurface,
               SDL_Window **Window,
               int *WindowWidth, int *WindowHeight,
@@ -748,7 +748,7 @@ void MainMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *B
         SDL_BlitSurface(osEXIT, 0, *WindowSurface, &orEXIT);
         SDL_BlitScaled(Logo.Surface, 0, *WindowSurface, &LogoRect);
 
-        RenderText(Regular, "Press Enter to select", 255, 255, 255, 10, 0, TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
+        RenderText(Regular, "Press Enter to select", 255, 255, 255, 10, 0, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
 
         //FPS and Resources------------------------------------------------------
         {
@@ -797,17 +797,17 @@ void MainMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *B
                 }
                 if (on)
                 {
-                    RenderText(Bold, "Memory Leak Detected!", 255, 255, 0, *WindowWidth - 300, 25, TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
+                    RenderText(Bold, "Memory Leak Detected!", 255, 255, 0, *WindowWidth - 300, 25, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
                 }
                 if (on == false)
                 {
-                    RenderText(Bold, "Memory Leak Detected!", 255, 0, 0, *WindowWidth - 300, 25, TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
+                    RenderText(Bold, "Memory Leak Detected!", 255, 0, 0, *WindowWidth - 300, 25, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
                 }
                 count++;
             }
 
-            RenderText(RegularS, NowFPS, 170, 170, 255, *WindowWidth - 60, 0, TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
-            RenderText(RegularS, NowRAM, 255, 255, 150, *WindowWidth - 300, 0, TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
+            RenderText(RegularS, NowFPS, 170, 170, 255, *WindowWidth - 60, 0, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
+            RenderText(RegularS, NowRAM, 255, 255, 150, *WindowWidth - 300, 0, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
         } //------------------------------------------------------
         SDL_UpdateWindowSurface(*Window);
 

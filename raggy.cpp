@@ -106,7 +106,6 @@ int main(int argc, char **argv)
 
     Mix_Music *BackgroundMusic = Mix_LoadMUS("data/sounds/music/background.WAV");
 
-
     float CamPosX = 0;
 
     //load fonts------------------------
@@ -161,7 +160,7 @@ int main(int argc, char **argv)
         {
             Mix_PauseMusic();
             MainMenu(Regular, RegularS, Bold, Bold2, Title1, Title2, Title1B, Title2B, Title3,
-                     Title3B, TextSurface, &WindowSurface, &Window, &WindowWidth, &WindowHeight, &Playing,
+                     Title3B, &TextSurface, &WindowSurface, &Window, &WindowWidth, &WindowHeight, &Playing,
                      &MusicBool, &SoundBool);
         }
         if (GameIsRunning == false)
@@ -195,7 +194,6 @@ int main(int argc, char **argv)
         if (Mix_PlayingMusic() == 0)
         {
             Mix_PlayMusic(BackgroundMusic, 3);
-        
         }
         if (MusicBool == true)
         {
@@ -342,7 +340,7 @@ int main(int argc, char **argv)
             Space_Key = false;
 
             DialogueMode(Regular, RegularS, Bold, Bold2, Title1, Title2, Title1B, Title2B, Title3, Title3B,
-                         TextSurface, &WindowSurface, &Window, &WindowWidth, &WindowHeight, &Player, BackgroundMusic, &MusicBool, &SoundBool);
+                         &TextSurface, &WindowSurface, &Window, &WindowWidth, &WindowHeight, &Player, BackgroundMusic, &MusicBool, &SoundBool);
         }
         //----------------------------LOAD RECTS HERE------------------------------------------
         //          IMPORTANT: make sure you update this function here and in rect.cpp
@@ -493,7 +491,7 @@ int main(int argc, char **argv)
     {
         OutFile << "OFF" << endl;
     }
-        printf("\n\nSettings saved\nExit successful\n\n");
-    
+    printf("\n\nSettings saved\nExit successful\n\n");
+
     return 0;
 }

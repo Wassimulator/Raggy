@@ -7,7 +7,7 @@
 void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *Bold2,
                   TTF_Font *Title1, TTF_Font *Title2, TTF_Font *Title1B, TTF_Font *Title2B,
                   TTF_Font *Title3, TTF_Font *Title3B,
-                  SDL_Surface *TextSurface,
+                  SDL_Surface **TextSurface,
                   SDL_Surface **WindowSurface,
                   SDL_Window **Window,
                   int *WindowWidth, int *WindowHeight,
@@ -50,19 +50,6 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
     char *text[12];
     char *o[12];
     char *OptionText[12];
-
-    OptionText[0] = "Never gonna give you up Never gonna let you down Never gonna run around and desert you Never gonna make you cry Never gonna say goodbye Never gonna tell a lie and hurt you ";
-    OptionText[1] = "NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA BATMAAAAAN";
-    OptionText[2] = "Bzzzzt Static........ bzzzzzt Dynamic.......";
-    OptionText[3] = "I'm in love with the shape of you, and that shape is a four dimentional polychoron in a non eucledian plane. sexy.";
-    OptionText[4] = "THIS IS NOT SPARTAAAAA and I cannot stress this enough. I am very stressed. what am I doing with my life. is this sparta? morelike, WHAT is sparta? how and when can I know? but wait a minute, if I can't see sparta... do I exist?";
-    OptionText[5] = "Place your ad here";
-    OptionText[6] = "Place your ad above. how many adspaces do you want asshole?";
-    OptionText[7] = "Cyberpunk sucks major ass, my disappointment in that game is immense and my day was ruined";
-    OptionText[8] = "God how many of these do you expectg me to write?";
-    OptionText[9] = "Site is under construction. Error 404, 501, bad gateway, connection timeout. just fuck off";
-    OptionText[10] = "I have information that could lead to hillary's arrest.";
-    OptionText[11] = "DO YOU KNOW DE WAE? who does... who does... what is life worth anymore? nothing. goodbye cruel world..... no I'm just going to sleep. tell me what yhou fink!";
 
     o[0] = "  1) ";
     o[1] = "  2) ";
@@ -437,12 +424,12 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
 
         SDL_BlitScaled(Dialogue.View.Surface, &ViewActiveRect, *WindowSurface, &ViewRect);
 
-        RenderTextCenteredX(Bold2, Dialogue.DialogueTitle, 255, 255, 255, 0, 10, TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
+        RenderTextCenteredX(Bold2, Dialogue.DialogueTitle, 255, 255, 255, 0, 10, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
 
-        RenderTextDialogue(Regular, Dialogue.NPCtext, 255, 255, 255, 20, (NPCtextRect.y + 10), TextSurface, *WindowSurface, *WindowWidth, *WindowHeight, (*WindowWidth - 40));
-        RenderTextDialogue(Regular, Dialogue.PlayerText, 255, 255, 255, 20, (PlayerTextRect.y + 10), TextSurface, *WindowSurface, *WindowWidth, *WindowHeight, (*WindowWidth - 40));
+        RenderTextDialogue(Regular, Dialogue.NPCtext, 255, 255, 255, 20, (NPCtextRect.y + 10), *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight, (*WindowWidth - 40));
+        RenderTextDialogue(Regular, Dialogue.PlayerText, 255, 255, 255, 20, (PlayerTextRect.y + 10), *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight, (*WindowWidth - 40));
 
-        RenderText(Regular, "Press Tab to exit Dialogue mode", 255, 255, 255, 0, 0, TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
+        RenderText(Regular, "Press Tab to exit Dialogue mode", 255, 255, 255, 0, 0, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
 
         //FPS and Resources------------------------------------------------------
         {
@@ -491,17 +478,17 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
                 }
                 if (on)
                 {
-                    RenderText(Bold, "Memory Leak Detected!", 255, 255, 0, *WindowWidth - 300, 25, TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
+                    RenderText(Bold, "Memory Leak Detected!", 255, 255, 0, *WindowWidth - 300, 25, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
                 }
                 if (on == false)
                 {
-                    RenderText(Bold, "Memory Leak Detected!", 255, 0, 0, *WindowWidth - 300, 25, TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
+                    RenderText(Bold, "Memory Leak Detected!", 255, 0, 0, *WindowWidth - 300, 25, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
                 }
                 count++;
             }
 
-            RenderText(RegularS, NowFPS, 170, 170, 255, *WindowWidth - 60, 0, TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
-            RenderText(RegularS, NowRAM, 255, 255, 150, *WindowWidth - 300, 0, TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
+            RenderText(RegularS, NowFPS, 170, 170, 255, *WindowWidth - 60, 0, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
+            RenderText(RegularS, NowRAM, 255, 255, 150, *WindowWidth - 300, 0, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
         } //------------------------------------------------------
 
         SDL_UpdateWindowSurface(*Window);
@@ -515,6 +502,7 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
             SDL_FreeSurface(SelectedOptionNumSurface[i]);
         }
     };
+    //------------Memory clean up-------------------------------
     for (int i = 2; i < 8; i++) //TODO: set max number
     {
         Mix_FreeChunk(AholeS.Node[i]);
