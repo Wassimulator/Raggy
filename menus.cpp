@@ -8,7 +8,7 @@ void OptionsMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font
                  SDL_Surface *TextSurface,
                  SDL_Surface **WindowSurface,
                  SDL_Window **Window,
-                 int *WindowWidth, int *WindowHight,
+                 int *WindowWidth, int *WindowHeight,
                  bool *Playing)
 {
     bool OptionsRunning = true;
@@ -18,6 +18,7 @@ void OptionsMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font
     bool UpButton = false;
     bool DownButton = false;
     bool Return_Key = false;
+    bool E_Key = false;
     const int MaxOptions = 4;
 
     SDL_Rect OptionRect[MaxOptions];
@@ -78,11 +79,11 @@ void OptionsMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font
         HighlightedResolution[2] = true;
         break;
     case 1280:
-        if (*WindowHight == 960)
+        if (*WindowHeight == 960)
         {
             HighlightedResolution[3] = true;
         }
-        if (*WindowHight == 720)
+        if (*WindowHeight == 720)
         {
             HighlightedResolution[4] = true;
         }
@@ -114,12 +115,13 @@ void OptionsMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font
 
     while (OptionsRunning)
     {
-        
+
         RightButton = false;
         LeftButton = false;
         UpButton = false;
         DownButton = false;
         Return_Key = false;
+        E_Key = false;
         //-------------------Getting Resource usage---------------------------------------------------------------------
         //
         //                  ------- RAM -------
@@ -144,7 +146,7 @@ void OptionsMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font
         while (SDL_PollEvent(&Event)) //if pPollEvent returns 1 then we enter the while loop this
                                       //means thatif we have more than one event, it gathers them all before running
         {
-           
+
             if (Event.type == SDL_QUIT)
             {
                 GameIsRunning = false;
@@ -174,6 +176,14 @@ void OptionsMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font
                 {
                     RightButton = true;
                 }
+                if (Event.key.keysym.sym == SDLK_e && Event.key.repeat == false)
+                {
+                    E_Key = true;
+                }
+                if (Event.key.keysym.sym == SDLK_BACKSPACE && Event.key.repeat == false)
+                {
+                    OptionsRunning = false;
+                }
             }
         }
 
@@ -186,7 +196,7 @@ void OptionsMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font
             OptionRect[i].x = (*WindowWidth - OptionSurface[i]->w) / 2;
         }
 
-        OptionRect[0].y = *WindowHight / 2 - 100;
+        OptionRect[0].y = *WindowHeight / 2 - 100;
         for (int i = 1; i < MaxOptions; i++)
         {
             OptionRect[i].y = OptionRect[i - 1].y + OptionRect[i - 1].h + 40;
@@ -233,7 +243,7 @@ void OptionsMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font
 
         for (int i = 0; i < MaxOptions; i++)
         {
-            if (HighlightedOption[i] == true && Return_Key == true)
+            if (HighlightedOption[i] == true && E_Key == true)
             {
                 SelectedOption[i] = true;
             }
@@ -291,44 +301,44 @@ void OptionsMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font
             }
         }
 
-        if (HighlightedResolution[0] == true && Return_Key)
+        if (HighlightedResolution[0] == true && E_Key)
         {
             *WindowWidth = 800;
-            *WindowHight = 600;
+            *WindowHeight = 600;
             SDL_DestroyWindow(*Window);
-            *Window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, *WindowWidth, *WindowHight, 0);
+            *Window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, *WindowWidth, *WindowHeight, 0);
             *WindowSurface = SDL_GetWindowSurface(*Window);
         }
-        if (HighlightedResolution[1] == true && Return_Key)
+        if (HighlightedResolution[1] == true && E_Key)
         {
             *WindowWidth = 960;
-            *WindowHight = 720;
+            *WindowHeight = 720;
             SDL_DestroyWindow(*Window);
-            *Window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, *WindowWidth, *WindowHight, 0);
+            *Window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, *WindowWidth, *WindowHeight, 0);
             *WindowSurface = SDL_GetWindowSurface(*Window);
         }
-        if (HighlightedResolution[2] == true && Return_Key)
+        if (HighlightedResolution[2] == true && E_Key)
         {
             *WindowWidth = 1024;
-            *WindowHight = 768;
+            *WindowHeight = 768;
             SDL_DestroyWindow(*Window);
-            *Window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, *WindowWidth, *WindowHight, 0);
+            *Window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, *WindowWidth, *WindowHeight, 0);
             *WindowSurface = SDL_GetWindowSurface(*Window);
         }
-        if (HighlightedResolution[3] == true && Return_Key)
+        if (HighlightedResolution[3] == true && E_Key)
         {
             *WindowWidth = 1280;
-            *WindowHight = 960;
+            *WindowHeight = 960;
             SDL_DestroyWindow(*Window);
-            *Window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, *WindowWidth, *WindowHight, 0);
+            *Window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, *WindowWidth, *WindowHeight, 0);
             *WindowSurface = SDL_GetWindowSurface(*Window);
         }
-        if (HighlightedResolution[4] == true && Return_Key)
+        if (HighlightedResolution[4] == true && E_Key)
         {
             *WindowWidth = 1280;
-            *WindowHight = 720;
+            *WindowHeight = 720;
             SDL_DestroyWindow(*Window);
-            *Window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, *WindowWidth, *WindowHight, 0);
+            *Window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, *WindowWidth, *WindowHeight, 0);
             *WindowSurface = SDL_GetWindowSurface(*Window);
         }
 
@@ -444,6 +454,10 @@ void OptionsMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font
             }
         }
 
+        RenderText(Regular, "Press E to Apply", 255, 255, 255, 10, 0, TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
+        RenderText(Regular, "Press Backspace to go back", 255, 255, 255, 10, 25, TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
+        RenderText(Regular, "Press Enter to select", 255, 255, 255, 10, 50, TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
+
         //FPS and Resources------------------------------------------------------
         {
             char NowFPS[10];
@@ -491,17 +505,17 @@ void OptionsMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font
                 }
                 if (on)
                 {
-                    RenderText(Bold, "Memory Leak Detected!", 255, 255, 0, *WindowWidth - 300, 25, TextSurface, *WindowSurface, *WindowWidth, *WindowHight);
+                    RenderText(Bold, "Memory Leak Detected!", 255, 255, 0, *WindowWidth - 300, 25, TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
                 }
                 if (on == false)
                 {
-                    RenderText(Bold, "Memory Leak Detected!", 255, 0, 0, *WindowWidth - 300, 25, TextSurface, *WindowSurface, *WindowWidth, *WindowHight);
+                    RenderText(Bold, "Memory Leak Detected!", 255, 0, 0, *WindowWidth - 300, 25, TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
                 }
                 count++;
             }
 
-            RenderText(RegularS, NowFPS, 170, 170, 255, *WindowWidth - 60, 0, TextSurface, *WindowSurface, *WindowWidth, *WindowHight);
-            RenderText(RegularS, NowRAM, 255, 255, 150, *WindowWidth - 300, 0, TextSurface, *WindowSurface, *WindowWidth, *WindowHight);
+            RenderText(RegularS, NowFPS, 170, 170, 255, *WindowWidth - 60, 0, TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
+            RenderText(RegularS, NowRAM, 255, 255, 150, *WindowWidth - 300, 0, TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
         } //------------------------------------------------------
         SDL_UpdateWindowSurface(*Window);
         for (int i = 0; i < MaxOptions; i++)
@@ -533,7 +547,7 @@ void MainMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *B
               SDL_Surface *TextSurface,
               SDL_Surface **WindowSurface,
               SDL_Window **Window,
-              int *WindowWidth, int *WindowHight,
+              int *WindowWidth, int *WindowHeight,
               bool *Playing)
 {
 
@@ -550,7 +564,7 @@ void MainMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *B
     orPLAY.w = osPLAY->w;
     orPLAY.h = osPLAY->h;
     orPLAY.x = (*WindowWidth - osPLAY->w) / 2;
-    orPLAY.y = *WindowHight / 2 - 500;
+    orPLAY.y = *WindowHeight / 2 - 500;
     bool PLAYselected = true;
 
     SDL_Rect orOPTIONS;
@@ -678,7 +692,7 @@ void MainMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *B
         if (OPTIONSselected && Return_Key)
         {
             OptionsMenu(Regular, RegularS, Bold, Bold2, Title1, Title2, Title1B, Title2B, Title3, Title3B,
-                        TextSurface, WindowSurface, Window, WindowWidth, WindowHight, Playing);
+                        TextSurface, WindowSurface, Window, WindowWidth, WindowHeight, Playing);
         }
         if (GameIsRunning == false)
         {
@@ -696,7 +710,7 @@ void MainMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *B
         orPLAY.w = osPLAY->w;
         orPLAY.h = osPLAY->h;
         orPLAY.x = (*WindowWidth - osPLAY->w) / 2;
-        orPLAY.y = *WindowHight / 2 ;
+        orPLAY.y = *WindowHeight / 2;
 
         if (OPTIONSselected == false)
         {
@@ -733,6 +747,8 @@ void MainMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *B
         SDL_BlitSurface(osOPTIONS, 0, *WindowSurface, &orOPTIONS);
         SDL_BlitSurface(osEXIT, 0, *WindowSurface, &orEXIT);
         SDL_BlitScaled(Logo.Surface, 0, *WindowSurface, &LogoRect);
+
+        RenderText(Regular, "Press Enter to select", 255, 255, 255, 10, 0, TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
 
         //FPS and Resources------------------------------------------------------
         {
@@ -781,17 +797,17 @@ void MainMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *B
                 }
                 if (on)
                 {
-                    RenderText(Bold, "Memory Leak Detected!", 255, 255, 0, *WindowWidth - 300, 25, TextSurface, *WindowSurface, *WindowWidth, *WindowHight);
+                    RenderText(Bold, "Memory Leak Detected!", 255, 255, 0, *WindowWidth - 300, 25, TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
                 }
                 if (on == false)
                 {
-                    RenderText(Bold, "Memory Leak Detected!", 255, 0, 0, *WindowWidth - 300, 25, TextSurface, *WindowSurface, *WindowWidth, *WindowHight);
+                    RenderText(Bold, "Memory Leak Detected!", 255, 0, 0, *WindowWidth - 300, 25, TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
                 }
                 count++;
             }
 
-            RenderText(RegularS, NowFPS, 170, 170, 255, *WindowWidth - 60, 0, TextSurface, *WindowSurface, *WindowWidth, *WindowHight);
-            RenderText(RegularS, NowRAM, 255, 255, 150, *WindowWidth - 300, 0, TextSurface, *WindowSurface, *WindowWidth, *WindowHight);
+            RenderText(RegularS, NowFPS, 170, 170, 255, *WindowWidth - 60, 0, TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
+            RenderText(RegularS, NowRAM, 255, 255, 150, *WindowWidth - 300, 0, TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
         } //------------------------------------------------------
         SDL_UpdateWindowSurface(*Window);
 

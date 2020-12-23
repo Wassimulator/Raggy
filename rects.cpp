@@ -2,7 +2,7 @@
 #include "raggy.hpp"
 #include "source.cpp"
 
-void LoadRects(int *WindowWidth, int *WindowHight, int CamPosX, bool *F_Key,
+void LoadRects(int *WindowWidth, int *WindowHeight, int CamPosX, bool *F_Key,
                SDL_Rect *PlayerRect, player *Player,
                SDL_Rect *PlayerActiveRectangle,
                SDL_Rect *MapRect, map Map,
@@ -20,13 +20,13 @@ void LoadRects(int *WindowWidth, int *WindowHight, int CamPosX, bool *F_Key,
     int SixCOunterQ = (Player->i - 1) / 3;
 
     PlayerRect->x = (*WindowWidth / 2) + (Player->PosX - CamPosX) - (3 * 16);
-    PlayerRect->y = (*WindowHight / 2) - 48;
+    PlayerRect->y = (*WindowHeight / 2) - 48;
     PlayerRect->w = 32 * 3; // TODO: Scaling is an inherent problem that needs fixing.
     PlayerRect->h = 32 * 3;
 
     //putting the map in the center of the screen:
     Map.PosX = -(Map.ActiveMap.w - *WindowWidth) / 2; 
-    Map.PosY = -(Map.ActiveMap.h - *WindowHight) / 2;
+    Map.PosY = -(Map.ActiveMap.h - *WindowHeight) / 2;
     MapRect->h = Map.ActiveMap.h;
     MapRect->w = Map.ActiveMap.w;
     MapRect->x = ((*WindowWidth - Map.ActiveMap.w) / 2) - CamPosX;
@@ -35,14 +35,14 @@ void LoadRects(int *WindowWidth, int *WindowHight, int CamPosX, bool *F_Key,
     DoorRect->h = Door.Closed.h * 3;
     DoorRect->w = Door.Closed.w * 3;
     DoorRect->x = (*WindowWidth / 2) - CamPosX - 48;
-    DoorRect->y = (*WindowHight / 2) - 96;
+    DoorRect->y = (*WindowHeight / 2) - 96;
 
     for (DTi = 0; DTi < 10; DTi++)
     {
         DTRect[DTi].h = DT[DTi].Closed.h * 3;
         DTRect[DTi].w = DT[DTi].Closed.w * 3;
         DTRect[DTi].x = (*WindowWidth / 2) - CamPosX - 48 - 1300 + 300 * (DTi);
-        DTRect[DTi].y = (*WindowHight / 2) - 96;
+        DTRect[DTi].y = (*WindowHeight / 2) - 96;
     }
 
     PlayerActiveRectangle->x = SixCounterP * 32;
@@ -50,12 +50,12 @@ void LoadRects(int *WindowWidth, int *WindowHight, int CamPosX, bool *F_Key,
     PlayerActiveRectangle->w = PlayerActiveRectangle->h = 32;
 
     PlayerFartRectR->x = (*WindowWidth / 2) + (Player->PosX - CamPosX) - (3 * 16) - 38;
-    PlayerFartRectR->y = (*WindowHight / 2) - 48 + 25;
+    PlayerFartRectR->y = (*WindowHeight / 2) - 48 + 25;
     PlayerFartRectR->w = 32 * 2;
     PlayerFartRectR->h = 32 * 2;
 
     PlayerFartRectL->x = (*WindowWidth / 2) + (Player->PosX - CamPosX) - (3 * 16) + 70;
-    PlayerFartRectL->y = (*WindowHight / 2) - 48 + 25;
+    PlayerFartRectL->y = (*WindowHeight / 2) - 48 + 25;
     PlayerFartRectL->w = 32 * 2;
     PlayerFartRectL->h = 32 * 2;
 
@@ -106,7 +106,7 @@ void LoadRects(int *WindowWidth, int *WindowHight, int CamPosX, bool *F_Key,
         for (FCi = 0; FCi < 20; FCi++)
         {
             PlayerFartCloudRect[FCi].x = PlayerFartCloud[FCi].FartCloudInitX - CamPosX;
-            PlayerFartCloudRect[FCi].y = (*WindowHight / 2) - PlayerFartCloud[FCi].iY - 24;
+            PlayerFartCloudRect[FCi].y = (*WindowHeight / 2) - PlayerFartCloud[FCi].iY - 24;
             PlayerFartCloudRect[FCi].w = PlayerFartCloudRect[FCi].h = 32 * 2;
 
             PlayerFartCloudActiveRect[FCi].x = (PlayerFartCloud[FCi].i - 1) * 32;
@@ -118,5 +118,5 @@ void LoadRects(int *WindowWidth, int *WindowHight, int CamPosX, bool *F_Key,
     AholeRect->h = Ahole.LeftLeaning.h * 3;
     AholeRect->w = Ahole.LeftLeaning.w * 3;
     AholeRect->x = (*WindowWidth / 2) - CamPosX - 48 + 650;
-    AholeRect->y = (*WindowHight / 2) - 52;
+    AholeRect->y = (*WindowHeight / 2) - 52;
 };

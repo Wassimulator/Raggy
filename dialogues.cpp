@@ -10,7 +10,7 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
                   SDL_Surface *TextSurface,
                   SDL_Surface **WindowSurface,
                   SDL_Window **Window,
-                  int *WindowWidth, int *WindowHight,
+                  int *WindowWidth, int *WindowHeight,
                   player *Player, Mix_Music *BackgroundMusic)
 {
     dialogues Dialogue;
@@ -149,7 +149,7 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
         if (Playing == false)
         {
             MainMenu(Regular, RegularS, Bold, Bold2, Title1, Title2, Title1B, Title2B, Title3,
-                     Title3B, TextSurface, WindowSurface, Window, WindowWidth, WindowHight, &Playing);
+                     Title3B, TextSurface, WindowSurface, Window, WindowWidth, WindowHeight, &Playing);
         }
 
         if (Mix_PlayingMusic() == 0)
@@ -319,7 +319,7 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
         HeaderRect.y = 0;
 
         ViewRect.w = *WindowWidth;
-        ViewRect.h = (*WindowHight / 3);
+        ViewRect.h = (*WindowHeight / 3);
         ViewRect.x = 0;
         ViewRect.y = 60;
 
@@ -334,7 +334,7 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
         PlayerTextRect.y = 60 + ViewRect.h + NPCtextRect.h;
 
         Options.w = *WindowWidth;
-        Options.h = *WindowHight - (60 + ViewRect.h + NPCtextRect.h + PlayerTextRect.h);
+        Options.h = *WindowHeight - (60 + ViewRect.h + NPCtextRect.h + PlayerTextRect.h);
         Options.x = 0;
         Options.y = 60 + ViewRect.h + NPCtextRect.h + PlayerTextRect.h;
 
@@ -356,7 +356,7 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
             }
             if (Dialogue.HighlightedOption[i] == true)
             {
-                if ((OptionRect[i].y + OptionSurface[i]->h) > *WindowHight)
+                if ((OptionRect[i].y + OptionSurface[i]->h) > *WindowHeight)
                 {
                     for (int t = 0; t < Dialogue.MaxOptions; t++)
                     {
@@ -421,12 +421,12 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
 
         SDL_BlitScaled(Dialogue.View.Surface, &ViewActiveRect, *WindowSurface, &ViewRect);
 
-        RenderTextCenteredX(Bold2, Dialogue.DialogueTitle, 255, 255, 255, 0, 10, TextSurface, *WindowSurface, *WindowWidth, *WindowHight);
+        RenderTextCenteredX(Bold2, Dialogue.DialogueTitle, 255, 255, 255, 0, 10, TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
 
-        RenderTextDialogue(Regular, Dialogue.NPCtext, 255, 255, 255, 20, (NPCtextRect.y + 10), TextSurface, *WindowSurface, *WindowWidth, *WindowHight, (*WindowWidth - 40));
-        RenderTextDialogue(Regular, Dialogue.PlayerText, 255, 255, 255, 20, (PlayerTextRect.y + 10), TextSurface, *WindowSurface, *WindowWidth, *WindowHight, (*WindowWidth - 40));
+        RenderTextDialogue(Regular, Dialogue.NPCtext, 255, 255, 255, 20, (NPCtextRect.y + 10), TextSurface, *WindowSurface, *WindowWidth, *WindowHeight, (*WindowWidth - 40));
+        RenderTextDialogue(Regular, Dialogue.PlayerText, 255, 255, 255, 20, (PlayerTextRect.y + 10), TextSurface, *WindowSurface, *WindowWidth, *WindowHeight, (*WindowWidth - 40));
 
-        RenderText(Regular, "Press Tab to exit Dialogue mode", 255, 255, 255, 0, 0, TextSurface, *WindowSurface, *WindowWidth, *WindowHight);
+        RenderText(Regular, "Press Tab to exit Dialogue mode", 255, 255, 255, 0, 0, TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
 
         //FPS and Resources------------------------------------------------------
         {
@@ -475,17 +475,17 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
                 }
                 if (on)
                 {
-                    RenderText(Bold, "Memory Leak Detected!", 255, 255, 0, *WindowWidth - 300, 25, TextSurface, *WindowSurface, *WindowWidth, *WindowHight);
+                    RenderText(Bold, "Memory Leak Detected!", 255, 255, 0, *WindowWidth - 300, 25, TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
                 }
                 if (on == false)
                 {
-                    RenderText(Bold, "Memory Leak Detected!", 255, 0, 0, *WindowWidth - 300, 25, TextSurface, *WindowSurface, *WindowWidth, *WindowHight);
+                    RenderText(Bold, "Memory Leak Detected!", 255, 0, 0, *WindowWidth - 300, 25, TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
                 }
                 count++;
             }
 
-            RenderText(RegularS, NowFPS, 170, 170, 255, *WindowWidth - 60, 0, TextSurface, *WindowSurface, *WindowWidth, *WindowHight);
-            RenderText(RegularS, NowRAM, 255, 255, 150, *WindowWidth - 300, 0, TextSurface, *WindowSurface, *WindowWidth, *WindowHight);
+            RenderText(RegularS, NowFPS, 170, 170, 255, *WindowWidth - 60, 0, TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
+            RenderText(RegularS, NowRAM, 255, 255, 150, *WindowWidth - 300, 0, TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
         } //------------------------------------------------------
 
         SDL_UpdateWindowSurface(*Window);

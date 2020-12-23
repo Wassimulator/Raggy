@@ -12,9 +12,42 @@ int main(int argc, char **argv)
 {
     SDL_Init(SDL_INIT_EVERYTHING);
 
-    int WindowWidth = 800;
-    int WindowHight = 600;
-    Window = SDL_CreateWindow("Raggy", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WindowWidth, WindowHight, 0);
+    int WindowWidth;
+    int WindowHeight;
+    bool SoundBool;
+    bool MusicBool;
+
+    {
+        fstream InFile("data/settings.rgg");
+        string buffer;
+        getline(InFile, buffer, ':');
+        getline(InFile, buffer, '\n');
+        WindowWidth = stoi(buffer);
+        getline(InFile, buffer, ':');
+        getline(InFile, buffer, '\n');
+        WindowHeight = stoi(buffer);
+        getline(InFile, buffer, ':');
+        getline(InFile, buffer, '\n');
+        if (buffer == "ON")
+        {
+            MusicBool = true;
+        }
+        if (buffer == "OFF")
+        {
+            MusicBool = false;
+        }
+        getline(InFile, buffer, ':');
+        getline(InFile, buffer, '\n');
+        if (buffer == "ON")
+        {
+            SoundBool = true;
+        }
+        if (buffer == "OFF")
+        {
+            SoundBool = false;
+        }
+    }
+    Window = SDL_CreateWindow("Raggy", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WindowWidth, WindowHeight, 0);
     WindowSurface = SDL_GetWindowSurface(Window);
 
     int frameIndex = 0;
@@ -95,7 +128,7 @@ int main(int argc, char **argv)
 
     SDL_Rect PlayerRect;
     PlayerRect.x = (WindowWidth / 2) + (Player.PosX - CamPosX) - (3 * 16);
-    PlayerRect.y = (WindowHight / 2) - 48;
+    PlayerRect.y = (WindowHeight / 2) - 48;
     PlayerRect.w = 32 * 3; // TODO: Scaling is an inherent problem that needs fixing.
     PlayerRect.h = 32 * 3;
 
@@ -109,7 +142,7 @@ int main(int argc, char **argv)
     DoorRect.h = Door.Closed.h * 3;
     DoorRect.w = Door.Closed.w * 3;
     DoorRect.x = (WindowWidth / 2) - CamPosX - 48 - 200;
-    DoorRect.y = (WindowHight / 2) - 96;
+    DoorRect.y = (WindowHeight / 2) - 96;
 
     SDL_Rect PlayerActiveRectangle;
     SDL_Rect PlayerFartRectR;
@@ -127,8 +160,9 @@ int main(int argc, char **argv)
     {
         if (Playing == false)
         {
+            Mix_PauseMusic();
             MainMenu(Regular, RegularS, Bold, Bold2, Title1, Title2, Title1B, Title2B, Title3,
-                     Title3B, TextSurface, &WindowSurface, &Window, &WindowWidth, &WindowHight, &Playing);
+                     Title3B, TextSurface, &WindowSurface, &Window, &WindowWidth, &WindowHeight, &Playing);
         }
         if (GameIsRunning == false)
         {
@@ -161,6 +195,23 @@ int main(int argc, char **argv)
         if (Mix_PlayingMusic() == 0)
         {
             Mix_PlayMusic(BackgroundMusic, 3);
+        
+        }
+        if (MusicBool == true)
+        {
+            Mix_VolumeMusic(128);
+        }
+        if (MusicBool == false)
+        {
+            Mix_VolumeMusic(0);
+        }
+        if (SoundBool == true)
+        {
+            Mix_Volume(-1, 128);
+        }
+        if (SoundBool == false)
+        {
+            Mix_Volume(-1, 0);
         }
 
         SDL_Event Event;
@@ -269,12 +320,12 @@ int main(int argc, char **argv)
         PlayerSoundUpdate(Sound, F_Key, H_Key);
         MapUpdate(&CamPosX, &Player);
         DoorUpdate(&Door, PlayerRect, DoorRect, Regular, TextSurface,
-                   WindowSurface, WindowWidth, WindowHight, E_Key);
+                   WindowSurface, WindowWidth, WindowHeight, E_Key);
 
         FartUpdate(&Player, &PlayerFart, PlayerFartCloud, F_Key);
 
-        DTUpdate(DT, PlayerRect, DTRect, Regular, TextSurface, WindowSurface, WindowWidth, WindowHight, E_Key);
-        AholeUpdate(&Player, PlayerRect, &AholeRect, Regular, TextSurface, WindowSurface, WindowWidth, WindowHight, E_Key);
+        DTUpdate(DT, PlayerRect, DTRect, Regular, TextSurface, WindowSurface, WindowWidth, WindowHeight, E_Key);
+        AholeUpdate(&Player, PlayerRect, &AholeRect, Regular, TextSurface, WindowSurface, WindowWidth, WindowHeight, E_Key);
 
         if (Player.Chatting == true)
         {
@@ -291,13 +342,13 @@ int main(int argc, char **argv)
             Space_Key = false;
 
             DialogueMode(Regular, RegularS, Bold, Bold2, Title1, Title2, Title1B, Title2B, Title3, Title3B,
-                         TextSurface, &WindowSurface, &Window, &WindowWidth, &WindowHight, &Player, BackgroundMusic);
+                         TextSurface, &WindowSurface, &Window, &WindowWidth, &WindowHeight, &Player, BackgroundMusic);
         }
         //----------------------------LOAD RECTS HERE------------------------------------------
         //          IMPORTANT: make sure you update this function here and in rect.cpp
         //                     every time you add a new object! and define the rects
         //                     outside the loop.
-        LoadRects(&WindowWidth, &WindowHight, CamPosX, &F_Key,
+        LoadRects(&WindowWidth, &WindowHeight, CamPosX, &F_Key,
                   &PlayerRect, &Player,
                   &PlayerActiveRectangle,
                   &MapRect, Map,
@@ -315,11 +366,11 @@ int main(int argc, char **argv)
 
         SDL_BlitScaled(Map.ActiveMap.Surface, 0, WindowSurface, &MapRect);
 
-        RenderTextCentered(Bold2, "This is a Game", 255, 255, 255, 0, -170, TextSurface, WindowSurface, WindowWidth, WindowHight);
-        RenderText(Regular, "Press H to say hello", 255, 255, 255, 0, 0, TextSurface, WindowSurface, WindowWidth, WindowHight);
-        RenderText(Regular, "Press F to pay respects", 255, 255, 255, 0, 25, TextSurface, WindowSurface, WindowWidth, WindowHight);
-        RenderText(Regular, "Press Q to quit the game", 255, 255, 255, 0, 50, TextSurface, WindowSurface, WindowWidth, WindowHight);
-        RenderText(Regular, "Press Esc to pause the game", 255, 255, 255, 0, 75, TextSurface, WindowSurface, WindowWidth, WindowHight);
+        RenderTextCentered(Bold2, "This is a Game", 255, 255, 255, 0, -170, TextSurface, WindowSurface, WindowWidth, WindowHeight);
+        RenderText(Regular, "Press H to say hello", 255, 255, 255, 0, 0, TextSurface, WindowSurface, WindowWidth, WindowHeight);
+        RenderText(Regular, "Press F to pay respects", 255, 255, 255, 0, 25, TextSurface, WindowSurface, WindowWidth, WindowHeight);
+        RenderText(Regular, "Press Q to quit the game", 255, 255, 255, 0, 50, TextSurface, WindowSurface, WindowWidth, WindowHeight);
+        RenderText(Regular, "Press Esc to pause the game", 255, 255, 255, 0, 75, TextSurface, WindowSurface, WindowWidth, WindowHeight);
 
         SDL_BlitScaled(Door.ActiveTexture->Surface, 0, WindowSurface, &DoorRect);
 
@@ -356,7 +407,7 @@ int main(int argc, char **argv)
         char FCcount[50];
         sprintf(FCcount, "Fart Cloud count: %i", FClength);
 
-        // RenderText(Regular, FCcount, 255, 255, 255, WindowWidth - 180, 25, TextSurface, WindowSurface, WindowWidth, WindowHight);
+        // RenderText(Regular, FCcount, 255, 255, 255, WindowWidth - 180, 25, TextSurface, WindowSurface, WindowWidth, WindowHeight);
         //printf("read index = %i, write index = %i\n", FartCloudReadIndex, FartCloudWriteIndex);
 
         //FPS and Resources------------------------------------------------------
@@ -406,21 +457,41 @@ int main(int argc, char **argv)
                 }
                 if (on)
                 {
-                    RenderText(Bold, "Memory Leak Detected!", 255, 255, 0, WindowWidth - 300, 25, TextSurface, WindowSurface, WindowWidth, WindowHight);
+                    RenderText(Bold, "Memory Leak Detected!", 255, 255, 0, WindowWidth - 300, 25, TextSurface, WindowSurface, WindowWidth, WindowHeight);
                 }
                 if (on == false)
                 {
-                    RenderText(Bold, "Memory Leak Detected!", 255, 0, 0, WindowWidth - 300, 25, TextSurface, WindowSurface, WindowWidth, WindowHight);
+                    RenderText(Bold, "Memory Leak Detected!", 255, 0, 0, WindowWidth - 300, 25, TextSurface, WindowSurface, WindowWidth, WindowHeight);
                 }
                 count++;
             }
 
-            RenderText(RegularS, NowFPS, 170, 170, 255, WindowWidth - 60, 0, TextSurface, WindowSurface, WindowWidth, WindowHight);
-            RenderText(RegularS, NowRAM, 255, 255, 150, WindowWidth - 300, 0, TextSurface, WindowSurface, WindowWidth, WindowHight);
+            RenderText(RegularS, NowFPS, 170, 170, 255, WindowWidth - 60, 0, TextSurface, WindowSurface, WindowWidth, WindowHeight);
+            RenderText(RegularS, NowRAM, 255, 255, 150, WindowWidth - 300, 0, TextSurface, WindowSurface, WindowWidth, WindowHeight);
         } //------------------------------------------------------
         SDL_UpdateWindowSurface(Window);
     };
     //end of game loop
-
+    ofstream OutFile("data/settings.rgg");
+    OutFile << "WindowWidth:" << WindowWidth << endl;
+    OutFile << "WindowHeight:" << WindowHeight << endl;
+    OutFile << "Music:";
+    if (Mix_VolumeMusic(-1) == 128)
+    {
+        OutFile << "ON" << endl;
+    }
+    if (Mix_VolumeMusic(-1) == 0)
+    {
+        OutFile << "OFF" << endl;
+    }
+    OutFile << "Sound:";
+    if (Mix_Volume(-1, -1) == 128)
+    {
+        OutFile << "ON" << endl;
+    }
+    if (Mix_Volume(-1, -1) == 0)
+    {
+        OutFile << "OFF" << endl;
+    }
     return 0;
 }
