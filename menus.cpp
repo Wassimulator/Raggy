@@ -306,7 +306,7 @@ void OptionsMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font
             *WindowWidth = 800;
             *WindowHeight = 600;
             SDL_DestroyWindow(*Window);
-            *Window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, *WindowWidth, *WindowHeight, 0);
+            *Window = SDL_CreateWindow("Raggy", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, *WindowWidth, *WindowHeight, 0);
             *WindowSurface = SDL_GetWindowSurface(*Window);
         }
         if (HighlightedResolution[1] == true && E_Key)
@@ -314,7 +314,7 @@ void OptionsMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font
             *WindowWidth = 960;
             *WindowHeight = 720;
             SDL_DestroyWindow(*Window);
-            *Window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, *WindowWidth, *WindowHeight, 0);
+            *Window = SDL_CreateWindow("Raggy", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, *WindowWidth, *WindowHeight, 0);
             *WindowSurface = SDL_GetWindowSurface(*Window);
         }
         if (HighlightedResolution[2] == true && E_Key)
@@ -322,7 +322,7 @@ void OptionsMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font
             *WindowWidth = 1024;
             *WindowHeight = 768;
             SDL_DestroyWindow(*Window);
-            *Window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, *WindowWidth, *WindowHeight, 0);
+            *Window = SDL_CreateWindow("Raggy", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, *WindowWidth, *WindowHeight, 0);
             *WindowSurface = SDL_GetWindowSurface(*Window);
         }
         if (HighlightedResolution[3] == true && E_Key)
@@ -330,7 +330,7 @@ void OptionsMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font
             *WindowWidth = 1280;
             *WindowHeight = 960;
             SDL_DestroyWindow(*Window);
-            *Window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, *WindowWidth, *WindowHeight, 0);
+            *Window = SDL_CreateWindow("Raggy", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, *WindowWidth, *WindowHeight, 0);
             *WindowSurface = SDL_GetWindowSurface(*Window);
         }
         if (HighlightedResolution[4] == true && E_Key)
@@ -338,8 +338,34 @@ void OptionsMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font
             *WindowWidth = 1280;
             *WindowHeight = 720;
             SDL_DestroyWindow(*Window);
-            *Window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, *WindowWidth, *WindowHeight, 0);
+            *Window = SDL_CreateWindow("Raggy", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, *WindowWidth, *WindowHeight, 0);
             *WindowSurface = SDL_GetWindowSurface(*Window);
+        }
+        if (E_Key)
+        {
+            //save settings:
+            ofstream OutFile("data/settings.rgg");
+            OutFile << "WindowWidth:" << WindowWidth << endl;
+            OutFile << "WindowHeight:" << WindowHeight << endl;
+            OutFile << "Music:";
+            if (*MusicBool == true)
+            {
+                OutFile << "ON" << endl;
+            }
+            if (*MusicBool == false)
+            {
+                OutFile << "OFF" << endl;
+            }
+            OutFile << "Sound:";
+            if (*SoundBool == true)
+            {
+                OutFile << "ON" << endl;
+            }
+            if (*SoundBool == false)
+            {
+                OutFile << "OFF" << endl;
+            }
+            printf("\n\nSettings saved\n\n");
         }
 
         if (HighlightedOption[1] == true)

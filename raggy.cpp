@@ -5,7 +5,6 @@
 #include "menus.cpp"
 
 SDL_Surface *WindowSurface;
-
 SDL_Window *Window;
 
 int main(int argc, char **argv)
@@ -265,6 +264,9 @@ int main(int argc, char **argv)
         float totalRAM = (float)(totalPhysMem / 1073741824.0f);
         SIZE_T physMemUsedByMe = pmc.WorkingSetSize;
         float currentRAM = (float)(physMemUsedByMe / 1073741824.0f * 1024.0f);
+
+        float RAM1, RAM2;
+
         //--------------------------------------------------------------------------------------------------------------
         //FPS------------------------------------------------------
         const int FPS = 60;
@@ -427,6 +429,8 @@ int main(int argc, char **argv)
 
                 ResetFades();
 
+                RAM1 = currentRAM; // this is here to calculate RAM change after leaving Dialogue Mode to detect leaks.
+
                 DialogueMode(Regular, RegularS, Bold, Bold2, Title1, Title2, Title1B, Title2B, Title3, Title3B,
                              &TextSurface, &WindowSurface, &Window, &WindowWidth, &WindowHeight, &Player, BackgroundMusic, &MusicBool, &SoundBool);
                 ResetFades();
@@ -554,7 +558,6 @@ int main(int argc, char **argv)
             char NowRAM[50];
             sprintf(NowRAM, "RAM usage: %.2f MB/ %.1f GB", currentRAM, totalRAM);
             //---------------------leak detector-------------------------------
-            float RAM1, RAM2;
             if (frameIndex == 60)
             {
                 RAM1 = currentRAM;
@@ -586,23 +589,31 @@ int main(int argc, char **argv)
                 {
                     on = false;
                 }
+                char RAMdiff[50];
+                float RAMdifference = RAM2 - RAM1;
+                sprintf(RAMdiff, "leak: %.2fMB", RAMdifference);
                 if (on)
                 {
-                    RenderText(Bold, "Memory Leak Detected!", 255, 255, 0, WindowWidth - 300, 25, TextSurface, WindowSurface, WindowWidth, WindowHeight);
+                    RenderText(Bold, "Memory Leak Detected!", 255, 255, 0, WindowWidth - 325, 25, TextSurface, WindowSurface, WindowWidth, WindowHeight);
+                    RenderText(RegularS, RAMdiff, 255, 255, 255, WindowWidth - 100, 27, TextSurface, WindowSurface, WindowWidth, WindowHeight);
                 }
                 if (on == false)
                 {
-                    RenderText(Bold, "Memory Leak Detected!", 255, 0, 0, WindowWidth - 300, 25, TextSurface, WindowSurface, WindowWidth, WindowHeight);
+                    RenderText(Bold, "Memory Leak Detected!", 255, 0, 0, WindowWidth - 325, 25, TextSurface, WindowSurface, WindowWidth, WindowHeight);
+                    RenderText(RegularS, RAMdiff, 255, 255, 255, WindowWidth - 100, 27, TextSurface, WindowSurface, WindowWidth, WindowHeight);
                 }
                 count++;
             }
 
             RenderText(RegularS, NowFPS, 170, 170, 255, WindowWidth - 60, 0, TextSurface, WindowSurface, WindowWidth, WindowHeight);
             RenderText(RegularS, NowRAM, 255, 255, 150, WindowWidth - 300, 0, TextSurface, WindowSurface, WindowWidth, WindowHeight);
-        } //------------------------------------------------------
+        }
+         //------------------------------------------------------
         SDL_UpdateWindowSurface(Window);
     };
     //end of game loop
+
+    //save settings:
     ofstream OutFile("data/settings.rgg");
     OutFile << "WindowWidth:" << WindowWidth << endl;
     OutFile << "WindowHeight:" << WindowHeight << endl;
@@ -624,7 +635,7 @@ int main(int argc, char **argv)
     {
         OutFile << "OFF" << endl;
     }
-    printf("\n\nSettings saved\nExit successful\n\n");
+    printf("\n\nSettings saved\n\nExit successful\n\n");
 
     return 0;
 }

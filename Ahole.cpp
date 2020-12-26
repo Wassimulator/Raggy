@@ -150,8 +150,8 @@ void AholeDialogue(dialogues *Dialogue, player *Player, dialogueNPC *Ahole, NPCs
                             count++;
                         }
                     }
-
-                    Mix_PlayChannel(2, AholeS->Node[TargetNode], 0); //use Mix_Haltchannel() to stop, also, Player uses channel 1, NPCs on channel 2.
+                    //use Mix_Haltchannel() to stop, also, Player uses channel 1, NPCs on channel 2.
+                    Mix_PlayChannel(2, AholeS->Node[TargetNode], 0);
                     Dialogue->View = Ahole->TalkView;
                     *isTalking = true;
                 }
