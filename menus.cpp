@@ -586,7 +586,8 @@ void MainMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *B
 
     SDL_Rect LogoRect;
     sprite Logo = LoadSprite("data/textures/raggy_logo.png");
-    
+
+    PLAYselected = true;
 
     while (MainMenuRunning)
     {
@@ -702,11 +703,11 @@ void MainMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *B
 
         if (PLAYselected == false)
         {
-            SDL_Surface *osPLAY = TTF_RenderText_Blended(Title1, "Play", PlayColor);
+            osPLAY = TTF_RenderText_Blended(Title1, "Play", PlayColor);
         }
         if (PLAYselected == true)
         {
-            SDL_Surface *osPLAY = TTF_RenderText_Blended(Title1B, "Play", PlayColor);
+            osPLAY = TTF_RenderText_Blended(Title1B, "Play", PlayColor);
         }
         orPLAY.w = osPLAY->w;
         orPLAY.h = osPLAY->h;
@@ -769,7 +770,7 @@ void MainMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *B
             char NowRAM[50];
             //sprintf(NowRAM, "RAM usage: %.3f MB/ %.1f GB", currentRAM, totalRAM);
             //---------------------leak detector-------------------------------
-           /* float RAM1, RAM2;
+            /* float RAM1, RAM2;
             if (frameIndex == 60)
             {
                 RAM1 = currentRAM;
@@ -811,11 +812,10 @@ void MainMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *B
             //RenderText(RegularS, NowRAM, 255, 255, 150, *WindowWidth - 300, 0, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
         } //------------------------------------------------------
         SDL_UpdateWindowSurface(*Window);
-
-        SDL_FreeSurface(osEXIT);
-        SDL_FreeSurface(osOPTIONS);
-        SDL_FreeSurface(osPLAY);
     }
+    SDL_FreeSurface(osEXIT);
+    SDL_FreeSurface(osOPTIONS);
+    SDL_FreeSurface(osPLAY);
     Mix_ResumeMusic();
     Mix_Resume(2);
 }
