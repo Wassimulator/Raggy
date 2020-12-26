@@ -52,6 +52,7 @@ int main(int argc, char **argv)
     SDL_UpdateWindowSurface(Window);
 
     int frameIndex = 0;
+    //test
 
     //------KEYS-------------
     bool RightButton = false;
