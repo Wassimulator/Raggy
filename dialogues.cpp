@@ -498,7 +498,7 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
                 sprintf(NowFPS, "FPS: %i", CurrentFPS);
             }
             char NowRAM[50];
-            sprintf(NowRAM, "RAM usage: %.3f MB/ %.1f GB", currentRAM, totalRAM);
+            sprintf(NowRAM, "RAM usage: %.2f MB/ %.1f GB", currentRAM, totalRAM);
             //---------------------leak detector-------------------------------
             float RAM1, RAM2;
             if (frameIndex == 60)

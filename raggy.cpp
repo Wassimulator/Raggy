@@ -49,6 +49,8 @@ int main(int argc, char **argv)
     }
     Window = SDL_CreateWindow("Raggy", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WindowWidth, WindowHeight, 0);
     WindowSurface = SDL_GetWindowSurface(Window);
+    SDL_FillRect(WindowSurface, 0, (255 << 24) | (50 << 16) | (50 << 8) | (50));
+    SDL_UpdateWindowSurface(Window);
 
     int frameIndex = 0;
 
@@ -221,7 +223,7 @@ int main(int argc, char **argv)
             }
 
             SDL_UpdateWindowSurface(Window);
-            if(Mix_Playing(3) == 0)
+            if (Mix_Playing(3) == 0)
             {
                 IntroRunning = false;
             }
@@ -550,7 +552,7 @@ int main(int argc, char **argv)
                 sprintf(NowFPS, "FPS: %i", CurrentFPS);
             }
             char NowRAM[50];
-            sprintf(NowRAM, "RAM usage: %.3f MB/ %.1f GB", currentRAM, totalRAM);
+            sprintf(NowRAM, "RAM usage: %.2f MB/ %.1f GB", currentRAM, totalRAM);
             //---------------------leak detector-------------------------------
             float RAM1, RAM2;
             if (frameIndex == 60)
