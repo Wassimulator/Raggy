@@ -96,6 +96,8 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
 
     bool Playing = true;
 
+    ResetFades();
+
     while (DialogueRunning)
     {
         if (GameIsRunning == false)
@@ -176,10 +178,7 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
                 }
                 if (Event.key.keysym.sym == SDLK_TAB && Event.key.repeat == false)
                 {
-                    DialogueRunning = false;
                     Player->Chatting = false;
-                    Player->AholeLevel = 0;
-                    Mix_HaltChannel(2); //stop the NPC talking
                 }
                 if (Event.key.keysym.sym == SDLK_RETURN && Event.key.repeat == false)
                 {
@@ -431,6 +430,58 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
 
         RenderText(Regular, "Press Tab to exit Dialogue mode", 255, 255, 255, 0, 0, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
 
+        if (FadeOut == true)
+        {
+            SDL_Surface *FadeSurface = SDL_CreateRGBSurface(0, *WindowWidth, *WindowHeight, 32, 0, 0, 0, 255);
+            SDL_SetSurfaceBlendMode(FadeSurface, SDL_BLENDMODE_BLEND);
+            SDL_SetSurfaceAlphaMod(FadeSurface, FadeOuti);
+            if (FadeOuti > 0 && (FadeOuti - 20) > 0)
+            {
+                FadeOuti = FadeOuti - 20;
+            }
+            if (FadeOuti == 0 || (FadeOuti - 20) < 0)
+            {
+                SDL_SetSurfaceAlphaMod(FadeSurface, FadeIni);
+                FadeOuti = 0;
+                FadeOut = false;
+            }
+            SDL_BlitSurface(FadeSurface, 0, *WindowSurface, 0);
+            SDL_FreeSurface(FadeSurface);
+        }
+        if (FadeIn == true)
+        {
+            SDL_Surface *FadeSurface = SDL_CreateRGBSurface(0, *WindowWidth, *WindowHeight, 32, 0, 0, 0, 255);
+            SDL_SetSurfaceBlendMode(FadeSurface, SDL_BLENDMODE_BLEND);
+            SDL_SetSurfaceAlphaMod(FadeSurface, FadeIni);
+            if (FadeIni < 255 && (FadeIni + 20) < 255)
+            {
+                FadeIni = FadeIni + 20;
+            }
+            if (FadeIni == 255 || (FadeIni + 20) > 255)
+            {
+                FadeIni = 255;
+                SDL_SetSurfaceAlphaMod(FadeSurface, FadeIni);
+                FadeIn = false;
+                FadedIn = true;
+            }
+            SDL_BlitSurface(FadeSurface, 0, *WindowSurface, 0);
+            SDL_FreeSurface(FadeSurface);
+        }
+        if (Player->Chatting == false)
+        {
+            if (FadedIn == false && FadeIn == false)
+            {
+                FadeIn = true;
+            }
+            if (FadedIn == true && FadeIn == false)
+            {
+                DialogueRunning = false;
+                Player->AholeLevel = 0;
+                Mix_HaltChannel(2);
+                FadedIn = false;
+            }
+        }
+
         //FPS and Resources------------------------------------------------------
         {
             char NowFPS[10];
@@ -485,6 +536,10 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
                     RenderText(Bold, "Memory Leak Detected!", 255, 0, 0, *WindowWidth - 300, 25, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
                 }
                 count++;
+                if (count == 180)
+                {
+                    RAMleak = false;
+                }
             }
 
             RenderText(RegularS, NowFPS, 170, 170, 255, *WindowWidth - 60, 0, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
@@ -503,7 +558,7 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
         }
     };
     //------------Memory clean up-------------------------------
-    for (int i = 2; i < 8; i++) //TODO: set max number
+    for (int i = 2; i < 8; i++) //TODO: set max voice node chunk number
     {
         Mix_FreeChunk(AholeS.Node[i]);
     }

@@ -586,6 +586,7 @@ void MainMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *B
 
     SDL_Rect LogoRect;
     sprite Logo = LoadSprite("data/textures/raggy_logo.png");
+    
 
     while (MainMenuRunning)
     {
@@ -597,7 +598,7 @@ void MainMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *B
         //-------------------Getting Resource usage---------------------------------------------------------------------
         //
         //                  ------- RAM -------
-        MEMORYSTATUSEX memInfo;
+        /*MEMORYSTATUSEX memInfo;
         memInfo.dwLength = sizeof(MEMORYSTATUSEX);
         GlobalMemoryStatusEx(&memInfo);
         DWORDLONG totalVirtualMem = memInfo.ullTotalPageFile;
@@ -607,7 +608,7 @@ void MainMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *B
         DWORDLONG totalPhysMem = memInfo.ullTotalPhys;
         float totalRAM = (float)(totalPhysMem / 1073741824.0f);
         SIZE_T physMemUsedByMe = pmc.WorkingSetSize;
-        float currentRAM = (float)(physMemUsedByMe / 1073741824.0f * 1024.0f);
+        float currentRAM = (float)(physMemUsedByMe / 1073741824.0f * 1024.0f);*/
         //--------------------------------------------------------------------------------------------------------------
         //FPS------------------------------------------------------
         const int FPS = 60;
@@ -766,9 +767,9 @@ void MainMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *B
                 sprintf(NowFPS, "FPS: %i", CurrentFPS);
             }
             char NowRAM[50];
-            sprintf(NowRAM, "RAM usage: %.3f MB/ %.1f GB", currentRAM, totalRAM);
+            //sprintf(NowRAM, "RAM usage: %.3f MB/ %.1f GB", currentRAM, totalRAM);
             //---------------------leak detector-------------------------------
-            float RAM1, RAM2;
+           /* float RAM1, RAM2;
             if (frameIndex == 60)
             {
                 RAM1 = currentRAM;
@@ -804,10 +805,10 @@ void MainMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *B
                     RenderText(Bold, "Memory Leak Detected!", 255, 0, 0, *WindowWidth - 300, 25, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
                 }
                 count++;
-            }
+            }*/
 
             RenderText(RegularS, NowFPS, 170, 170, 255, *WindowWidth - 60, 0, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
-            RenderText(RegularS, NowRAM, 255, 255, 150, *WindowWidth - 300, 0, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
+            //RenderText(RegularS, NowRAM, 255, 255, 150, *WindowWidth - 300, 0, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
         } //------------------------------------------------------
         SDL_UpdateWindowSurface(*Window);
 

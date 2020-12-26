@@ -153,6 +153,83 @@ int main(int argc, char **argv)
 
     bool Playing = false;
 
+    ResetFades();
+
+    //---------------intro Logo----------------------
+    {
+        bool IntroRunning = true;
+        SDL_Event Event;
+        SDL_Rect LogoRect;
+        sprite Logo = LoadSprite("data/textures/ragsterb_logo.png");
+        Mix_Chunk *IntroMusic;
+        IntroMusic = Mix_LoadWAV("data/sounds/music/intro.wav");
+        Mix_PlayChannel(3, IntroMusic, 0);
+        while (IntroRunning)
+        {
+            //FPS------------------------------------------------------
+            const int FPS = 60;
+            const int frameDelay = 1000 / FPS;
+            Uint32 frameStart = SDL_GetTicks();
+            //------------------------------------------------------
+            while (SDL_PollEvent(&Event)) //if pPollEvent returns 1 then we enter the while loop this
+                                          //means thatif we have more than one event, it gathers them all before running
+            {
+                if (Event.type == SDL_QUIT)
+                {
+                    IntroRunning = false;
+                    GameIsRunning = false;
+                }
+                if (Event.type == SDL_KEYDOWN)
+                {
+                    if (Event.key.keysym.sym == SDLK_RETURN && Event.key.repeat == false)
+                    {
+                        IntroRunning = false;
+                        Mix_HaltChannel(3);
+                    }
+                }
+            }
+            LogoRect.h = Logo.h / 6;
+            LogoRect.w = Logo.w / 6;
+            LogoRect.x = (WindowWidth - Logo.w / 6) / 2;
+            LogoRect.y = (WindowHeight - Logo.h / 6) / 2;
+
+            SDL_FillRect(WindowSurface, 0, (255 << 24) | (50 << 16) | (50 << 8) | (50));
+            SDL_SetSurfaceBlendMode(Logo.Surface, SDL_BLENDMODE_BLEND);
+            SDL_SetSurfaceAlphaMod(Logo.Surface, FadeIni);
+            if (FadedIn == false)
+            {
+                if (FadeIni < 255 && (FadeIni + 1) < 255)
+                {
+                    FadeIni = FadeIni + 1;
+                }
+                if (FadeIni == 255 || (FadeIni + 1) > 255)
+                {
+                    FadeIni = 255;
+                    SDL_SetSurfaceAlphaMod(Logo.Surface, FadeIni);
+                    FadeIn = false;
+                    FadedIn = true;
+                }
+            }
+
+            SDL_BlitScaled(Logo.Surface, 0, WindowSurface, &LogoRect);
+            char NowFPS[10];
+            int frameEnd = SDL_GetTicks();
+            int frameTime = frameEnd - frameStart;
+            if (frameTime < frameDelay)
+            {
+                SDL_Delay(frameDelay - frameTime);
+            }
+
+            SDL_UpdateWindowSurface(Window);
+            if(Mix_Playing(3) == 0)
+            {
+                IntroRunning = false;
+            }
+        }
+        SDL_FreeSurface(Logo.Surface);
+    }
+    ResetFades();
+
     //Game Loop-----------------------------------------------------------------
     while (GameIsRunning)
     {
@@ -167,6 +244,7 @@ int main(int argc, char **argv)
         {
             break;
         }
+
         //leave these here. they're necessary for the "pressable once" system.
         E_Key = false;
         F_Key = false;
@@ -327,20 +405,30 @@ int main(int argc, char **argv)
 
         if (Player.Chatting == true)
         {
-            //lets go of all already pressed buttons otherwise they dont reset
-            RightButton = false;
-            LeftButton = false;
-            UpButton = false;
-            DownButton = false;
-            Shift = false;
-            F_Key = false;
-            H_Key = false;
-            E_Key = false;
-            Tab_Key = false;
-            Space_Key = false;
+            if (FadedIn == false && FadeIn == false)
+            {
+                FadeIn = true;
+            }
+            if (FadedIn == true && FadeIn == false)
+            {
+                //lets go of all already pressed buttons otherwise they dont reset
+                RightButton = false;
+                LeftButton = false;
+                UpButton = false;
+                DownButton = false;
+                Shift = false;
+                F_Key = false;
+                H_Key = false;
+                E_Key = false;
+                Tab_Key = false;
+                Space_Key = false;
 
-            DialogueMode(Regular, RegularS, Bold, Bold2, Title1, Title2, Title1B, Title2B, Title3, Title3B,
-                         &TextSurface, &WindowSurface, &Window, &WindowWidth, &WindowHeight, &Player, BackgroundMusic, &MusicBool, &SoundBool);
+                ResetFades();
+
+                DialogueMode(Regular, RegularS, Bold, Bold2, Title1, Title2, Title1B, Title2B, Title3, Title3B,
+                             &TextSurface, &WindowSurface, &Window, &WindowWidth, &WindowHeight, &Player, BackgroundMusic, &MusicBool, &SoundBool);
+                ResetFades();
+            }
         }
         //----------------------------LOAD RECTS HERE------------------------------------------
         //          IMPORTANT: make sure you update this function here and in rect.cpp
@@ -408,6 +496,44 @@ int main(int argc, char **argv)
         // RenderText(Regular, FCcount, 255, 255, 255, WindowWidth - 180, 25, TextSurface, WindowSurface, WindowWidth, WindowHeight);
         //printf("read index = %i, write index = %i\n", FartCloudReadIndex, FartCloudWriteIndex);
 
+        if (FadeOut == true)
+        {
+            SDL_Surface *FadeSurface = SDL_CreateRGBSurface(0, WindowWidth, WindowHeight, 32, 0, 0, 0, 255);
+            SDL_SetSurfaceBlendMode(FadeSurface, SDL_BLENDMODE_BLEND);
+            SDL_SetSurfaceAlphaMod(FadeSurface, FadeOuti);
+            if (FadeOuti > 0 && (FadeOuti - 20) > 0)
+            {
+                FadeOuti = FadeOuti - 20;
+            }
+            if (FadeOuti == 0 || (FadeOuti - 20) < 0)
+            {
+                SDL_SetSurfaceAlphaMod(FadeSurface, FadeIni);
+                FadeOuti = 0;
+                FadeOut = false;
+            }
+            SDL_BlitSurface(FadeSurface, 0, WindowSurface, 0);
+            SDL_FreeSurface(FadeSurface);
+        }
+        if (FadeIn == true)
+        {
+            SDL_Surface *FadeSurface = SDL_CreateRGBSurface(0, WindowWidth, WindowHeight, 32, 0, 0, 0, 255);
+            SDL_SetSurfaceBlendMode(FadeSurface, SDL_BLENDMODE_BLEND);
+            SDL_SetSurfaceAlphaMod(FadeSurface, FadeIni);
+            if (FadeIni < 255 && (FadeIni + 20) < 255)
+            {
+                FadeIni = FadeIni + 20;
+            }
+            if (FadeIni == 255 || (FadeIni + 20) > 255)
+            {
+                FadeIni = 255;
+                SDL_SetSurfaceAlphaMod(FadeSurface, FadeIni);
+                FadeIn = false;
+                FadedIn = true;
+            }
+            SDL_BlitSurface(FadeSurface, 0, WindowSurface, 0);
+            SDL_FreeSurface(FadeSurface);
+        }
+
         //FPS and Resources------------------------------------------------------
         {
             char NowFPS[10];
@@ -440,6 +566,11 @@ int main(int argc, char **argv)
             {
                 RAMleak = true;
             }
+            if (frameIndex > 120 && (RAM2 - RAM1) < sensetivity)
+            {
+                RAMleak = false;
+            }
+            printf("%f  %f\n", RAM2, RAM1);
             if (RAMleak)
             {
                 bool on;

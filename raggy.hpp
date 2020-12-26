@@ -21,7 +21,24 @@ int FCi = 0;
 int FCiw = 0;
 int FClength = 0;
 
+//---------------------------------------------------------
+
 bool GameIsRunning = true;
 bool RAMleak = false;
 bool MainMenuRunning = true;
+
+bool FadeOut = true;
+int FadeOuti;
+bool FadeIn = false;
+int FadeIni;
+bool FadedIn = false;
+
+void ResetFades()
+{
+    FadeOut = true;
+    FadeOuti = 255;
+    FadeIn = false;
+    FadeIni = 0;
+    FadedIn = false;
+}
 

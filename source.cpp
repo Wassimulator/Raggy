@@ -600,6 +600,5 @@ void UpdateOptionRects(SDL_Rect OptionRect[12], SDL_Rect Options, SDL_Rect Optio
     OptionRect[9].y = Options.y + 10 + OptionRect[0].h + OptionRect[1].h + OptionRect[2].h + OptionRect[3].h + OptionRect[4].h + OptionRect[5].h + OptionRect[6].h + OptionRect[7].h + OptionRect[8].h;
     OptionRect[10].y = Options.y + 10 + OptionRect[0].h + OptionRect[1].h + OptionRect[2].h + OptionRect[3].h + OptionRect[4].h + OptionRect[5].h + OptionRect[6].h + OptionRect[7].h + OptionRect[8].h + OptionRect[9].h;
     OptionRect[11].y = Options.y + 10 + OptionRect[0].h + OptionRect[1].h + OptionRect[2].h + OptionRect[3].h + OptionRect[4].h + OptionRect[5].h + OptionRect[6].h + OptionRect[7].h + OptionRect[8].h + OptionRect[9].h + OptionRect[10].h;
-
 }
 //--------------------------------------------------------
