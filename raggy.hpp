@@ -16,10 +16,16 @@
 
 //-----------------array indeces---------------------------
 
-int DTi = 0;
+int Di = 0;
 int FCi = 0;
 int FCiw = 0;
 int FClength = 0;
+
+//-----------------array max values------------------------
+
+const int MaxNPCs = 1;
+const int MaxMaps = 1;
+const int MaxDoors = 10;
 
 //---------------------------------------------------------
 
@@ -33,6 +39,11 @@ bool FadeIn = false;
 int FadeIni;
 bool FadedIn = false;
 
+int CurrentMap = 0; // TODO: deal with this.
+bool ToUpdateMap = false;
+bool ToUpdateMapRects = false;
+
+
 void ResetFades()
 {
     FadeOut = true;
@@ -41,4 +52,3 @@ void ResetFades()
     FadeIni = 0;
     FadedIn = false;
 }
-

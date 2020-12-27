@@ -51,56 +51,6 @@ int main(int argc, char **argv)
     SDL_FillRect(WindowSurface, 0, (255 << 24) | (50 << 16) | (50 << 8) | (50));
     SDL_UpdateWindowSurface(Window);
 
-    int frameIndex = 0;
-    //test
-
-    //------KEYS-------------
-    bool RightButton = false;
-    bool LeftButton = false;
-    bool UpButton = false;
-    bool DownButton = false;
-    bool Shift = false;
-    bool F_Key = false;
-    bool H_Key = false;
-    bool E_Key = false;
-    bool Tab_Key = false;
-    bool Space_Key = false;
-    //-----------------------
-
-    bool ChattingAhole = false;
-    //-------------------Load Objects--------------------------
-
-    player Player = LoadPlayer();
-    map Map = LoadMap();
-    door Door = LoadDoor();
-    fart PlayerFart = LoadFart();
-    fartCloud PlayerFartCloud[20];
-    for (FCi = 0; FCi < 20; FCi++)
-    {
-        PlayerFartCloud[FCi] = LoadFartCloud();
-    }
-    door DT[10];
-    for (DTi = 0; DTi < 10; DTi++)
-    {
-        DT[DTi] = LoadDoor();
-    }
-    npc Ahole = LoadAhole();
-
-    //---------------------------------------------------------
-
-    Player.PosX = 0;
-    Player.PosY = 0;
-
-    Map.ActiveMap.h = Map.ActiveMap.h * 3;
-    Map.ActiveMap.w = Map.ActiveMap.w * 3;
-
-    int InitialMapPosX = Map.PosX;
-    int InitialPlayerPosX = Player.PosX;
-
-    int WalkSpeed = 2;
-    int RunSpeed = 4; //They're now adjustable, I still don't see why you need them to be as such,
-                      // but here, 1,5 hours later, I present you ADJUSTABLE SPEEDS * Confetti *
-
     //------load sounds--------
 
     Mix_OpenAudio(44800, MIX_DEFAULT_FORMAT, 2, 4096);
@@ -125,6 +75,55 @@ int main(int argc, char **argv)
 
     SDL_Surface *TextSurface;
     //----------------------------------
+    int frameIndex = 0;
+
+    //------KEYS-------------
+    bool RightButton = false;
+    bool LeftButton = false;
+    bool UpButton = false;
+    bool DownButton = false;
+    bool Shift = false;
+    bool F_Key = false;
+    bool H_Key = false;
+    bool E_Key = false;
+    bool Tab_Key = false;
+    bool Space_Key = false;
+    //-----------------------
+
+    //-------------------Load Objects--------------------------
+    player Player = LoadPlayer();
+    map Map = LoadMap(CurrentMap);
+    fart PlayerFart = LoadFart();
+    fartCloud PlayerFartCloud[20];
+    for (FCi = 0; FCi < 20; FCi++)
+    {
+        PlayerFartCloud[FCi] = LoadFartCloud();
+    }
+    door Door[MaxDoors];
+    for (Di = 0; Di < MaxDoors; Di++)
+    {
+        Door[Di] = LoadDoor();
+    }
+    npc NPC[MaxNPCs];
+    for (int i = 0; i < MaxNPCs; i++)
+    {
+        NPC[i] = LoadNPC(i);
+    }
+
+    //---------------------------------------------------------
+
+    Player.PosX = 0;
+    Player.PosY = 0;
+
+    Map.ActiveMap.h = Map.ActiveMap.h * 3;
+    Map.ActiveMap.w = Map.ActiveMap.w * 3;
+
+    int InitialMapPosX = Map.PosX;
+    int InitialPlayerPosX = Player.PosX;
+
+    int WalkSpeed = 2;
+    int RunSpeed = 4; //They're now adjustable, I still don't see why you need them to be as such,
+                      // but here, 1,5 hours later, I present you ADJUSTABLE SPEEDS * Confetti *
 
     SDL_Rect PlayerRect;
     PlayerRect.x = (WindowWidth / 2) + (Player.PosX - CamPosX) - (3 * 16);
@@ -138,20 +137,14 @@ int main(int argc, char **argv)
     MapRect.x = ((WindowWidth - Map.ActiveMap.w) / 2) - CamPosX;
     MapRect.y = Map.PosY;
 
-    SDL_Rect DoorRect;
-    DoorRect.h = Door.Closed.h * 3;
-    DoorRect.w = Door.Closed.w * 3;
-    DoorRect.x = (WindowWidth / 2) - CamPosX - 48 - 200;
-    DoorRect.y = (WindowHeight / 2) - 96;
-
     SDL_Rect PlayerActiveRectangle;
     SDL_Rect PlayerFartRectR;
     SDL_Rect PlayerFartRectL;
     SDL_Rect PlayerFartActiveRect;
     SDL_Rect PlayerFartCloudRect[20];
     SDL_Rect PlayerFartCloudActiveRect[20];
-    SDL_Rect DTRect[10];
-    SDL_Rect AholeRect;
+    SDL_Rect DoorRect[10];
+    SDL_Rect NPCRect;
 
     bool Playing = false;
 
@@ -232,7 +225,22 @@ int main(int argc, char **argv)
     }
     ResetFades();
 
-    //Game Loop-----------------------------------------------------------------
+    for (int i = 0; i < MaxDoors; i++)
+    {
+        Door[i].exists = false;
+    }
+    Door[5].exists = true;
+    Door[5].next = 1;
+    Door[5].nextDoor = 0;
+    Door[0].next = 0;
+    Door[0].nextDoor = 5;
+
+    bool UpdatedMap = false;
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////    GAME LOOP    //////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     while (GameIsRunning)
     {
         if (Playing == false)
@@ -245,6 +253,12 @@ int main(int argc, char **argv)
         if (GameIsRunning == false)
         {
             break;
+        }
+        if (ToUpdateMap)
+        {
+            UpdateMap(&PlayerRect, &Map, Door, DoorRect, &CamPosX, &WindowWidth);
+            ToUpdateMap = false;
+            UpdatedMap = true;
         }
 
         //leave these here. they're necessary for the "pressable once" system.
@@ -395,18 +409,15 @@ int main(int argc, char **argv)
         float MapLimitL = -Map.ActiveMap.w * 0.5f + 3 * 16;
 
         //-------------------------Game Update----------------------------------------------------------
-
         PlayerUpdate(&Player, CamPosX, RightButton, LeftButton, UpButton,
                      DownButton, Shift, MapLimitL, MapLimitR, WalkSpeed, RunSpeed);
         PlayerSoundUpdate(Sound, F_Key, H_Key);
         MapUpdate(&CamPosX, &Player);
-        DoorUpdate(&Door, PlayerRect, DoorRect, Regular, TextSurface,
-                   WindowSurface, WindowWidth, WindowHeight, E_Key);
 
         FartUpdate(&Player, &PlayerFart, PlayerFartCloud, F_Key);
 
-        DTUpdate(DT, PlayerRect, DTRect, Regular, TextSurface, WindowSurface, WindowWidth, WindowHeight, E_Key);
-        AholeUpdate(&Player, PlayerRect, &AholeRect, Regular, TextSurface, WindowSurface, WindowWidth, WindowHeight, E_Key);
+        DoorsUpdate(Door, PlayerRect, DoorRect, Regular, TextSurface, WindowSurface, WindowWidth, WindowHeight, E_Key);
+        NPCUpdate(&Player, PlayerRect, &NPCRect, Regular, TextSurface, WindowSurface, WindowWidth, WindowHeight, E_Key);
 
         if (Player.Chatting == true)
         {
@@ -445,14 +456,20 @@ int main(int argc, char **argv)
                   &PlayerRect, &Player,
                   &PlayerActiveRectangle,
                   &MapRect, Map,
-                  &DoorRect, Door,
                   &PlayerFartRectR, PlayerFart,
                   &PlayerFartRectL,
                   &PlayerFartActiveRect,
                   PlayerFartCloudRect, PlayerFartCloud,
                   PlayerFartCloudActiveRect,
-                  DTRect, DT,
-                  &AholeRect, Ahole);
+                  DoorRect, Door,
+                  &NPCRect, NPC);
+        if (ToUpdateMapRects)
+        {
+            UpdateMapRects(&Player, &PlayerRect, &Map, Door, DoorRect, &CamPosX, &WindowWidth);
+            //MapUpdate(&CamPosX, &Player);
+            UpdatedMap = false;
+        }
+
         //-----------------------------Rendering-------------------------------------------------
         //          IMPORTANT: make sure you render the character last and the map first.
         //                     NPCs go before the player typically.
@@ -465,14 +482,15 @@ int main(int argc, char **argv)
         RenderText(Regular, "Press Q to quit the game", 255, 255, 255, 0, 50, TextSurface, WindowSurface, WindowWidth, WindowHeight);
         RenderText(Regular, "Press Esc to pause the game", 255, 255, 255, 0, 75, TextSurface, WindowSurface, WindowWidth, WindowHeight);
 
-        SDL_BlitScaled(Door.ActiveTexture->Surface, 0, WindowSurface, &DoorRect);
-
-        for (DTi = 0; DTi < 10; DTi++)
+        for (Di = 0; Di < MaxDoors; Di++)
         {
-            SDL_BlitScaled(DT[DTi].ActiveTexture->Surface, 0, WindowSurface, &DTRect[DTi]);
+            if (Door[Di].exists)
+            {
+                SDL_BlitScaled(Door[Di].ActiveTexture->Surface, 0, WindowSurface, &DoorRect[Di]);
+            }
         }
 
-        SDL_BlitScaled(Ahole.LeftLeaning.Surface, 0, WindowSurface, &AholeRect);
+        SDL_BlitScaled(NPC[0].LeaningLeft.Surface, 0, WindowSurface, &NPCRect); //TODO: update to fit NPC!
 
         SDL_BlitScaled(Player.ActiveTexture->Surface, &PlayerActiveRectangle, WindowSurface, &PlayerRect);
 
@@ -523,6 +541,7 @@ int main(int argc, char **argv)
         }
         if (FadeIn == true)
         {
+
             SDL_Surface *FadeSurface = SDL_CreateRGBSurface(0, WindowWidth, WindowHeight, 32, 0, 0, 0, 255);
             SDL_SetSurfaceBlendMode(FadeSurface, SDL_BLENDMODE_BLEND);
             SDL_SetSurfaceAlphaMod(FadeSurface, FadeIni);
@@ -540,6 +559,12 @@ int main(int argc, char **argv)
             SDL_BlitSurface(FadeSurface, 0, WindowSurface, 0);
             SDL_FreeSurface(FadeSurface);
         }
+
+        /////////////////////////Printf section///////////////////////////////
+        printf("PX=%f, PRect= %i, DoorRect0= %i, CamPosX=%f, DTPosX=%f \n", Player.PosX, PlayerRect.x, DoorRect[MAPPPP].x, CamPosX, Door[MAPPPP].PosX);
+        //printf(ToUpdateMapRects ? "TUM = true\n" : "TUM = false\n");
+
+        //////////////////////////////////////////////////////////////////////
 
         //FPS and Resources------------------------------------------------------
         {
@@ -576,7 +601,7 @@ int main(int argc, char **argv)
             {
                 RAMleak = false;
             }
-            printf("%f  %f\n", RAM2, RAM1);
+            //printf("%f  %f\n", RAM2, RAM1);
             if (RAMleak)
             {
                 bool on;
@@ -609,7 +634,7 @@ int main(int argc, char **argv)
             RenderText(RegularS, NowFPS, 170, 170, 255, WindowWidth - 60, 0, TextSurface, WindowSurface, WindowWidth, WindowHeight);
             RenderText(RegularS, NowRAM, 255, 255, 150, WindowWidth - 300, 0, TextSurface, WindowSurface, WindowWidth, WindowHeight);
         }
-         //------------------------------------------------------
+        //------------------------------------------------------
         SDL_UpdateWindowSurface(Window);
     };
     //end of game loop

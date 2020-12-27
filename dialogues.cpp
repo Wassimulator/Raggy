@@ -236,7 +236,7 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
             }
         }
         //-----------------------Update---------------------------------
-        if (Player->ChattingAhole == true)
+        if (Player->ChattingNPC == true)
         {
             if (AholeSLoaded == false)
             {
@@ -476,7 +476,6 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
             if (FadedIn == true && FadeIn == false)
             {
                 DialogueRunning = false;
-                Player->AholeLevel = 0;
                 Mix_HaltChannel(2);
                 FadedIn = false;
             }

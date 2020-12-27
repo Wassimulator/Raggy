@@ -147,14 +147,12 @@ struct player
     int Speed;
     direction Direction;
     bool Chatting = false;
-    bool ChattingAhole = false;
-
-    int AholeLevel = 0; // TODO: There should be a better way for tracking dialogue progress
+    bool ChattingNPC = false;
 };
 
 struct npc
 {
-    sprite LeftLeaning;
+    sprite LeaningLeft;
 };
 
 struct map
@@ -178,6 +176,11 @@ struct door
     float PosY;
     sprite *ActiveTexture;
     doorStatus Status;
+    bool exists = true;
+    int next;
+    int nextDoor;
+    int previous;
+    int previousDoor;
 };
 struct fart
 {
@@ -286,85 +289,51 @@ door LoadDoor()
     return Door;
 }
 
-void DoorUpdate(door *Door, SDL_Rect PlayerRect, SDL_Rect DoorRect, TTF_Font *Font, SDL_Surface *TextSurface,
-                SDL_Surface *WindowSurface, int WindowWidth, int WindowHight, bool E_Key)
+void DoorsUpdate(door *DT, SDL_Rect PlayerRect, SDL_Rect *DTRect, TTF_Font *Font, SDL_Surface *TextSurface,
+                 SDL_Surface *WindowSurface, int WindowWidth, int WindowHight, bool E_Key)
 {
-    if (Door->Status == Closed)
+    for (Di = 0; Di < MaxDoors; Di++)
     {
-        Door->ActiveTexture = &Door->Closed;
-    }
-    else if (Door->Status == Open)
-    {
-        Door->ActiveTexture = &Door->Open;
-    }
-
-    if (Door->Status == Closed)
-    {
-        if (PlayerRect.x < (DoorRect.x + 48) && PlayerRect.x > (DoorRect.x - 48))
+        if (DT[Di].exists)
         {
-            RenderText(Font, "Door: press E to Open", 255, 255, 255, 0, 150, TextSurface, WindowSurface, WindowWidth, WindowHight);
-
-            if (E_Key)
+            if (DT[Di].Status == Closed)
             {
-                Door->ActiveTexture = &Door->Open;
-                Door->Status = Open;
+                DT[Di].ActiveTexture = &DT[Di].Closed;
             }
-        }
-    }
-    else if (Door->Status == Open)
-    {
-        if (PlayerRect.x < (DoorRect.x + 48) && PlayerRect.x > (DoorRect.x - 48))
-        {
-            RenderText(Font, "Door: press E to Close", 255, 255, 255, 0, 150, TextSurface, WindowSurface, WindowWidth, WindowHight);
-
-            if (E_Key)
+            else if (DT[Di].Status == Open)
             {
-                Door->ActiveTexture = &Door->Closed;
-                Door->Status = Closed;
+                DT[Di].ActiveTexture = &DT[Di].Open;
             }
-        }
-    }
-}
 
-void DTUpdate(door *DT, SDL_Rect PlayerRect, SDL_Rect *DTRect, TTF_Font *Font, SDL_Surface *TextSurface,
-              SDL_Surface *WindowSurface, int WindowWidth, int WindowHight, bool E_Key)
-{
-    for (DTi = 0; DTi < 10; DTi++)
-    {
-        if (DT[DTi].Status == Closed)
-        {
-            DT[DTi].ActiveTexture = &DT[DTi].Closed;
-        }
-        else if (DT[DTi].Status == Open)
-        {
-            DT[DTi].ActiveTexture = &DT[DTi].Open;
-        }
-
-        if (DT[DTi].Status == Closed)
-        {
-            if (PlayerRect.x < (DTRect[DTi].x + 48) && PlayerRect.x > (DTRect[DTi].x - 48))
+            if (DT[Di].Status == Closed)
             {
-                RenderText(Font, "Door: press E to Open", 255, 255, 255, 0, 150, TextSurface, WindowSurface, WindowWidth, WindowHight);
-
-                if (E_Key)
+                if (PlayerRect.x < (DTRect[Di].x + 48) && PlayerRect.x > (DTRect[Di].x - 48))
                 {
-                    DT[DTi].ActiveTexture = &DT[DTi].Open;
-                    DT[DTi].Status = Open;
+                    RenderText(Font, "Door: press E to Open", 255, 255, 255, 0, 150, TextSurface, WindowSurface, WindowWidth, WindowHight);
+
+                    if (E_Key)
+                    {
+                        DT[Di].ActiveTexture = &DT[Di].Open;
+                        DT[Di].Status = Open;
+                        CurrentMap = DT[Di].next;
+                        ToUpdateMap = true;
+                        ToUpdateMapRects = true;
+                    }
                 }
             }
-        }
-        else if (DT[DTi].Status == Open)
-        {
-            if (PlayerRect.x < (DTRect[DTi].x + 48) && PlayerRect.x > (DTRect[DTi].x - 48))
+            /*else if (DT[Di].Status == Open)
             {
-                RenderText(Font, "Door: press E to Close", 255, 255, 255, 0, 150, TextSurface, WindowSurface, WindowWidth, WindowHight);
-
-                if (E_Key)
+                if (PlayerRect.x < (DTRect[Di].x + 48) && PlayerRect.x > (DTRect[Di].x - 48))
                 {
-                    DT[DTi].ActiveTexture = &DT[DTi].Closed;
-                    DT[DTi].Status = Closed;
+                    RenderText(Font, "Door: press E to Close", 255, 255, 255, 0, 150, TextSurface, WindowSurface, WindowWidth, WindowHight);
+
+                    if (E_Key)
+                    {
+                        DT[Di].ActiveTexture = &DT[Di].Closed;
+                        DT[Di].Status = Closed;
+                    }
                 }
-            }
+            }*/
         }
     }
 }
@@ -375,23 +344,25 @@ void DialogueAhole(TTF_Font *Font, SDL_Surface *TextSurface,
 {
     RenderTextCentered(Font, "Hey asshole", 255, 255, 255, 0, 150, TextSurface, WindowSurface, WindowWidth, WindowHight);
 }
-npc LoadAhole()
+npc LoadNPC(int NPCnumber)
 {
-    npc Ahole = {};
-    Ahole.LeftLeaning = LoadSprite("data/textures/a_hole_leaning_left.png");
-    return Ahole;
+    npc NPC = {};
+    char LeaningLeft[50];
+    sprintf(LeaningLeft, "data/textures/npc/npc%i_leaning_left.png", NPCnumber);
+    NPC.LeaningLeft = LoadSprite(LeaningLeft);
+    return NPC;
 };
 
-void AholeUpdate(player *Player, SDL_Rect PlayerRect, SDL_Rect *AholeRect, TTF_Font *Font, SDL_Surface *TextSurface,
-                 SDL_Surface *WindowSurface, int WindowWidth, int WindowHight, bool E_Key)
+void NPCUpdate(player *Player, SDL_Rect PlayerRect, SDL_Rect *NPCRect, TTF_Font *Font, SDL_Surface *TextSurface,
+               SDL_Surface *WindowSurface, int WindowWidth, int WindowHight, bool E_Key)
 {
-    if (PlayerRect.x > (AholeRect->x - 60) && PlayerRect.x < (AholeRect->x + 10))
+    if (PlayerRect.x > (NPCRect->x - 60) && PlayerRect.x < (NPCRect->x + 10))
     {
         RenderText(Font, "Pricksoin Ahole: press E to Speak", 255, 255, 255, 0, 150, TextSurface, WindowSurface, WindowWidth, WindowHight);
         if (E_Key)
         {
             Player->Chatting = true;
-            Player->ChattingAhole = true;
+            Player->ChattingNPC = true;
             //RenderTextCentered(Font, "Hey asshole", 255, 255, 255, 0, 150, TextSurface, WindowSurface, WindowWidth, WindowHight);
         }
     }
@@ -529,10 +500,12 @@ void PlayerSoundUpdate(sounds Sound, bool F_Key, bool H_Key)
 
 //-------------------------MAPS-------------------------------------------------------
 
-map LoadMap()
+map LoadMap(int LevelNumber)
 {
     map LoadedMap = {};
-    LoadedMap.ActiveMap = LoadSprite("data/textures/map.png");
+    char MapFile[50];
+    sprintf(MapFile, "data/textures/levels/level%i.png", LevelNumber);
+    LoadedMap.ActiveMap = LoadSprite(MapFile);
 
     return LoadedMap;
 }
@@ -551,10 +524,64 @@ void MapUpdate(float *CamPosX, player *Player)
     {
         *CamPosX = Player->PosX - HalfRange;
     }
-    //printf("Player->Posx = %.0f  ", Player->PosX);
-    //printf("PlayerCamX = %.0f  ", PlayerCamX);
-    //printf("HalfRange = %.0f  ", HalfRange);
 }
+
+int MAPPPP = 0;
+
+void UpdateMap(SDL_Rect *PlayerRect, map *Map, door *Door, SDL_Rect *DTRect, float *CamPosX, int *WindowWidth)
+{
+    *Map = LoadMap(CurrentMap);
+    Map->ActiveMap.h = Map->ActiveMap.h * 3;
+    Map->ActiveMap.w = Map->ActiveMap.w * 3;
+
+    for (int i = 0; i < MaxDoors; i++)
+    {
+        if (Door[i].Status == Open)
+        {
+            Door[Door[i].nextDoor].exists = true;
+            //Door[5].exists = false;
+        }
+    }
+
+    for (Di = 0; Di < MaxDoors; Di++)
+    {
+        Door[Di].Status = Closed;
+    }
+    //PlayerRect->x = DTRect[3].x;
+}
+
+void UpdateMapRects(player *Player, SDL_Rect *PlayerRect, map *Map, door *Door, SDL_Rect *DTRect, float *CamPosX, int *WindowWidth)
+{
+    for (int i = 0; i < MaxDoors; i++)
+    {
+        if (Door[i].Status == Open)
+        {
+            if (Player->PosX == DTRect[Door[i].nextDoor].x)
+            {
+                ToUpdateMapRects = false;
+            }
+            int y;
+            y = 768 - (*WindowWidth / 2); //Why this number? anticipate bugs.
+
+            Player->PosX = (*WindowWidth / 2)  - 48 - (Map->ActiveMap.w / 2) + 100 + 300 * (Door[i].nextDoor) + y;
+
+            *CamPosX = Player->PosX;
+        }
+    }
+    ToUpdateMapRects = false;
+}
+/*
+fckn why
+1280,112  380
+1024,240  252
+960,272   220  
+800,352   40  
+520
+260
+
+960, 288
+800, 368
+*/
 
 //---------------------Dialogues--------------------------
 struct dialogueNPC

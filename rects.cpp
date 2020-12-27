@@ -6,43 +6,41 @@ void LoadRects(int *WindowWidth, int *WindowHeight, int CamPosX, bool *F_Key,
                SDL_Rect *PlayerRect, player *Player,
                SDL_Rect *PlayerActiveRectangle,
                SDL_Rect *MapRect, map Map,
-               SDL_Rect *DoorRect, door Door,
                SDL_Rect *PlayerFartRectR, fart PlayerFart,
                SDL_Rect *PlayerFartRectL,
                SDL_Rect *PlayerFartActiveRect,
                SDL_Rect *PlayerFartCloudRect, fartCloud *PlayerFartCloud,
                SDL_Rect *PlayerFartCloudActiveRect,
                SDL_Rect *DTRect, door *DT,
-               SDL_Rect *AholeRect, npc Ahole) // Do I need a pointer here for the array since the array is a pointer?
+               SDL_Rect *NPCRect, npc NPC[MaxNPCs]) // Do I need a pointer here for the array since the array is a pointer?
 {
     //animation sequence
     int SixCounterP = (Player->i - 1) % 3;
     int SixCOunterQ = (Player->i - 1) / 3;
-
+    
     PlayerRect->x = (*WindowWidth / 2) + (Player->PosX - CamPosX) - (3 * 16);
     PlayerRect->y = (*WindowHeight / 2) - 48;
     PlayerRect->w = 32 * 3; // TODO: Scaling is an inherent problem that needs fixing.
     PlayerRect->h = 32 * 3;
 
     //putting the map in the center of the screen:
-    Map.PosX = -(Map.ActiveMap.w - *WindowWidth) / 2; 
+    Map.PosX = -(Map.ActiveMap.w - *WindowWidth) / 2;
     Map.PosY = -(Map.ActiveMap.h - *WindowHeight) / 2;
     MapRect->h = Map.ActiveMap.h;
     MapRect->w = Map.ActiveMap.w;
     MapRect->x = ((*WindowWidth - Map.ActiveMap.w) / 2) - CamPosX;
     MapRect->y = Map.PosY;
 
-    DoorRect->h = Door.Closed.h * 3;
-    DoorRect->w = Door.Closed.w * 3;
-    DoorRect->x = (*WindowWidth / 2) - CamPosX - 48;
-    DoorRect->y = (*WindowHeight / 2) - 96;
-
-    for (DTi = 0; DTi < 10; DTi++)
+    for (Di = 0; Di < MaxDoors; Di++)
     {
-        DTRect[DTi].h = DT[DTi].Closed.h * 3;
-        DTRect[DTi].w = DT[DTi].Closed.w * 3;
-        DTRect[DTi].x = (*WindowWidth / 2) - CamPosX - 48 - 1300 + 300 * (DTi);
-        DTRect[DTi].y = (*WindowHeight / 2) - 96;
+        if (DT[Di].exists)
+        {
+            DTRect[Di].h = DT[Di].Closed.h * 3;
+            DTRect[Di].w = DT[Di].Closed.w * 3;
+            DTRect[Di].x = (*WindowWidth / 2) - CamPosX - 48 - (Map.ActiveMap.w / 2) + 100 + 300 * (Di);
+            DTRect[Di].y = (*WindowHeight / 2) - 96;
+            //DT[Di].PosX = (*WindowWidth / 2) - 48 - (Map.ActiveMap.w / 2) + 100 + 300 * (Di);
+        }
     }
 
     PlayerActiveRectangle->x = SixCounterP * 32;
@@ -115,8 +113,8 @@ void LoadRects(int *WindowWidth, int *WindowHeight, int CamPosX, bool *F_Key,
         }
     }
 
-    AholeRect->h = Ahole.LeftLeaning.h * 3;
-    AholeRect->w = Ahole.LeftLeaning.w * 3;
-    AholeRect->x = (*WindowWidth / 2) - CamPosX - 48 + 650;
-    AholeRect->y = (*WindowHeight / 2) - 52;
+    NPCRect->h = NPC[0].LeaningLeft.h * 3;
+    NPCRect->w = NPC[0].LeaningLeft.w * 3;
+    NPCRect->x = (*WindowWidth / 2) - CamPosX - 48 + 650;
+    NPCRect->y = (*WindowHeight / 2) - 52;
 };
