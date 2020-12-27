@@ -235,6 +235,37 @@ int main(int argc, char **argv)
     Door[0].next = 0;
     Door[0].nextDoor = 5;
 
+    {
+        fstream InFile("data/levels.txt");
+        string buffer;
+        getline(InFile, buffer, '\n');
+        getline(InFile, buffer, ','); //skip level number...
+        for (int i = 0; i < 10; i++)
+        {
+            getline(InFile, buffer, ',');
+            if (buffer.empty() == false)
+            {
+                Door[i].exists = true;
+            }
+            if (buffer.empty() == true)
+            {
+                Door[i].exists = false;
+            }
+            getline(InFile, buffer, ',');
+            if (buffer.empty() == false)
+            {
+                Door[i].next = stoi(buffer);
+            }
+            getline(InFile, buffer, ',');
+            if (buffer.empty() == false)
+            {
+                Door[i].nextDoor = stoi(buffer);
+            }
+        }
+        getline(InFile, buffer, '\n');
+        InFile.close();
+    }
+
     bool UpdatedMap = false;
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -561,7 +592,7 @@ int main(int argc, char **argv)
         }
 
         /////////////////////////Printf section///////////////////////////////
-        printf("PX=%f, PRect= %i, DoorRect0= %i, CamPosX=%f, DTPosX=%f \n", Player.PosX, PlayerRect.x, DoorRect[Door[5].nextDoor].x, CamPosX, Door[MAPPPP].PosX);
+        //printf("PX=%f, PRect= %i, DoorRect0= %i, CamPosX=%f, DTPosX=%f \n", Player.PosX, PlayerRect.x, DoorRect[Door[5].nextDoor].x, CamPosX, Door[MAPPPP].PosX);
         //printf(ToUpdateMapRects ? "TUM = true\n" : "TUM = false\n");
 
         //////////////////////////////////////////////////////////////////////

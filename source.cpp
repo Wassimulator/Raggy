@@ -1,5 +1,6 @@
 #pragma once
 #include "raggy.hpp"
+using namespace std;
 
 struct sprite
 {
@@ -526,24 +527,62 @@ void MapUpdate(float *CamPosX, player *Player)
     }
 }
 
-int MAPPPP = 0;
-
 void UpdateMap(SDL_Rect *PlayerRect, map *Map, door *Door, SDL_Rect *DTRect, float *CamPosX, int *WindowWidth)
 {
     *Map = LoadMap(CurrentMap);
     Map->ActiveMap.h = Map->ActiveMap.h * 3;
     Map->ActiveMap.w = Map->ActiveMap.w * 3;
 
+    int TargetLevel;
     for (int i = 0; i < MaxDoors; i++)
     {
         if (Door[i].Status == Open)
         {
             Door[Door[i].nextDoor].exists = true;
-            //Door[5].exists = false;
+            TargetLevel = Door[i].next;
         }
     }
 
-    //PlayerRect->x = DTRect[3].x;
+    int count = 0;
+    fstream InFile("data/levels.txt");
+    string buffer;
+    getline(InFile, buffer, '\n');
+    while (1)
+    {
+        getline(InFile, buffer, ',');
+        if (stoi(buffer) == TargetLevel)
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                getline(InFile, buffer, ',');
+                if (buffer.empty() == false)
+                {
+                    Door[i].exists = true;
+                }
+                if (buffer.empty() == true)
+                {
+                    Door[i].exists = false;
+                }
+                getline(InFile, buffer, ',');
+                if (buffer.empty() == false)
+                {
+                    Door[i].next = stoi(buffer);
+                }
+                getline(InFile, buffer, ',');
+                if (buffer.empty() == false && buffer != "\n")
+                {
+                    Door[i].nextDoor = stoi(buffer);
+                }
+            }
+            getline(InFile, buffer, '\n');
+            break;
+            count = 0;
+        }
+        else
+        {
+            getline(InFile, buffer, '\n');
+        }
+    }
 }
 
 void UpdateMapRects(player *Player, SDL_Rect *PlayerRect, map *Map, door *Door, SDL_Rect *DTRect, float *CamPosX, int *WindowWidth)
@@ -559,7 +598,7 @@ void UpdateMapRects(player *Player, SDL_Rect *PlayerRect, map *Map, door *Door, 
             int y;
             y = 768 - (*WindowWidth / 2); //Why this number? anticipate bugs.
 
-            Player->PosX =  - (Map->ActiveMap.w / 2) + 100 + 300 * (Door[i].nextDoor);
+            Player->PosX = -(Map->ActiveMap.w / 2) + 100 + 300 * (Door[i].nextDoor);
             //Player->PosX = DTRect[Door[i].nextDoor].x;
 
             *CamPosX = Player->PosX;
