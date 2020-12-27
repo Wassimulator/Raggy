@@ -321,7 +321,7 @@ int main(int argc, char **argv)
         //---------------------------------------------------------
         if (Mix_PlayingMusic() == 0)
         {
-            Mix_PlayMusic(BackgroundMusic, 3);
+            Mix_PlayMusic(BackgroundMusic, 50);
         }
         if (MusicBool == true)
         {

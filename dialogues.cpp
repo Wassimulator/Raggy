@@ -139,7 +139,7 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
 
         if (Mix_PlayingMusic() == 0)
         {
-            Mix_PlayMusic(BackgroundMusic, 3);
+            Mix_PlayMusic(BackgroundMusic, 30);
         }
         if (*MusicBool == true)
         {
