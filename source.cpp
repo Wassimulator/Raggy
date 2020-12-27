@@ -543,10 +543,6 @@ void UpdateMap(SDL_Rect *PlayerRect, map *Map, door *Door, SDL_Rect *DTRect, flo
         }
     }
 
-    for (Di = 0; Di < MaxDoors; Di++)
-    {
-        Door[Di].Status = Closed;
-    }
     //PlayerRect->x = DTRect[3].x;
 }
 
@@ -563,11 +559,18 @@ void UpdateMapRects(player *Player, SDL_Rect *PlayerRect, map *Map, door *Door, 
             int y;
             y = 768 - (*WindowWidth / 2); //Why this number? anticipate bugs.
 
-            Player->PosX = (*WindowWidth / 2)  - 48 - (Map->ActiveMap.w / 2) + 100 + 300 * (Door[i].nextDoor) + y;
+            Player->PosX =  - (Map->ActiveMap.w / 2) + 100 + 300 * (Door[i].nextDoor);
+            //Player->PosX = DTRect[Door[i].nextDoor].x;
 
             *CamPosX = Player->PosX;
         }
     }
+
+    for (Di = 0; Di < MaxDoors; Di++)
+    {
+        Door[Di].Status = Closed;
+    }
+
     ToUpdateMapRects = false;
 }
 /*

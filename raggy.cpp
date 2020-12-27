@@ -463,7 +463,7 @@ int main(int argc, char **argv)
                   PlayerFartCloudActiveRect,
                   DoorRect, Door,
                   &NPCRect, NPC);
-        if (ToUpdateMapRects)
+        if (ToUpdateMapRects && UpdatedMap)
         {
             UpdateMapRects(&Player, &PlayerRect, &Map, Door, DoorRect, &CamPosX, &WindowWidth);
             //MapUpdate(&CamPosX, &Player);
@@ -561,7 +561,7 @@ int main(int argc, char **argv)
         }
 
         /////////////////////////Printf section///////////////////////////////
-        printf("PX=%f, PRect= %i, DoorRect0= %i, CamPosX=%f, DTPosX=%f \n", Player.PosX, PlayerRect.x, DoorRect[MAPPPP].x, CamPosX, Door[MAPPPP].PosX);
+        printf("PX=%f, PRect= %i, DoorRect0= %i, CamPosX=%f, DTPosX=%f \n", Player.PosX, PlayerRect.x, DoorRect[Door[5].nextDoor].x, CamPosX, Door[MAPPPP].PosX);
         //printf(ToUpdateMapRects ? "TUM = true\n" : "TUM = false\n");
 
         //////////////////////////////////////////////////////////////////////
