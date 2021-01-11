@@ -5,15 +5,16 @@
 #include "stb_image.h"
 #include <SDL_mixer.h>
 #include <SDL_ttf.h>
-#include <lexer.h>
 #include <fstream>
 #include <string>
 #include <iostream>
+#include <lexer.h>
 
-//these are for resource monitoring on Windows:-------------------------------------------------
+//these are for resource monitoring on Windows and should be commented out elsewherer:
 #include "windows.h"
 #include "psapi.h"
 //--------------------
+
 
 //-----------------array indeces---------------------------
 
