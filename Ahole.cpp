@@ -12,6 +12,7 @@ void LoadAholeSound(NPCsounds *AholeS, bool *AholeSLoaded)
     AholeS->Node[5] = Mix_LoadWAV("data/sounds/ahole/5.WAV");
     AholeS->Node[6] = Mix_LoadWAV("data/sounds/ahole/6.WAV");
     AholeS->Node[7] = Mix_LoadWAV("data/sounds/ahole/7.WAV");
+    AholeS->Node[8] = Mix_LoadWAV("data/sounds/ahole/8.WAV");
 
     *AholeSLoaded = true;
 }

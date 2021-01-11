@@ -5,6 +5,7 @@
 #include "stb_image.h"
 #include <SDL_mixer.h>
 #include <SDL_ttf.h>
+#include <lexer.h>
 #include <fstream>
 #include <string>
 #include <iostream>

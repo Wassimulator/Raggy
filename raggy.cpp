@@ -45,7 +45,7 @@ int main(int argc, char **argv)
         {
             SoundBool = false;
         }
-    }
+    }   
     Window = SDL_CreateWindow("Raggy", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WindowWidth, WindowHeight, 0);
     WindowSurface = SDL_GetWindowSurface(Window);
     SDL_FillRect(WindowSurface, 0, (255 << 24) | (50 << 16) | (50 << 8) | (50));
