@@ -248,7 +248,8 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
         {
             for (int i = 0; i < Dialogue.MaxOptions; i++)
             {
-                OptionText[i] = Dialogue.Option[i].Text;
+                const char *temp = Dialogue.Option[i].Text.c_str();
+                OptionText[i] = const_cast<char*>(temp);
             }
             for (int i = 0; i < 12; i++)
             {

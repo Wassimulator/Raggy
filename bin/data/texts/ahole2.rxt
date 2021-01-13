@@ -1,0 +1,48 @@
+Homenode
+    {
+        NPCprompt:"Hey there champ! Amazing day isn't it? and what a good day it is to be me! how're you doing? I'm sure fine. Why wouldn't you be?";
+        Option[0]:"Fuck off Prickard.";
+            <
+            tags: tag1, tag2, tag3;
+            boolON: boolean1, boolean2;
+            boolOFF:;
+            effects: sth+, sth-;
+            nextNode: 1;
+            > 
+        Option[1]:"And a good day to you too!";
+            <
+            tags: tag1, tag2, tag3;
+            boolON: boolean1, boolean2; 
+            boolOFF:; 
+            effects: sth+, sth-; 
+            >
+        Option[2]:"Would you take a breath and let me answer your fucking question?";
+            <>
+        Option[3]:"I'm fine. Why wouldn't I be indeed! I just got fired from my fucking job.";
+
+        Option[4]:"(Say nothing)";
+    }
+Node[1]
+    {
+        NPCprompt:"Haha that's the spirit of the fighter in me that I love to see in others!";
+        Option[0]:"You're the reason I'm leaving. (turn away and leave)";
+            <
+            tags: tag1, tag2, tag3;
+            boolON: boolean1, boolean2;
+            boolOFF:;
+            effects: sth+, sth-;
+            > 
+        Option[1]:"And a good day to you too!";
+            <
+            tags: tag1, tag2, tag3;
+            boolON: boolean1, boolean2;
+            boolOFF:;
+            effects: sth+, sth-;
+            >
+        Option[2]:"Would you take a breath and let me answer your fucking question?";
+
+        Option[3]:"I'm fine. Why wouldn't I be indeed! I just got fired from my fucking job.";
+
+        Option[4]:"(Say nothing)";
+        
+    }

@@ -71,12 +71,16 @@ void RenderTextCentered(TTF_Font *Font, char *text, Uint8 R, Uint8 G, Uint8 B,
     SDL_FreeSurface(TextSurface);
 }
 
-void RenderTextCenteredX(TTF_Font *Font, char *text, Uint8 R, Uint8 G, Uint8 B,
+void RenderTextCenteredX(TTF_Font *Font, string textstring, Uint8 R, Uint8 G, Uint8 B,
                          int PosXfromCenter, int PosYfromTop, SDL_Surface *TextSurface, SDL_Surface *WindowSurface,
                          int WindowWidth, int WindowHight)
 {
 
     SDL_Color TextColor = {R, G, B};
+
+    const char *temp = textstring.c_str();
+    char *text = const_cast<char *>(temp);
+
     TextSurface = TTF_RenderText_Solid(Font, text, TextColor);
 
     SDL_Rect TextRect1;
@@ -89,12 +93,16 @@ void RenderTextCenteredX(TTF_Font *Font, char *text, Uint8 R, Uint8 G, Uint8 B,
     SDL_FreeSurface(TextSurface);
 }
 
-void RenderTextDialogue(TTF_Font *Font, char *text, Uint8 R, Uint8 G, Uint8 B,
+void RenderTextDialogue(TTF_Font *Font, string textstring, Uint8 R, Uint8 G, Uint8 B,
                         int PosX, int PosY, SDL_Surface *TextSurface, SDL_Surface *WindowSurface,
                         int WindowWidth, int WindowHight, Uint32 WrapLength)
 {
 
     SDL_Color TextColor = {R, G, B};
+    
+    const char *temp = textstring.c_str();
+    char *text = const_cast<char *>(temp);
+
     TextSurface = TTF_RenderText_Blended_Wrapped(Font, text, TextColor, WrapLength);
 
     SDL_Rect TextRect1;
@@ -637,16 +645,16 @@ struct dialogues
     bool Ahole = false;
     char *OptionText[12];
     int MaxOptions = 12;
-    char *DialogueTitle = "dialogue title";
-    char *NPCtext = "placeholder for NPC text (what they say)";
-    char *PlayerText = "placeholder for Player text (what he says)";
+    string DialogueTitle = "dialogue title";
+    string NPCtext = "placeholder for NPC text (what they say)";
+    string PlayerText = "placeholder for Player text (what he says)";
     bool HighlightedOption[12];
     bool SelectedOption[12];
     int ID;
 
     struct options
     {
-        char *Text;
+        string Text;
         dialogues *NextNode;
         int NextNodeID;
     };
