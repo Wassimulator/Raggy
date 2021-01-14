@@ -98,6 +98,8 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
 
     ResetFades();
 
+    string FileString = "Potato";
+
     while (DialogueRunning)
     {
         if (GameIsRunning == false)
@@ -238,18 +240,15 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
         //-----------------------Update---------------------------------
         if (Player->ChattingNPC == true)
         {
-            if (AholeSLoaded == false)
-            {
-                LoadAholeSound(&AholeS, &AholeSLoaded);
-            }
-            AholeDialogue(&Dialogue, Player, &Ahole, &AholeS, &firstrun, &refresh, &isTalking);
+            AholeMain(&AholeSLoaded, &AholeS, &Dialogue, Player, &Ahole,
+           &firstrun, &refresh, &isTalking, &FileString);
         }
         if (refresh)
         {
             for (int i = 0; i < Dialogue.MaxOptions; i++)
             {
                 const char *temp = Dialogue.Option[i].Text.c_str();
-                OptionText[i] = const_cast<char*>(temp);
+                OptionText[i] = const_cast<char *>(temp);
             }
             for (int i = 0; i < 12; i++)
             {
@@ -558,7 +557,7 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
         }
     };
     //------------Memory clean up-------------------------------
-    for (int i = 2; i < 8; i++) //TODO: set max voice node chunk number
+    for (int i = 0; i < 100; i++) //TODO: set max voice node chunk number
     {
         Mix_FreeChunk(AholeS.Node[i]);
     }

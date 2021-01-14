@@ -39,12 +39,22 @@ string Lexer_ReadFileIntoMemory(char *File)
 {
     string Result;
 
+    cout << "Loading RXT file... ";
     string Buffer;
     string FileName = File;
     ifstream Input;
     Input.open(FileName);
     getline(Input, Buffer, '%');
     Result = Buffer;
+    
+    switch (Input.good())
+    {
+    case true:
+        cout << "Successful" << endl;
+        break;
+    case false:
+        cout << "Failed!" << endl;
+    }
 
     return (Result);
 }
@@ -339,7 +349,7 @@ token Lexer_GetToken(stringstream *Input)
     return ResultToken;
 }
 
-string Lexer_FileToString(char* file)
+string Lexer_FileToString(char *file)
 {
     string FileString = Lexer_ReadFileIntoMemory(file);
     Lexer_RemoveComments(&FileString);

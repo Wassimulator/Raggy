@@ -37,7 +37,7 @@ sounds LoadSound()
 
 struct NPCsounds
 {
-    Mix_Chunk *Node[10];
+    Mix_Chunk *Node[100];
 };
 
 //---------FONTS-------------
@@ -99,7 +99,7 @@ void RenderTextDialogue(TTF_Font *Font, string textstring, Uint8 R, Uint8 G, Uin
 {
 
     SDL_Color TextColor = {R, G, B};
-    
+
     const char *temp = textstring.c_str();
     char *text = const_cast<char *>(temp);
 
@@ -679,3 +679,172 @@ void UpdateOptionRects(SDL_Rect OptionRect[12], SDL_Rect Options, SDL_Rect Optio
     OptionRect[11].y = Options.y + 10 + OptionRect[0].h + OptionRect[1].h + OptionRect[2].h + OptionRect[3].h + OptionRect[4].h + OptionRect[5].h + OptionRect[6].h + OptionRect[7].h + OptionRect[8].h + OptionRect[9].h + OptionRect[10].h;
 }
 //--------------------------------------------------------
+
+//-----------------------------------------------Parser
+void DP_Node(stringstream *Input, dialogues *D)
+{
+    token T;
+    T = Lexer_GetToken(Input);
+    if (T.Type == OpenBrace)
+    {
+        int i;
+        while (true)
+        {
+            T = Lexer_GetToken(Input);
+            if (T.Type == Identifier)
+            {
+                if (T.Text == "NPCprompt")
+                {
+                    while (true)
+                    {
+                        T = Lexer_GetToken(Input);
+                        if (T.Type == Text)
+                        {
+                            D->NPCtext = T.Text;
+                        }
+                        if (T.Type == SemiColon)
+                        {
+                            break;
+                        }
+                    }
+                }
+                if (T.Text == "Title")
+                {
+                    while (true)
+                    {
+                        T = Lexer_GetToken(Input);
+                        if (T.Type == Text)
+                        {
+                            D->DialogueTitle = T.Text;
+                        }
+                        if (T.Type == SemiColon)
+                        {
+                            break;
+                        }
+                    }
+                }
+                if (T.Text == "Option")
+                {
+                    bool WithinOption = true;
+                    while (WithinOption)
+                    {
+                        T = Lexer_GetToken(Input);
+                        if (T.Type == OpenSquareBrace)
+                        {
+                            T = Lexer_GetToken(Input);
+                            if (T.Type == Number)
+                            {
+                                i = stoi(T.Text);
+                            }
+                        }
+                        if (T.Type == Text)
+                        {
+                            D->Option[i].Text = T.Text;
+                        }
+                        if (T.Type == SmallerThan)
+                        {
+                            while (true)
+                            {
+                                /////////////////////////copy this and paste afterwards for more modifiers
+                                T = Lexer_GetToken(Input);
+                                if (T.Type == Identifier)
+                                {
+                                    if (T.Text == "nextNode")
+                                    {
+                                        while (true)
+                                        {
+                                            T = Lexer_GetToken(Input);
+                                            if (T.Type == Number)
+                                            {
+                                                D->Option[i].NextNodeID = stoi(T.Text);
+                                            }
+                                            if (T.Type == SemiColon)
+                                            {
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    /////////////////////////////
+                                }
+                                if (T.Type == LargerThan)
+                                {
+                                    WithinOption = false;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (T.Type == ClosedBrace)
+            {
+                D->MaxOptions = i + 1;
+                break;
+            }
+        }
+    }
+}
+
+void DP_ReloadStream(stringstream *Input, string FileString)
+{
+    stringstream tempstream;
+    Input->swap(tempstream);
+    Input->str(FileString);
+}
+
+int DP_ParseNextNode(int choice, dialogues *D, stringstream *Input, token *T, string FileString)
+{
+    string NextNode = to_string(D->Option[choice].NextNodeID);
+
+    int NodeFound = false;
+    DP_ReloadStream(Input, FileString);
+    while (true)
+    {
+        *T = Lexer_GetToken(Input);
+        if (T->Type == Identifier)
+        {
+            if (T->Text == "Node")
+            {
+                *T = Lexer_GetToken(Input);
+                if (T->Type == OpenSquareBrace)
+                {
+                    *T = Lexer_GetToken(Input);
+                    if (T->Type == Number && T->Text == NextNode)
+                    {
+                        *T = Lexer_GetToken(Input);
+                        DP_Node(Input, D);
+                        NodeFound = true;
+                        break;
+                    }
+                }
+            }
+            if (T->Text == "EOF")
+            {
+                break;
+            }
+        }
+    }
+    if (NodeFound)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+void DP_FindAndParseHomeNode(token *T, stringstream *Input, dialogues * Dialogue, string FileString)
+{
+    *T = Lexer_GetToken(Input);
+    if (T->Type == Identifier)
+    {
+        if (T->Text == "Homenode")
+        {
+            DP_Node(Input, Dialogue);
+            DP_ReloadStream(Input, FileString);
+        }
+    }
+}
+
+//---------------------------------------------------------------------

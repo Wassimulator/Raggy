@@ -45,22 +45,27 @@ int main(int argc, char **argv)
         {
             SoundBool = false;
         }
-    }   
+    }
     Window = SDL_CreateWindow("Raggy", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WindowWidth, WindowHeight, 0);
     WindowSurface = SDL_GetWindowSurface(Window);
     SDL_FillRect(WindowSurface, 0, (255 << 24) | (50 << 16) | (50 << 8) | (50));
     SDL_UpdateWindowSurface(Window);
 
     //------load sounds--------
+    printf("Loading sounds... ");
 
     Mix_OpenAudio(44800, MIX_DEFAULT_FORMAT, 2, 4096);
     sounds Sound = LoadSound();
 
     Mix_Music *BackgroundMusic = Mix_LoadMUS("data/sounds/music/background.WAV");
 
+    printf("Successful\n");
+
     float CamPosX = 0;
 
     //load fonts------------------------
+    printf("Loading fonts... ");
+
     TTF_Init();
     TTF_Font *Regular = TTF_OpenFont("data/fonts/PTSans-Regular.ttf", 20);
     TTF_Font *RegularS = TTF_OpenFont("data/fonts/PTSans-Regular.ttf", 17);
@@ -74,6 +79,7 @@ int main(int argc, char **argv)
     TTF_Font *Title3 = TTF_OpenFont("data/fonts/PTSans-Regular.ttf", 30);
 
     SDL_Surface *TextSurface;
+    printf("Successful\n");
     //----------------------------------
     int frameIndex = 0;
 
@@ -91,6 +97,7 @@ int main(int argc, char **argv)
     //-----------------------
 
     //-------------------Load Objects--------------------------
+    printf("Loading objects... ");
     player Player = LoadPlayer();
     map Map = LoadMap(CurrentMap);
     fart PlayerFart = LoadFart();
@@ -110,6 +117,7 @@ int main(int argc, char **argv)
         NPC[i] = LoadNPC(i);
     }
 
+    printf("Successful\n");
     //---------------------------------------------------------
 
     Player.PosX = 0;
@@ -152,13 +160,19 @@ int main(int argc, char **argv)
 
     //---------------intro Logo----------------------
     {
+
         bool IntroRunning = true;
         SDL_Event Event;
         SDL_Rect LogoRect;
+        printf("Loading logo... ");
         sprite Logo = LoadSprite("data/textures/ragsterb_logo.png");
+        printf("Successful\n");
         Mix_Chunk *IntroMusic;
+        printf("Loading intro music... ");
         IntroMusic = Mix_LoadWAV("data/sounds/music/intro.wav");
+        printf("Successful\n");
         Mix_PlayChannel(3, IntroMusic, 0);
+
         while (IntroRunning)
         {
             //FPS------------------------------------------------------

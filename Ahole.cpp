@@ -6,17 +6,103 @@ using namespace std;
 
 void LoadAholeSound(NPCsounds *AholeS, bool *AholeSLoaded)
 {
-    AholeS->Node[2] = Mix_LoadWAV("data/sounds/ahole/2.WAV");
-    AholeS->Node[3] = Mix_LoadWAV("data/sounds/ahole/3.WAV");
-    AholeS->Node[4] = Mix_LoadWAV("data/sounds/ahole/4.WAV");
-    AholeS->Node[5] = Mix_LoadWAV("data/sounds/ahole/5.WAV");
-    AholeS->Node[6] = Mix_LoadWAV("data/sounds/ahole/6.WAV");
-    AholeS->Node[7] = Mix_LoadWAV("data/sounds/ahole/7.WAV");
-    AholeS->Node[8] = Mix_LoadWAV("data/sounds/ahole/8.WAV");
-
+    cout << "Loading sound files... ";
+    for (int i = 0; i < 100; i++)
+    {
+        char File[30];
+        sprintf(File, "data/sounds/ahole/%i.WAV", i);
+        AholeS->Node[i] = Mix_LoadWAV(File);
+    }
+    cout << "Successful" << endl;
     *AholeSLoaded = true;
 }
-void AholeDialogue(dialogues *Dialogue, player *Player, dialogueNPC *Ahole, NPCsounds *AholeS, bool *firstrun, bool *refresh, bool *isTalking)
+void AholeDialogue(dialogues *Dialogue, player *Player, dialogueNPC *Ahole, NPCsounds *AholeS,
+                   bool *firstrun, bool *refresh, bool *isTalking, string FileString)
+{
+
+    stringstream Input;
+    token T;
+    Input.str(FileString);
+
+    if (Mix_Playing(2) == 0)
+    {
+        *isTalking = false;
+    }
+    if (*isTalking == false)
+    {
+        Dialogue->View = Ahole->IdleView;
+    }
+
+    if (*refresh)
+    {
+
+        int TargetNode;
+        int count = 0;
+
+        bool NoneSelected = true;
+        for (int i = 0; i < 12; i++)
+        {
+            if (Dialogue->SelectedOption[i] == true)
+            {
+                NoneSelected = false;
+            }
+        }
+        if (firstrun)
+        {
+
+            if (NoneSelected == true)
+            {
+                DP_FindAndParseHomeNode(&T, &Input, Dialogue, FileString);
+                Mix_PlayChannel(2, AholeS->Node[0], 0); //use Mix_Haltchannel() to stop, also, Player uses channel 1, NPCs on channel 2.
+                Dialogue->View = Ahole->TalkView;
+                *isTalking = true;
+
+                for (int i = 0; i < 12; i++)
+                {
+                    Dialogue->SelectedOption[i] = false;
+                }
+                Dialogue->PlayerText = " ";
+                *firstrun = false;
+            }
+
+            if (NoneSelected == false)
+            {
+                for (int i = 0; i < 12; i++)
+                {
+                    if (Dialogue->SelectedOption[i] == true)
+                    {
+
+                        //use Mix_Haltchannel() to stop, also, Player uses channel 1, NPCs on channel 2.
+                        Mix_PlayChannel(2, AholeS->Node[Dialogue->Option[i].NextNodeID], 0);
+
+                        Dialogue->PlayerText = Dialogue->Option[i].Text;
+                        if (!DP_ParseNextNode(i, Dialogue, &Input, &T, FileString))
+                        {
+                            cout << "ERROR: Node not found!" << endl;
+                            break;
+                        }
+
+                        Dialogue->View = Ahole->TalkView;
+                        *isTalking = true;
+                    }
+                }
+            }
+            refresh = false;
+        }
+    }
+}
+void AholeMain(bool *AholeSLoaded, NPCsounds *AholeS, dialogues *Dialogue, player *Player, dialogueNPC *Ahole,
+               bool *firstrun, bool *refresh, bool *isTalking, string *FileString)
+{
+    if (*AholeSLoaded == false)
+    {
+        LoadAholeSound(AholeS, AholeSLoaded);
+        *FileString = Lexer_FileToString("data/texts/ahole2.rxt");
+    }
+    AholeDialogue(Dialogue, Player, Ahole, AholeS, firstrun, refresh, isTalking, *FileString);
+}
+
+/*void AholeDialogue(dialogues *Dialogue, player *Player, dialogueNPC *Ahole, NPCsounds *AholeS, bool *firstrun, bool *refresh, bool *isTalking)
 {
 
     if (Mix_Playing(2) == 0)
@@ -161,121 +247,4 @@ void AholeDialogue(dialogues *Dialogue, player *Player, dialogueNPC *Ahole, NPCs
         refresh = false;
         Input.close();
     }
-    //cout << Dialogue->Option[0].Text << " firstrun = " << firstrun << endl;
-
-    //
-
-    /*Dialogue->DialogueTitle = "Pricksoin Ahole";
-    Dialogue->View = Ahole->IdleView;
-
-    FILE *TextFile;
-    char *Token;
-    char Buffer[1024];
-    int TargetNode;
-    int count = 0;
-    int ID;
-    TextFile = fopen("data/texts/ahole.txt", "r");
-
-    //--------------------assign all NextNodes-------------------------------
-    fgets(Buffer, sizeof(Buffer), TextFile); //skip first line
-    while (fgets(Buffer, sizeof(Buffer), TextFile))
-    {
-        Token = strtok(Buffer, ",");
-        Token = strtok(NULL, ",");
-        for (int i = 0; i < 12; i++)
-        {
-            Token = strtok(NULL, ",");
-            Token = strtok(NULL, ",");
-            if (Token != NULL)
-            {
-                ID = atoi(Token);
-                Dialogue->Option[i].NextNode = &Node[ID];
-                Dialogue->Option[i].NextNodeID = atoi(Token);
-                Dialogue->Option[i].NextNodeID = Node[ID].ID;
-            }
-        }
-    }
-    rewind(TextFile);
-
-    //----------------------Read Base Node----------------------------
-    bool NoneSelected = true;
-    for (int i = 0; i < 12; i++)
-    {
-        if (Dialogue->SelectedOption[i] == true)
-        {
-        }
-        else
-        {
-            NoneSelected = true;
-        }
-    }
-
-    if (NoneSelected = true)
-    {
-        for (int i = 0; i < 12; i++)
-        {
-            Dialogue->SelectedOption[i] = false;
-        }
-        Dialogue->PlayerText = " ";
-        fgets(Buffer, sizeof(Buffer), TextFile);
-        fgets(Buffer, sizeof(Buffer), TextFile);
-
-        Token = strtok(Buffer, ","); //starts with the line we got
-        Dialogue->NPCtext = Token;
-        Token = strtok(NULL, ","); //NULL means it starts where the last one stopped
-        Dialogue->MaxOptions = atoi(Token);
-        for (int i = 0; i < 12; i++)
-        {
-            Token = strtok(NULL, ",");
-            Dialogue->Option[i].Text = Token;
-            Token = strtok(NULL, ",");
-            if (Token != NULL)
-            {
-                ID = atoi(Token);
-                Dialogue->Option[i].NextNode = &Node[ID];
-                Dialogue->Option[i].NextNodeID = atoi(Token);
-                Node[ID].ID = Dialogue->Option[i].NextNodeID;
-            }
-        }
-
-        rewind(TextFile);
-    }
-
-    //------------------------------------------------------------------
-
-    for (int i = 0; i < 12; i++)
-    {
-        if (Dialogue->SelectedOption[i] == true)
-        {
-            TargetNode = Dialogue->Option[i].NextNodeID;
-            Dialogue->PlayerText = Dialogue->Option[i].Text;
-
-            while (fgets(Buffer, sizeof(Buffer), TextFile) != NULL)
-            {
-                if (count == TargetNode)
-                {
-                    Token = strtok(Buffer, ","); //starts with the line we got
-                    Dialogue->NPCtext = Token;
-                    Token = strtok(NULL, ","); //NULL means it starts where the last one stopped
-                    Dialogue->MaxOptions = atoi(Token);
-                    for (int i = 0; i < Dialogue->MaxOptions; i++)
-                    {
-                        Token = strtok(NULL, ",");
-                        Dialogue->Option[i].Text = Token;
-                        Token = strtok(NULL, ",");
-                        ID = atoi(Token);
-                        Dialogue->Option[i].NextNode = &Node[ID];
-                    }
-                }
-                else
-                {
-                    count++;
-                }
-            }
-            rewind(TextFile);
-            count = 0;
-        }
-    }
-
-    fclose(TextFile);*/
-}
+}*/

@@ -1,27 +1,8 @@
 #pragma once
+#include "source.cpp"
+#include <lexer.h>
 
 
-struct dialogues
-{
-    bool Ahole = false;
-    char *OptionText[12];
-    int MaxOptions = 12;
-    string DialogueTitle = "dialogue title";
-    string NPCtext = "placeholder for NPC text (what they say)";
-    char *PlayerText = "placeholder for Player text (what he says)";
-    bool HighlightedOption[12];
-    bool SelectedOption[12];
-    int ID;
-
-    struct options
-    {
-        string Text;
-        dialogues *NextNode;
-        int NextNodeID;
-    };
-
-    options Option[12];
-};
 
 void DP_Node(stringstream *Input, dialogues *D)
 {
