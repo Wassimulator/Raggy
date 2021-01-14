@@ -164,12 +164,20 @@ struct npc
     sprite LeaningLeft;
 };
 
+enum maptileType
+{
+    start,
+    middle,
+    end
+};
+
 struct map
 {
     sprite ActiveMap;
     float PosX;
     float PosY;
-    //int Speed; no longer necessary
+
+    maptileType Type;
 };
 
 enum doorStatus
@@ -537,10 +545,18 @@ void MapUpdate(float *CamPosX, player *Player)
 
 void UpdateMap(SDL_Rect *PlayerRect, map *Map, door *Door, SDL_Rect *DTRect, float *CamPosX, int *WindowWidth)
 {
-    *Map = LoadMap(CurrentMap);
+    Map[0] = LoadMap(CurrentMap);
+    for(int i = 1 ; i < 30 ; i++)
+    {
+        Map[i] = LoadMap(CurrentMap);
+    }
+    Map[30] = LoadMap(CurrentMap);
+    for(int i = 1 ; i < 30 ; i++)
+    {
     Map->ActiveMap.h = Map->ActiveMap.h * 3;
     Map->ActiveMap.w = Map->ActiveMap.w * 3;
-
+    }
+    //door stuff below/////
     int TargetLevel;
     for (int i = 0; i < MaxDoors; i++)
     {
@@ -834,7 +850,7 @@ int DP_ParseNextNode(int choice, dialogues *D, stringstream *Input, token *T, st
     }
 }
 
-void DP_FindAndParseHomeNode(token *T, stringstream *Input, dialogues * Dialogue, string FileString)
+void DP_FindAndParseHomeNode(token *T, stringstream *Input, dialogues *Dialogue, string FileString)
 {
     *T = Lexer_GetToken(Input);
     if (T->Type == Identifier)

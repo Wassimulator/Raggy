@@ -28,7 +28,7 @@ void LoadRects(int *WindowWidth, int *WindowHeight, int CamPosX, bool *F_Key,
     Map.PosY = -(Map.ActiveMap.h - *WindowHeight) / 2;
     MapRect->h = Map.ActiveMap.h;
     MapRect->w = Map.ActiveMap.w;
-    MapRect->x = ((*WindowWidth - Map.ActiveMap.w) / 2) - CamPosX;
+    MapRect->x = ((*WindowWidth - Map.ActiveMap.w) / 2) - CamPosX; //moves the map based on campos., where the player is
     MapRect->y = Map.PosY;
 
     for (Di = 0; Di < MaxDoors; Di++)
