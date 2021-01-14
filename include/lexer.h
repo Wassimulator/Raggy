@@ -192,9 +192,6 @@ token Lexer_GetToken(stringstream *Input)
 {
     token ResultToken;
 
-    //stringstream Input;
-
-    ;
     char c;
     bool isChar = false;
 
@@ -340,4 +337,12 @@ token Lexer_GetToken(stringstream *Input)
         }
     }
     return ResultToken;
+}
+
+string Lexer_FileToString(char* file)
+{
+    string FileString = Lexer_ReadFileIntoMemory(file);
+    Lexer_RemoveComments(&FileString);
+    Lexer_RemoveWhitespace(&FileString);
+    return FileString;
 }
