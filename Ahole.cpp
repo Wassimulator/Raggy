@@ -52,7 +52,7 @@ void AholeDialogue(dialogues *Dialogue, player *Player, dialogueNPC *Ahole, NPCs
 
             if (NoneSelected == true)
             {
-                DP_FindAndParseHomeNode(&T, &Input, Dialogue, FileString);
+                RXT_FindAndParseHomeNode(&T, &Input, Dialogue, FileString);
                 Mix_PlayChannel(2, AholeS->Node[0], 0); //use Mix_Haltchannel() to stop, also, Player uses channel 1, NPCs on channel 2.
                 Dialogue->View = Ahole->TalkView;
                 *isTalking = true;
@@ -76,7 +76,7 @@ void AholeDialogue(dialogues *Dialogue, player *Player, dialogueNPC *Ahole, NPCs
                         Mix_PlayChannel(2, AholeS->Node[Dialogue->Option[i].NextNodeID], 0);
 
                         Dialogue->PlayerText = Dialogue->Option[i].Text;
-                        if (!DP_ParseNextNode(i, Dialogue, &Input, &T, FileString))
+                        if (!RXT_ParseNextNode(i, Dialogue, &Input, &T, FileString))
                         {
                             cout << "ERROR: Node not found!" << endl;
                             break;

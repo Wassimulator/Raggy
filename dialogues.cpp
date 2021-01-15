@@ -98,7 +98,7 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
 
     ResetFades();
 
-    string FileString = "Potato";
+    string FileString;
 
     while (DialogueRunning)
     {

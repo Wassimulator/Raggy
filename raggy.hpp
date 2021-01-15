@@ -29,6 +29,7 @@ int FClength = 0;
 const int MaxNPCs = 1;
 const int MaxMaps = 1;
 const int MaxDoors = 10;
+const int MaxTiles = 50;
 
 //---------------------------------------------------------
 

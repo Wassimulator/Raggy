@@ -4,7 +4,7 @@
 
 
 
-void DP_Node(stringstream *Input, dialogues *D)
+void RXT_ParseNode(stringstream *Input, dialogues *D)
 {
     token T;
     T = Lexer_GetToken(Input);
@@ -108,19 +108,19 @@ void DP_Node(stringstream *Input, dialogues *D)
     }
 }
 
-void DP_ReloadStream(stringstream *Input, string FileString)
+void RXT_ReloadStream(stringstream *Input, string FileString)
 {
     stringstream tempstream;
     Input->swap(tempstream);
     Input->str(FileString);
 }
 
-int DP_ParseNextNode(int choice, dialogues *D, stringstream *Input, token *T, string FileString)
+int RXT_ParseNextNode(int choice, dialogues *D, stringstream *Input, token *T, string FileString)
 {
     string NextNode = to_string(D->Option[choice - 1].NextNodeID);
 
     int NodeFound = false;
-    DP_ReloadStream(Input, FileString);
+    RXT_ReloadStream(Input, FileString);
     while (true)
     {
         *T = Lexer_GetToken(Input);
@@ -135,7 +135,7 @@ int DP_ParseNextNode(int choice, dialogues *D, stringstream *Input, token *T, st
                     if (T->Type == Number && T->Text == NextNode)
                     {
                         *T = Lexer_GetToken(Input);
-                        DP_Node(Input, D);
+                        RXT_ParseNode(Input, D);
                         NodeFound = true;
                         break;
                     }

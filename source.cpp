@@ -171,6 +171,27 @@ struct map
     float PosY;
     //int Speed; no longer necessary
 };
+enum maptileType
+{
+    Start,
+    Middle,
+    End
+};
+struct maptile
+{
+    sprite Start, Middle, End;
+    sprite *ActiveTexture;
+    maptileType Type;
+    float PosX;
+    float PosY;
+    bool exists = true;
+};
+
+struct levelInfo
+{
+    int Length;
+    int Texture_Type = 0;
+};
 
 enum doorStatus
 {
@@ -214,6 +235,23 @@ struct fartCloud
     int T;
 };
 //-----------------things----------------------
+maptile LoadTile(int levelNumber)
+{
+    maptile result = {};
+    char Start[40];
+    char Middle[40];
+    char End[40];
+    sprintf(Start, "data/textures/levels/%i_start.png", levelNumber);
+    sprintf(Middle, "data/textures/levels/%i_middle.png", levelNumber);
+    sprintf(End, "data/textures/levels/%i_end.png", levelNumber);
+
+    result.Start = LoadSprite(Start);
+    result.Middle = LoadSprite(Middle);
+    result.End = LoadSprite(End);
+
+    return result;
+}
+
 fartCloud LoadFartCloud()
 {
     fartCloud PlayerFartCloud = {};
@@ -330,19 +368,6 @@ void DoorsUpdate(door *DT, SDL_Rect PlayerRect, SDL_Rect *DTRect, TTF_Font *Font
                     }
                 }
             }
-            /*else if (DT[Di].Status == Open)
-            {
-                if (PlayerRect.x < (DTRect[Di].x + 48) && PlayerRect.x > (DTRect[Di].x - 48))
-                {
-                    RenderText(Font, "Door: press E to Close", 255, 255, 255, 0, 150, TextSurface, WindowSurface, WindowWidth, WindowHight);
-
-                    if (E_Key)
-                    {
-                        DT[Di].ActiveTexture = &DT[Di].Closed;
-                        DT[Di].Status = Closed;
-                    }
-                }
-            }*/
         }
     }
 }
@@ -535,91 +560,6 @@ void MapUpdate(float *CamPosX, player *Player)
     }
 }
 
-void UpdateMap(SDL_Rect *PlayerRect, map *Map, door *Door, SDL_Rect *DTRect, float *CamPosX, int *WindowWidth)
-{
-    *Map = LoadMap(CurrentMap);
-    Map->ActiveMap.h = Map->ActiveMap.h * 3;
-    Map->ActiveMap.w = Map->ActiveMap.w * 3;
-
-    int TargetLevel;
-    for (int i = 0; i < MaxDoors; i++)
-    {
-        if (Door[i].Status == Open)
-        {
-            Door[Door[i].nextDoor].exists = true;
-            TargetLevel = Door[i].next;
-        }
-    }
-
-    int count = 0;
-    fstream InFile("data/levels.txt");
-    string buffer;
-    getline(InFile, buffer, '\n');
-    while (1)
-    {
-        getline(InFile, buffer, ',');
-        if (stoi(buffer) == TargetLevel)
-        {
-            for (int i = 0; i < 10; i++)
-            {
-                getline(InFile, buffer, ',');
-                if (buffer.empty() == false)
-                {
-                    Door[i].exists = true;
-                }
-                if (buffer.empty() == true)
-                {
-                    Door[i].exists = false;
-                }
-                getline(InFile, buffer, ',');
-                if (buffer.empty() == false)
-                {
-                    Door[i].next = stoi(buffer);
-                }
-                getline(InFile, buffer, ',');
-                if (buffer.empty() == false && buffer != "\n")
-                {
-                    Door[i].nextDoor = stoi(buffer);
-                }
-            }
-            getline(InFile, buffer, '\n');
-            break;
-            count = 0;
-        }
-        else
-        {
-            getline(InFile, buffer, '\n');
-        }
-    }
-}
-
-void UpdateMapRects(player *Player, SDL_Rect *PlayerRect, map *Map, door *Door, SDL_Rect *DTRect, float *CamPosX, int *WindowWidth)
-{
-    for (int i = 0; i < MaxDoors; i++)
-    {
-        if (Door[i].Status == Open)
-        {
-            if (Player->PosX == DTRect[Door[i].nextDoor].x)
-            {
-                ToUpdateMapRects = false;
-            }
-            int y;
-            y = 768 - (*WindowWidth / 2); //Why this number? anticipate bugs.
-
-            Player->PosX = -(Map->ActiveMap.w / 2) + 100 + 300 * (Door[i].nextDoor);
-            //Player->PosX = DTRect[Door[i].nextDoor].x;
-
-            *CamPosX = Player->PosX;
-        }
-    }
-
-    for (Di = 0; Di < MaxDoors; Di++)
-    {
-        Door[Di].Status = Closed;
-    }
-
-    ToUpdateMapRects = false;
-}
 /*
 fckn why
 1280,112  380
@@ -680,8 +620,8 @@ void UpdateOptionRects(SDL_Rect OptionRect[12], SDL_Rect Options, SDL_Rect Optio
 }
 //--------------------------------------------------------
 
-//-----------------------------------------------Parser
-void DP_Node(stringstream *Input, dialogues *D)
+//-----------------------------------------------Parser-----------------------------------
+void RXT_ParseNode(stringstream *Input, dialogues *D)
 {
     token T;
     T = Lexer_GetToken(Input);
@@ -785,19 +725,19 @@ void DP_Node(stringstream *Input, dialogues *D)
     }
 }
 
-void DP_ReloadStream(stringstream *Input, string FileString)
+void RXT_ReloadStream(stringstream *Input, string FileString)
 {
     stringstream tempstream;
     Input->swap(tempstream);
     Input->str(FileString);
 }
 
-int DP_ParseNextNode(int choice, dialogues *D, stringstream *Input, token *T, string FileString)
+int RXT_ParseNextNode(int choice, dialogues *D, stringstream *Input, token *T, string FileString)
 {
     string NextNode = to_string(D->Option[choice].NextNodeID);
 
     int NodeFound = false;
-    DP_ReloadStream(Input, FileString);
+    RXT_ReloadStream(Input, FileString);
     while (true)
     {
         *T = Lexer_GetToken(Input);
@@ -812,7 +752,7 @@ int DP_ParseNextNode(int choice, dialogues *D, stringstream *Input, token *T, st
                     if (T->Type == Number && T->Text == NextNode)
                     {
                         *T = Lexer_GetToken(Input);
-                        DP_Node(Input, D);
+                        RXT_ParseNode(Input, D);
                         NodeFound = true;
                         break;
                     }
@@ -834,17 +774,230 @@ int DP_ParseNextNode(int choice, dialogues *D, stringstream *Input, token *T, st
     }
 }
 
-void DP_FindAndParseHomeNode(token *T, stringstream *Input, dialogues * Dialogue, string FileString)
+void RXT_FindAndParseHomeNode(token *T, stringstream *Input, dialogues *Dialogue, string FileString)
 {
     *T = Lexer_GetToken(Input);
     if (T->Type == Identifier)
     {
         if (T->Text == "Homenode")
         {
-            DP_Node(Input, Dialogue);
-            DP_ReloadStream(Input, FileString);
+            RXT_ParseNode(Input, Dialogue);
+            RXT_ReloadStream(Input, FileString);
         }
     }
 }
 
+//---------RMP-----------
+void RMP_ParseLevel(stringstream *Input, levelInfo *LevelInfo)
+{
+    token T;
+    T = Lexer_GetToken(Input);
+    if (T.Type == OpenBrace)
+    {
+        int i;
+        while (true)
+        {
+            T = Lexer_GetToken(Input);
+            if (T.Type == Identifier)
+            {
+                if (T.Text == "Length")
+                {
+                    while (true)
+                    {
+                        T = Lexer_GetToken(Input);
+                        if (T.Type == Number)
+                        {
+                            LevelInfo->Length = stoi(T.Text);
+                        }
+                        if (T.Type == SemiColon)
+                        {
+                            break;
+                        }
+                    }
+                }
+                if (T.Text == "TextureType")
+                {
+                    while (true)
+                    {
+                        T = Lexer_GetToken(Input);
+                        if (T.Type == Number)
+                        {
+                            LevelInfo->Texture_Type = stoi(T.Text);
+                        }
+                        if (T.Type == SemiColon)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+            if (T.Type == ClosedBrace)
+            {
+                break;
+            }
+        }
+    }
+}
+
+void RMP_ReloadStream(stringstream *Input, string FileString)
+{
+    stringstream tempstream;
+    Input->swap(tempstream);
+    Input->str(FileString);
+}
+
+int RMP_ParseNextLevel(levelInfo *LevelInfo, stringstream *Input, token *T, string FileString)
+{
+    string NextLevel = to_string(CurrentMap);
+
+    bool LevelFound = false;
+    RMP_ReloadStream(Input, FileString);
+    while (true)
+    {
+        *T = Lexer_GetToken(Input);
+        if (T->Type == Identifier)
+        {
+            if (T->Text == "Level")
+            {
+                *T = Lexer_GetToken(Input);
+                if (T->Type == OpenSquareBrace)
+                {
+                    *T = Lexer_GetToken(Input);
+                    if (T->Type == Number && T->Text == NextLevel)
+                    {
+                        *T = Lexer_GetToken(Input);
+                        RMP_ParseLevel(Input, LevelInfo);
+                        LevelFound = true;
+                        break;
+                    }
+                }
+            }
+            if (T->Text == "EOF")
+            {
+                break;
+            }
+        }
+    }
+    if (LevelFound)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
 //---------------------------------------------------------------------
+
+void UpdateMap(SDL_Rect *PlayerRect, map *Map, door *Door, SDL_Rect *DTRect, float *CamPosX, int *WindowWidth,
+               levelInfo *LevelInfo, stringstream *LevelInput, token *LevelToken, string LevelFileString)
+{
+
+    RMP_ParseNextLevel(LevelInfo, LevelInput, LevelToken, LevelFileString);
+
+    *Map = LoadMap(CurrentMap);
+    Map->ActiveMap.h = Map->ActiveMap.h * 3;
+    Map->ActiveMap.w = Map->ActiveMap.w * 3;
+
+    int TargetLevel;
+    for (int i = 0; i < MaxDoors; i++)
+    {
+        if (Door[i].Status == Open)
+        {
+            Door[Door[i].nextDoor].exists = true;
+            TargetLevel = Door[i].next;
+        }
+    }
+
+    int count = 0;
+    fstream InFile("data/levels.txt");
+    string buffer;
+    getline(InFile, buffer, '\n');
+    while (1)
+    {
+        getline(InFile, buffer, ',');
+        if (stoi(buffer) == TargetLevel)
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                getline(InFile, buffer, ',');
+                if (buffer.empty() == false)
+                {
+                    Door[i].exists = true;
+                }
+                if (buffer.empty() == true)
+                {
+                    Door[i].exists = false;
+                }
+                getline(InFile, buffer, ',');
+                if (buffer.empty() == false)
+                {
+                    Door[i].next = stoi(buffer);
+                }
+                getline(InFile, buffer, ',');
+                if (buffer.empty() == false && buffer != "\n")
+                {
+                    Door[i].nextDoor = stoi(buffer);
+                }
+            }
+            getline(InFile, buffer, '\n');
+            break;
+            count = 0;
+        }
+        else
+        {
+            getline(InFile, buffer, '\n');
+        }
+    }
+}
+
+void UpdateMapRects(player *Player, SDL_Rect *PlayerRect, map *Map, door *Door, SDL_Rect *DTRect, float *CamPosX, int *WindowWidth)
+{
+    for (int i = 0; i < MaxDoors; i++)
+    {
+        if (Door[i].Status == Open)
+        {
+            if (Player->PosX == DTRect[Door[i].nextDoor].x)
+            {
+                ToUpdateMapRects = false;
+            }
+            int y;
+
+            Player->PosX = -(Map->ActiveMap.w / 2) + 100 + 300 * (Door[i].nextDoor);
+            //Player->PosX = DTRect[Door[i].nextDoor].x;
+
+            *CamPosX = Player->PosX;
+        }
+    }
+
+    for (Di = 0; Di < MaxDoors; Di++)
+    {
+        Door[Di].Status = Closed;
+    }
+
+    ToUpdateMapRects = false;
+}
+
+void UpdateTiles(maptile *MapTile, levelInfo LevelInfo)
+{
+    for (int i = 0; i < MaxTiles; i++)
+    {
+        MapTile[i] = LoadTile(LevelInfo.Texture_Type);
+    }
+    for (int i = 0; i < (LevelInfo.Length + 1); i++)
+    {
+        MapTile[i].exists = true;
+    }
+    for (int i = LevelInfo.Length + 1; i < MaxTiles; i++)
+    {
+        MapTile[i].exists = false;
+    }
+
+    MapTile[0].ActiveTexture = &MapTile[0].Start;
+    MapTile[LevelInfo.Length].ActiveTexture = &MapTile[LevelInfo.Length].End;
+    for (int i = 1; i < LevelInfo.Length; i++)
+    {
+        MapTile[i].ActiveTexture = &MapTile[i].Middle;
+    }
+}

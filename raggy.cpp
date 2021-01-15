@@ -98,6 +98,7 @@ int main(int argc, char **argv)
 
     //-------------------Load Objects--------------------------
     printf("Loading objects... ");
+
     player Player = LoadPlayer();
     map Map = LoadMap(CurrentMap);
     fart PlayerFart = LoadFart();
@@ -106,11 +107,26 @@ int main(int argc, char **argv)
     {
         PlayerFartCloud[FCi] = LoadFartCloud();
     }
+
     door Door[MaxDoors];
     for (Di = 0; Di < MaxDoors; Di++)
     {
         Door[Di] = LoadDoor();
     }
+
+    maptile MapTile[MaxTiles];
+
+    for (int i = 0; i < MaxTiles; i++)
+    {
+        MapTile[i] = LoadTile(0);
+    }
+    MapTile[0].ActiveTexture = &MapTile[0].Start;
+    MapTile[MaxTiles - 1].ActiveTexture = &MapTile[MaxTiles - 1].End;
+    for (int i = 1; i < MaxTiles - 1; i++)
+    {
+        MapTile[i].ActiveTexture = &MapTile[i].Middle;
+    }
+
     npc NPC[MaxNPCs];
     for (int i = 0; i < MaxNPCs; i++)
     {
@@ -151,12 +167,21 @@ int main(int argc, char **argv)
     SDL_Rect PlayerFartActiveRect;
     SDL_Rect PlayerFartCloudRect[20];
     SDL_Rect PlayerFartCloudActiveRect[20];
-    SDL_Rect DoorRect[10];
+    SDL_Rect DoorRect[MaxDoors];
+    SDL_Rect MapTileRect[MaxTiles];
     SDL_Rect NPCRect;
 
     bool Playing = false;
 
     ResetFades();
+
+    levelInfo LevelInfo;
+    string LevelFileString = Lexer_FileToString("data/levels.rmp");
+    stringstream LevelInput;
+    token LevelToken;
+    LevelInput.str(LevelFileString);
+    RMP_ParseLevel(&LevelInput, &LevelInfo);
+    RMP_ReloadStream(&LevelInput, LevelFileString);
 
     //---------------intro Logo----------------------
     {
@@ -301,7 +326,9 @@ int main(int argc, char **argv)
         }
         if (ToUpdateMap)
         {
-            UpdateMap(&PlayerRect, &Map, Door, DoorRect, &CamPosX, &WindowWidth);
+            UpdateMap(&PlayerRect, &Map, Door, DoorRect, &CamPosX, &WindowWidth,
+                      &LevelInfo, &LevelInput, &LevelToken, LevelFileString);
+            UpdateTiles(MapTile, LevelInfo);
             ToUpdateMap = false;
             UpdatedMap = true;
         }
@@ -453,6 +480,17 @@ int main(int argc, char **argv)
         float MapLimitR = Map.ActiveMap.w * 0.5f - 3 * 16;
         float MapLimitL = -Map.ActiveMap.w * 0.5f + 3 * 16;
 
+        int limitcounter = 0;
+        for (int i = 0; i < MaxTiles; i++)
+        {
+            if (MapTile[i].exists)
+            {
+                ++limitcounter;
+            }
+        }
+        MapLimitR = limitcounter * 32 * 3 * 0.5f - 3 * 16;
+        MapLimitL = -limitcounter * 32 * 3 * 0.5f + 3 * 16;
+
         //-------------------------Game Update----------------------------------------------------------
         PlayerUpdate(&Player, CamPosX, RightButton, LeftButton, UpButton,
                      DownButton, Shift, MapLimitL, MapLimitR, WalkSpeed, RunSpeed);
@@ -507,7 +545,8 @@ int main(int argc, char **argv)
                   PlayerFartCloudRect, PlayerFartCloud,
                   PlayerFartCloudActiveRect,
                   DoorRect, Door,
-                  &NPCRect, NPC);
+                  &NPCRect, NPC,
+                  MapTileRect, MapTile);
         if (ToUpdateMapRects && UpdatedMap)
         {
             UpdateMapRects(&Player, &PlayerRect, &Map, Door, DoorRect, &CamPosX, &WindowWidth);
@@ -520,6 +559,14 @@ int main(int argc, char **argv)
         //                     NPCs go before the player typically.
 
         SDL_BlitScaled(Map.ActiveMap.Surface, 0, WindowSurface, &MapRect);
+
+        for (int i = 0; i < MaxTiles; i++)
+        {
+            if (MapTile[i].exists)
+            {
+                SDL_BlitScaled(MapTile[i].ActiveTexture->Surface, 0, WindowSurface, &MapTileRect[i]);
+            }
+        }
 
         RenderTextCentered(Bold2, "This is a Game", 255, 255, 255, 0, -170, TextSurface, WindowSurface, WindowWidth, WindowHeight);
         RenderText(Regular, "Press H to say hello", 255, 255, 255, 0, 0, TextSurface, WindowSurface, WindowWidth, WindowHeight);
@@ -563,9 +610,6 @@ int main(int argc, char **argv)
         char FCcount[50];
         sprintf(FCcount, "Fart Cloud count: %i", FClength);
 
-        // RenderText(Regular, FCcount, 255, 255, 255, WindowWidth - 180, 25, TextSurface, WindowSurface, WindowWidth, WindowHeight);
-        //printf("read index = %i, write index = %i\n", FartCloudReadIndex, FartCloudWriteIndex);
-
         if (FadeOut == true)
         {
             SDL_Surface *FadeSurface = SDL_CreateRGBSurface(0, WindowWidth, WindowHeight, 32, 0, 0, 0, 255);
@@ -606,6 +650,7 @@ int main(int argc, char **argv)
         }
 
         /////////////////////////Printf section///////////////////////////////
+
         //printf("PX=%f, PRect= %i, DoorRect0= %i, CamPosX=%f, DTPosX=%f \n", Player.PosX, PlayerRect.x, DoorRect[Door[5].nextDoor].x, CamPosX, Door[MAPPPP].PosX);
         //printf(ToUpdateMapRects ? "TUM = true\n" : "TUM = false\n");
 
@@ -646,7 +691,6 @@ int main(int argc, char **argv)
             {
                 RAMleak = false;
             }
-            //printf("%f  %f\n", RAM2, RAM1);
             if (RAMleak)
             {
                 bool on;
@@ -678,6 +722,13 @@ int main(int argc, char **argv)
 
             RenderText(RegularS, NowFPS, 170, 170, 255, WindowWidth - 60, 0, TextSurface, WindowSurface, WindowWidth, WindowHeight);
             RenderText(RegularS, NowRAM, 255, 255, 150, WindowWidth - 300, 0, TextSurface, WindowSurface, WindowWidth, WindowHeight);
+
+            char DebugPlayerPosX[30];
+            sprintf(DebugPlayerPosX, "Player Pos X: %i", (int16_t)Player.PosX);
+            RenderText(RegularS, DebugPlayerPosX, 170, 170, 170, WindowWidth - 300, 50, TextSurface, WindowSurface, WindowWidth, WindowHeight);
+            char DebugCamPosX[30];
+            sprintf(DebugCamPosX, "Camera Position X: %i", (int16_t)CamPosX);
+            RenderText(RegularS, DebugCamPosX, 170, 170, 170, WindowWidth - 300, 75, TextSurface, WindowSurface, WindowWidth, WindowHeight);
         }
         //------------------------------------------------------
         SDL_UpdateWindowSurface(Window);

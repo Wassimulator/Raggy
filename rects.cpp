@@ -12,12 +12,13 @@ void LoadRects(int *WindowWidth, int *WindowHeight, int CamPosX, bool *F_Key,
                SDL_Rect *PlayerFartCloudRect, fartCloud *PlayerFartCloud,
                SDL_Rect *PlayerFartCloudActiveRect,
                SDL_Rect *DTRect, door *DT,
-               SDL_Rect *NPCRect, npc NPC[MaxNPCs]) // Do I need a pointer here for the array since the array is a pointer?
+               SDL_Rect *NPCRect, npc NPC[MaxNPCs],
+               SDL_Rect *MapTileRect, maptile *MapTile) // Do I need a pointer here for the array since the array is a pointer?
 {
     //animation sequence
     int SixCounterP = (Player->i - 1) % 3;
     int SixCOunterQ = (Player->i - 1) / 3;
-    
+
     PlayerRect->x = (*WindowWidth / 2) + (Player->PosX - CamPosX) - (3 * 16);
     PlayerRect->y = (*WindowHeight / 2) - 48;
     PlayerRect->w = 32 * 3; // TODO: Scaling is an inherent problem that needs fixing.
@@ -39,7 +40,26 @@ void LoadRects(int *WindowWidth, int *WindowHeight, int CamPosX, bool *F_Key,
             DTRect[Di].w = DT[Di].Closed.w * 3;
             DTRect[Di].x = (*WindowWidth / 2) - CamPosX - 48 - (Map.ActiveMap.w / 2) + 100 + 300 * (Di);
             DTRect[Di].y = (*WindowHeight / 2) - 96;
-            //DT[Di].PosX = (*WindowWidth / 2) - 48 - (Map.ActiveMap.w / 2) + 100 + 300 * (Di);
+        }
+    }
+
+    int limitcounter = 0;
+    for (int i = 0; i < MaxTiles; i++)
+    {
+        if (MapTile[i].exists)
+        {
+            ++limitcounter;
+        }
+    }
+    int MapSizeFromTiles = limitcounter * 32 * 3;
+    for (int i = 0; i < MaxTiles; i++)
+    {
+        if (MapTile[i].exists)
+        {
+            MapTileRect[i].h = MapTile[i].ActiveTexture->h * 3;
+            MapTileRect[i].w = MapTile[i].ActiveTexture->w * 3;
+            MapTileRect[i].x = (*WindowWidth / 2) - CamPosX - (MapSizeFromTiles / 2) + 32 * 3 * (i);
+            MapTileRect[i].y = (*WindowHeight / 2) - (MapTile[i].ActiveTexture->h / 2 * 3);
         }
     }
 
