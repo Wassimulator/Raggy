@@ -981,6 +981,8 @@ void UpdateMapRects(player *Player, SDL_Rect *PlayerRect, map *Map, door *Door, 
 
 void UpdateTiles(maptile *MapTile, levelInfo LevelInfo)
 {
+    printf("Loading map... ");
+
     for (int i = 0; i < MaxTiles; i++)
     {
         MapTile[i] = LoadTile(LevelInfo.Texture_Type);
@@ -1000,4 +1002,5 @@ void UpdateTiles(maptile *MapTile, levelInfo LevelInfo)
     {
         MapTile[i].ActiveTexture = &MapTile[i].Middle;
     }
+    printf("Successful\n");
 }

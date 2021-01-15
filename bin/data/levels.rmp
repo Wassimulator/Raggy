@@ -1,6 +1,6 @@
 Level[0]
 {
-    Length: 40;
+    Length: 40; /*Length includes the number*/
     TextureType: 0;
 }
 

@@ -113,7 +113,7 @@ int main(int argc, char **argv)
     {
         Door[Di] = LoadDoor();
     }
-
+    
     maptile MapTile[MaxTiles];
 
     for (int i = 0; i < MaxTiles; i++)
@@ -757,7 +757,7 @@ int main(int argc, char **argv)
     {
         OutFile << "OFF" << endl;
     }
-    printf("\n\nSettings saved\n\nExit successful\n\n");
+    printf("\nSettings saved\nExit successful\n");
 
     return 0;
 }
