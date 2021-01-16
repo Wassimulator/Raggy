@@ -53,7 +53,13 @@ void AholeDialogue(dialogues *Dialogue, player *Player, dialogueNPC *Ahole, NPCs
             if (NoneSelected == true)
             {
                 RXT_FindAndParseHomeNode(&T, &Input, Dialogue, FileString);
-                Mix_PlayChannel(2, AholeS->Node[0], 0); //use Mix_Haltchannel() to stop, also, Player uses channel 1, NPCs on channel 2.
+                if (Mix_PlayChannel(2, AholeS->Node[0], 0) == -1)
+                {
+
+                    printf("sound file 0.wav not found!\n");
+
+                } //use Mix_Haltchannel() to stop, also, Player uses channel 1, NPCs on channel 2.
+
                 Dialogue->View = Ahole->TalkView;
                 *isTalking = true;
 
@@ -73,7 +79,10 @@ void AholeDialogue(dialogues *Dialogue, player *Player, dialogueNPC *Ahole, NPCs
                     {
 
                         //use Mix_Haltchannel() to stop, also, Player uses channel 1, NPCs on channel 2.
-                        Mix_PlayChannel(2, AholeS->Node[Dialogue->Option[i].NextNodeID], 0);
+                        if (Mix_PlayChannel(2, AholeS->Node[Dialogue->Option[i].NextNodeID], 0) == -1)
+                        {
+                            printf("sound file %i.wav not found!\n", Dialogue->Option[i].NextNodeID);
+                        }
 
                         Dialogue->PlayerText = Dialogue->Option[i].Text;
                         if (!RXT_ParseNextNode(i, Dialogue, &Input, &T, FileString))
@@ -86,8 +95,8 @@ void AholeDialogue(dialogues *Dialogue, player *Player, dialogueNPC *Ahole, NPCs
                         *isTalking = true;
                     }
                 }
+                refresh = false;
             }
-            refresh = false;
         }
     }
 }
