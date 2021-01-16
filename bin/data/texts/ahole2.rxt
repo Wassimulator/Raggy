@@ -26,7 +26,7 @@ Homenode
         Option[3]:"I'm fine. Why wouldn't I be indeed! I just got fired from my fucking job."
             <nextNode: 4;>
         Option[4]:"(Say nothing)";
-            <nextNode: 5;>
+            <nextNode: 5;> 
     }
 Node[0]
     {
