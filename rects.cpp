@@ -2,44 +2,40 @@
 #include "raggy.hpp"
 #include "source.cpp"
 
-void LoadRects(int *WindowWidth, int *WindowHeight, int CamPosX, bool *F_Key,
-               SDL_Rect *PlayerRect, player *Player,
-               SDL_Rect *PlayerActiveRectangle,
-               SDL_Rect *MapRect, map Map,
-               SDL_Rect *PlayerFartRectR, fart PlayerFart,
-               SDL_Rect *PlayerFartRectL,
-               SDL_Rect *PlayerFartActiveRect,
-               SDL_Rect *PlayerFartCloudRect, fartCloud *PlayerFartCloud,
-               SDL_Rect *PlayerFartCloudActiveRect,
-               SDL_Rect *DTRect, door *DT,
-               SDL_Rect *NPCRect, npc NPC[MaxNPCs],
-               SDL_Rect *MapTileRect, maptile *MapTile) // Do I need a pointer here for the array since the array is a pointer?
+void LoadRects(int *WindowWidth, int *WindowHeight, int CamPosX, bool *F_Key, rects *R,
+               player *Player,
+               map Map,
+               fart PlayerFart,
+               fartCloud *PlayerFartCloud,
+               door *DT,
+               npc NPC[MaxNPCs],
+               maptile *MapTile) // Do I need a pointer here for the array since the array is a pointer?
 {
     //animation sequence
     int SixCounterP = (Player->i - 1) % 3;
     int SixCOunterQ = (Player->i - 1) / 3;
 
-    PlayerRect->x = (*WindowWidth / 2) + (Player->PosX - CamPosX) - (3 * 16);
-    PlayerRect->y = (*WindowHeight / 2) - 48;
-    PlayerRect->w = 32 * 3; // TODO: Scaling is an inherent problem that needs fixing.
-    PlayerRect->h = 32 * 3;
+    R->PlayerRect.x = (*WindowWidth / 2) + (Player->PosX - CamPosX) - (3 * 16);
+    R->PlayerRect.y = (*WindowHeight / 2) - 48;
+    R->PlayerRect.w = 32 * 3; // TODO: Scaling is an inherent problem that needs fixing.
+    R->PlayerRect.h = 32 * 3;
 
     //putting the map in the center of the screen:
     Map.PosX = -(Map.ActiveMap.w - *WindowWidth) / 2;
     Map.PosY = -(Map.ActiveMap.h - *WindowHeight) / 2;
-    MapRect->h = Map.ActiveMap.h;
-    MapRect->w = Map.ActiveMap.w;
-    MapRect->x = ((*WindowWidth - Map.ActiveMap.w) / 2) - CamPosX;
-    MapRect->y = Map.PosY;
+    R->MapRect.h = Map.ActiveMap.h;
+    R->MapRect.w = Map.ActiveMap.w;
+    R->MapRect.x = ((*WindowWidth - Map.ActiveMap.w) / 2) - CamPosX;
+    R->MapRect.y = Map.PosY;
 
     for (Di = 0; Di < MaxDoors; Di++)
     {
         if (DT[Di].exists)
         {
-            DTRect[Di].h = DT[Di].Closed.h * 3;
-            DTRect[Di].w = DT[Di].Closed.w * 3;
-            DTRect[Di].x = (*WindowWidth / 2) - CamPosX - 48 - (Map.ActiveMap.w / 2) + 100 + 300 * (Di);
-            DTRect[Di].y = (*WindowHeight / 2) - 96;
+            R->DoorRect[Di].h = DT[Di].Closed.h * 3;
+            R->DoorRect[Di].w = DT[Di].Closed.w * 3;
+            R->DoorRect[Di].x = (*WindowWidth / 2) - CamPosX - 48 - (Map.ActiveMap.w / 2) + 100 + 300 * (Di);
+            R->DoorRect[Di].y = (*WindowHeight / 2) - 96;
         }
     }
 
@@ -56,30 +52,30 @@ void LoadRects(int *WindowWidth, int *WindowHeight, int CamPosX, bool *F_Key,
     {
         if (MapTile[i].exists)
         {
-            MapTileRect[i].h = MapTile[i].ActiveTexture->h * 3;
-            MapTileRect[i].w = MapTile[i].ActiveTexture->w * 3;
-            MapTileRect[i].x = (*WindowWidth / 2) - CamPosX - (MapSizeFromTiles / 2) + 32 * 3 * (i);
-            MapTileRect[i].y = (*WindowHeight / 2) - (MapTile[i].ActiveTexture->h / 2 * 3);
+            R->MapTileRect[i].h = MapTile[i].ActiveTexture->h * 3;
+            R->MapTileRect[i].w = MapTile[i].ActiveTexture->w * 3;
+            R->MapTileRect[i].x = (*WindowWidth / 2) - CamPosX - (MapSizeFromTiles / 2) + 32 * 3 * (i);
+            R->MapTileRect[i].y = (*WindowHeight / 2) - (MapTile[i].ActiveTexture->h / 2 * 3);
         }
     }
 
-    PlayerActiveRectangle->x = SixCounterP * 32;
-    PlayerActiveRectangle->y = SixCOunterQ * 32;
-    PlayerActiveRectangle->w = PlayerActiveRectangle->h = 32;
+    R->PlayerActiveRectangle.x = SixCounterP * 32;
+    R->PlayerActiveRectangle.y = SixCOunterQ * 32;
+    R->PlayerActiveRectangle.w = R->PlayerActiveRectangle.h = 32;
 
-    PlayerFartRectR->x = (*WindowWidth / 2) + (Player->PosX - CamPosX) - (3 * 16) - 38;
-    PlayerFartRectR->y = (*WindowHeight / 2) - 48 + 25;
-    PlayerFartRectR->w = 32 * 2;
-    PlayerFartRectR->h = 32 * 2;
+    R->PlayerFartRectR.x = (*WindowWidth / 2) + (Player->PosX - CamPosX) - (3 * 16) - 38;
+    R->PlayerFartRectR.y = (*WindowHeight / 2) - 48 + 25;
+    R->PlayerFartRectR.w = 32 * 2;
+    R->PlayerFartRectR.h = 32 * 2;
 
-    PlayerFartRectL->x = (*WindowWidth / 2) + (Player->PosX - CamPosX) - (3 * 16) + 70;
-    PlayerFartRectL->y = (*WindowHeight / 2) - 48 + 25;
-    PlayerFartRectL->w = 32 * 2;
-    PlayerFartRectL->h = 32 * 2;
+    R->PlayerFartRectL.x = (*WindowWidth / 2) + (Player->PosX - CamPosX) - (3 * 16) + 70;
+    R->PlayerFartRectL.y = (*WindowHeight / 2) - 48 + 25;
+    R->PlayerFartRectL.w = 32 * 2;
+    R->PlayerFartRectL.h = 32 * 2;
 
-    PlayerFartActiveRect->x = (PlayerFart.i - 1) * 32;
-    PlayerFartActiveRect->y = 0;
-    PlayerFartActiveRect->w = PlayerFartActiveRect->h = 32;
+    R->PlayerFartActiveRect.x = (PlayerFart.i - 1) * 32;
+    R->PlayerFartActiveRect.y = 0;
+    R->PlayerFartActiveRect.w = R->PlayerFartActiveRect.h = 32;
 
     for (FCi = 0; FCi < 20; FCi++) //update all the cloud's positions as they all need to be rising with time
     {
@@ -96,7 +92,7 @@ void LoadRects(int *WindowWidth, int *WindowHeight, int CamPosX, bool *F_Key,
         }
     }
 
-    int PlayerPosition = PlayerRect->x + CamPosX; // This the player's actual position on the map
+    int PlayerPosition = R->PlayerRect.x + CamPosX; // This the player's actual position on the map
 
     const int MaxFartClouds = 20;
     {
@@ -123,18 +119,18 @@ void LoadRects(int *WindowWidth, int *WindowHeight, int CamPosX, bool *F_Key,
 
         for (FCi = 0; FCi < 20; FCi++)
         {
-            PlayerFartCloudRect[FCi].x = PlayerFartCloud[FCi].FartCloudInitX - CamPosX;
-            PlayerFartCloudRect[FCi].y = (*WindowHeight / 2) - PlayerFartCloud[FCi].iY - 24;
-            PlayerFartCloudRect[FCi].w = PlayerFartCloudRect[FCi].h = 32 * 2;
+            R->PlayerFartCloudRect[FCi].x = PlayerFartCloud[FCi].FartCloudInitX - CamPosX;
+            R->PlayerFartCloudRect[FCi].y = (*WindowHeight / 2) - PlayerFartCloud[FCi].iY - 24;
+            R->PlayerFartCloudRect[FCi].w = R->PlayerFartCloudRect[FCi].h = 32 * 2;
 
-            PlayerFartCloudActiveRect[FCi].x = (PlayerFartCloud[FCi].i - 1) * 32;
-            PlayerFartCloudActiveRect[FCi].y = 0;
-            PlayerFartCloudActiveRect[FCi].h = PlayerFartCloudActiveRect[FCi].w = 32;
+            R->PlayerFartCloudActiveRect[FCi].x = (PlayerFartCloud[FCi].i - 1) * 32;
+            R->PlayerFartCloudActiveRect[FCi].y = 0;
+            R->PlayerFartCloudActiveRect[FCi].h = R->PlayerFartCloudActiveRect[FCi].w = 32;
         }
     }
 
-    NPCRect->h = NPC[0].LeaningLeft.h * 3;
-    NPCRect->w = NPC[0].LeaningLeft.w * 3;
-    NPCRect->x = (*WindowWidth / 2) - CamPosX - 48 + 650;
-    NPCRect->y = (*WindowHeight / 2) - 52;
+    R->NPCRect.h = NPC[0].LeaningLeft.h * 3;
+    R->NPCRect.w = NPC[0].LeaningLeft.w * 3;
+    R->NPCRect.x = (*WindowWidth / 2) - CamPosX - 48 + 650;
+    R->NPCRect.y = (*WindowHeight / 2) - 52;
 };

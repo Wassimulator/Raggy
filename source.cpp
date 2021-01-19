@@ -19,6 +19,21 @@ sprite LoadSprite(char *filename)
     return Result;
 }
 
+struct rects
+{
+    SDL_Rect PlayerRect;
+    SDL_Rect MapRect;
+    SDL_Rect PlayerActiveRectangle;
+    SDL_Rect PlayerFartRectR;
+    SDL_Rect PlayerFartRectL;
+    SDL_Rect PlayerFartActiveRect;
+    SDL_Rect PlayerFartCloudRect[20];
+    SDL_Rect PlayerFartCloudActiveRect[20];
+    SDL_Rect DoorRect[MaxDoors];
+    SDL_Rect MapTileRect[MaxTiles];
+    SDL_Rect NPCRect;
+};
+
 //--------SOUNDS-----------
 struct sounds
 {
@@ -41,6 +56,20 @@ struct NPCsounds
 };
 
 //---------FONTS-------------
+struct fonts
+{
+    TTF_Font *Regular = TTF_OpenFont("data/fonts/PTSans-Regular.ttf", 20);
+    TTF_Font *RegularS = TTF_OpenFont("data/fonts/PTSans-Regular.ttf", 17);
+    TTF_Font *Bold = TTF_OpenFont("data/fonts/PTSans-Bold.ttf", 20);
+    TTF_Font *Bold2 = TTF_OpenFont("data/fonts/PTSans-Bold.ttf", 24);
+    TTF_Font *Title1B = TTF_OpenFont("data/fonts/PTSans-Bold.ttf", 60);
+    TTF_Font *Title1 = TTF_OpenFont("data/fonts/PTSans-Regular.ttf", 60);
+    TTF_Font *Title2B = TTF_OpenFont("data/fonts/PTSans-Bold.ttf", 40);
+    TTF_Font *Title2 = TTF_OpenFont("data/fonts/PTSans-Regular.ttf", 40);
+    TTF_Font *Title3B = TTF_OpenFont("data/fonts/PTSans-Bold.ttf", 30);
+    TTF_Font *Title3 = TTF_OpenFont("data/fonts/PTSans-Regular.ttf", 30);
+    SDL_Surface* TextSurface;
+} ;
 struct font
 {
     int r;
@@ -336,7 +365,7 @@ door LoadDoor()
     return Door;
 }
 
-void DoorsUpdate(door *DT, SDL_Rect PlayerRect, SDL_Rect *DTRect, TTF_Font *Font, SDL_Surface *TextSurface,
+void DoorsUpdate(door *DT, rects *R, TTF_Font *Font, SDL_Surface *TextSurface,
                  SDL_Surface *WindowSurface, int WindowWidth, int WindowHight, bool E_Key)
 {
     for (Di = 0; Di < MaxDoors; Di++)
@@ -354,7 +383,7 @@ void DoorsUpdate(door *DT, SDL_Rect PlayerRect, SDL_Rect *DTRect, TTF_Font *Font
 
             if (DT[Di].Status == Closed)
             {
-                if (PlayerRect.x < (DTRect[Di].x + 48) && PlayerRect.x > (DTRect[Di].x - 48))
+                if (R->PlayerRect.x < (R->DoorRect[Di].x + 48) && R->PlayerRect.x > (R->DoorRect[Di].x - 48))
                 {
                     RenderText(Font, "Door: press E to Open", 255, 255, 255, 0, 150, TextSurface, WindowSurface, WindowWidth, WindowHight);
 
@@ -387,10 +416,10 @@ npc LoadNPC(int NPCnumber)
     return NPC;
 };
 
-void NPCUpdate(player *Player, SDL_Rect PlayerRect, SDL_Rect *NPCRect, TTF_Font *Font, SDL_Surface *TextSurface,
+void NPCUpdate(player *Player, rects *R, TTF_Font *Font, SDL_Surface *TextSurface,
                SDL_Surface *WindowSurface, int WindowWidth, int WindowHight, bool E_Key)
 {
-    if (PlayerRect.x > (NPCRect->x - 60) && PlayerRect.x < (NPCRect->x + 10))
+    if (R->PlayerRect.x > (R->NPCRect.x - 60) && R->PlayerRect.x < (R->NPCRect.x + 10))
     {
         RenderText(Font, "Pricksoin Ahole: press E to Speak", 255, 255, 255, 0, 150, TextSurface, WindowSurface, WindowWidth, WindowHight);
         if (E_Key)
@@ -890,7 +919,7 @@ int RMP_ParseNextLevel(levelInfo *LevelInfo, stringstream *Input, token *T, stri
 
 //---------------------------------------------------------------------
 
-void UpdateMap(SDL_Rect *PlayerRect, map *Map, door *Door, SDL_Rect *DTRect, float *CamPosX, int *WindowWidth,
+void UpdateMap(rects *R, map *Map, door *Door, float *CamPosX, int *WindowWidth,
                levelInfo *LevelInfo, stringstream *LevelInput, token *LevelToken, string LevelFileString)
 {
 
@@ -952,13 +981,13 @@ void UpdateMap(SDL_Rect *PlayerRect, map *Map, door *Door, SDL_Rect *DTRect, flo
     }
 }
 
-void UpdateMapRects(player *Player, SDL_Rect *PlayerRect, map *Map, door *Door, SDL_Rect *DTRect, float *CamPosX, int *WindowWidth)
+void UpdateMapRects(rects *R, player *Player, map *Map, door *Door, float *CamPosX, int *WindowWidth)
 {
     for (int i = 0; i < MaxDoors; i++)
     {
         if (Door[i].Status == Open)
         {
-            if (Player->PosX == DTRect[Door[i].nextDoor].x)
+            if (Player->PosX == R->DoorRect[Door[i].nextDoor].x)
             {
                 ToUpdateMapRects = false;
             }

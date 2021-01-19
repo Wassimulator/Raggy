@@ -4,9 +4,7 @@
 #include "Ahole.cpp"
 #include "menus.cpp"
 
-void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *Bold2,
-                  TTF_Font *Title1, TTF_Font *Title2, TTF_Font *Title1B, TTF_Font *Title2B,
-                  TTF_Font *Title3, TTF_Font *Title3B,
+void DialogueMode(fonts F,
                   SDL_Surface **TextSurface,
                   SDL_Surface **WindowSurface,
                   SDL_Window **Window,
@@ -134,8 +132,7 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
 
         if (Playing == false)
         {
-            MainMenu(Regular, RegularS, Bold, Bold2, Title1, Title2, Title1B, Title2B, Title3,
-                     Title3B, TextSurface, WindowSurface, Window, WindowWidth, WindowHeight, &Playing,
+            MainMenu(F, TextSurface, WindowSurface, Window, WindowWidth, WindowHeight, &Playing,
                      MusicBool, SoundBool);
         }
 
@@ -263,10 +260,10 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
             strcat(OptionText[i], Dialogue.Option[i].Text);*/
             //TODO: leave this to show to Said, this is the reason I had memory corruption.
 
-            OptionSurface[i] = TTF_RenderText_Blended_Wrapped(Regular, OptionText[i], DialogueColor, (*WindowWidth - 60));
-            OptionNumSurface[i] = TTF_RenderText_Blended_Wrapped(Regular, o[i], DialogueColor, 30);
-            SelectedOptionSurface[i] = TTF_RenderText_Blended_Wrapped(Bold, OptionText[i], DialogueColor, (*WindowWidth - 60));
-            SelectedOptionNumSurface[i] = TTF_RenderText_Blended_Wrapped(Bold, o[i], DialogueColor, 30);
+            OptionSurface[i] = TTF_RenderText_Blended_Wrapped(F.Regular, OptionText[i], DialogueColor, (*WindowWidth - 60));
+            OptionNumSurface[i] = TTF_RenderText_Blended_Wrapped(F.Regular, o[i], DialogueColor, 30);
+            SelectedOptionSurface[i] = TTF_RenderText_Blended_Wrapped(F.Bold, OptionText[i], DialogueColor, (*WindowWidth - 60));
+            SelectedOptionNumSurface[i] = TTF_RenderText_Blended_Wrapped(F.Bold, o[i], DialogueColor, 30);
 
             OptionRect[i].h = OptionSurface[i]->h;
             OptionRect[i].w = OptionSurface[i]->w;
@@ -423,12 +420,12 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
 
         SDL_BlitScaled(Dialogue.View.Surface, &ViewActiveRect, *WindowSurface, &ViewRect);
 
-        RenderTextCenteredX(Bold2, Dialogue.DialogueTitle, 255, 255, 255, 0, 10, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
+        RenderTextCenteredX(F.Bold2, Dialogue.DialogueTitle, 255, 255, 255, 0, 10, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
 
-        RenderTextDialogue(Regular, Dialogue.NPCtext, 255, 255, 255, 20, (NPCtextRect.y + 10), *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight, (*WindowWidth - 40));
-        RenderTextDialogue(Regular, Dialogue.PlayerText, 255, 255, 255, 20, (PlayerTextRect.y + 10), *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight, (*WindowWidth - 40));
+        RenderTextDialogue(F.Regular, Dialogue.NPCtext, 255, 255, 255, 20, (NPCtextRect.y + 10), *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight, (*WindowWidth - 40));
+        RenderTextDialogue(F.Regular, Dialogue.PlayerText, 255, 255, 255, 20, (PlayerTextRect.y + 10), *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight, (*WindowWidth - 40));
 
-        RenderText(Regular, "Press Tab to exit Dialogue mode", 255, 255, 255, 0, 0, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
+        RenderText(F.Regular, "Press Tab to exit Dialogue mode", 255, 255, 255, 0, 0, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
 
         if (FadeOut == true)
         {
@@ -528,11 +525,11 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
                 }
                 if (on)
                 {
-                    RenderText(Bold, "Memory Leak Detected!", 255, 255, 0, *WindowWidth - 300, 25, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
+                    RenderText(F.Bold, "Memory Leak Detected!", 255, 255, 0, *WindowWidth - 300, 25, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
                 }
                 if (on == false)
                 {
-                    RenderText(Bold, "Memory Leak Detected!", 255, 0, 0, *WindowWidth - 300, 25, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
+                    RenderText(F.Bold, "Memory Leak Detected!", 255, 0, 0, *WindowWidth - 300, 25, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
                 }
                 count++;
                 if (count == 180)
@@ -541,8 +538,8 @@ void DialogueMode(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Fon
                 }
             }
 
-            RenderText(RegularS, NowFPS, 170, 170, 255, *WindowWidth - 60, 0, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
-            RenderText(RegularS, NowRAM, 255, 255, 150, *WindowWidth - 300, 0, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
+            RenderText(F.RegularS, NowFPS, 170, 170, 255, *WindowWidth - 60, 0, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
+            RenderText(F.RegularS, NowRAM, 255, 255, 150, *WindowWidth - 300, 0, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
         } //------------------------------------------------------
 
         SDL_UpdateWindowSurface(*Window);

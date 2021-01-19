@@ -7,12 +7,104 @@
 SDL_Surface *WindowSurface;
 SDL_Window *Window;
 
+void RenderAll(rects *R, fonts Fonts, player *Player, map *Map, maptile *MapTile, door *Door, npc *NPC, fartCloud *PlayerFartCloud, fart *PlayerFart)
+{
+    SDL_BlitScaled(Map->ActiveMap.Surface, 0, WindowSurface, &R->MapRect);
+
+    for (int i = 0; i < MaxTiles; i++)
+    {
+        if (MapTile[i].exists)
+        {
+            SDL_BlitScaled(MapTile[i].ActiveTexture->Surface, 0, WindowSurface, &R->MapTileRect[i]);
+        }
+    }
+
+    RenderTextCentered(Fonts.Bold2, "This is a Game", 255, 255, 255, 0, -170, Fonts.TextSurface, WindowSurface, WindowWidth, WindowHeight);
+    RenderText(Fonts.Regular, "Press H to say hello", 255, 255, 255, 0, 0, Fonts.TextSurface, WindowSurface, WindowWidth, WindowHeight);
+    RenderText(Fonts.Regular, "Press F to pay respects", 255, 255, 255, 0, 25, Fonts.TextSurface, WindowSurface, WindowWidth, WindowHeight);
+    RenderText(Fonts.Regular, "Press Q to quit the game", 255, 255, 255, 0, 50, Fonts.TextSurface, WindowSurface, WindowWidth, WindowHeight);
+    RenderText(Fonts.Regular, "Press Esc to pause the game", 255, 255, 255, 0, 75, Fonts.TextSurface, WindowSurface, WindowWidth, WindowHeight);
+
+    for (Di = 0; Di < MaxDoors; Di++)
+    {
+        if (Door[Di].exists)
+        {
+            SDL_BlitScaled(Door[Di].ActiveTexture->Surface, 0, WindowSurface, &R->DoorRect[Di]);
+        }
+    }
+
+    SDL_BlitScaled(NPC[0].LeaningLeft.Surface, 0, WindowSurface, &R->NPCRect); //TODO: update to fit NPC!
+
+    SDL_BlitScaled(Player->ActiveTexture->Surface, &R->PlayerActiveRectangle, WindowSurface, &R->PlayerRect);
+
+    if (PlayerFart->ToFart)
+    {
+        if (Player->Direction == RightDirection)
+        {
+            SDL_BlitScaled(PlayerFart->ActiveTexture->Surface,
+                           &R->PlayerFartActiveRect, WindowSurface, &R->PlayerFartRectR);
+        }
+        if (Player->Direction == LeftDirection)
+        {
+            SDL_BlitScaled(PlayerFart->ActiveTexture->Surface,
+                           &R->PlayerFartActiveRect, WindowSurface, &R->PlayerFartRectL);
+        }
+    }
+    for (FCi = 0; FCi < FClength; FCi++)
+    {
+        if (PlayerFartCloud[FCi].HasFarted)
+        {
+            SDL_BlitScaled(PlayerFartCloud[FCi].FartCloud.Surface, &R->PlayerFartCloudActiveRect[FCi],
+                           WindowSurface, &R->PlayerFartCloudRect[FCi]);
+        }
+    }
+    char FCcount[50];
+    sprintf(FCcount, "Fart Cloud count: %i", FClength);
+
+    if (FadeOut == true)
+    {
+        SDL_Surface *FadeSurface = SDL_CreateRGBSurface(0, WindowWidth, WindowHeight, 32, 0, 0, 0, 255);
+        SDL_SetSurfaceBlendMode(FadeSurface, SDL_BLENDMODE_BLEND);
+        SDL_SetSurfaceAlphaMod(FadeSurface, FadeOuti);
+        if (FadeOuti > 0 && (FadeOuti - 20) > 0)
+        {
+            FadeOuti = FadeOuti - 20;
+        }
+        if (FadeOuti == 0 || (FadeOuti - 20) < 0)
+        {
+            SDL_SetSurfaceAlphaMod(FadeSurface, FadeIni);
+            FadeOuti = 0;
+            FadeOut = false;
+        }
+        SDL_BlitSurface(FadeSurface, 0, WindowSurface, 0);
+        SDL_FreeSurface(FadeSurface);
+    }
+    if (FadeIn == true)
+    {
+
+        SDL_Surface *FadeSurface = SDL_CreateRGBSurface(0, WindowWidth, WindowHeight, 32, 0, 0, 0, 255);
+        SDL_SetSurfaceBlendMode(FadeSurface, SDL_BLENDMODE_BLEND);
+        SDL_SetSurfaceAlphaMod(FadeSurface, FadeIni);
+        if (FadeIni < 255 && (FadeIni + 20) < 255)
+        {
+            FadeIni = FadeIni + 20;
+        }
+        if (FadeIni == 255 || (FadeIni + 20) > 255)
+        {
+            FadeIni = 255;
+            SDL_SetSurfaceAlphaMod(FadeSurface, FadeIni);
+            FadeIn = false;
+            FadedIn = true;
+        }
+        SDL_BlitSurface(FadeSurface, 0, WindowSurface, 0);
+        SDL_FreeSurface(FadeSurface);
+    }
+}
+
 int main(int argc, char **argv)
 {
     SDL_Init(SDL_INIT_EVERYTHING);
 
-    int WindowWidth;
-    int WindowHeight;
     bool SoundBool;
     bool MusicBool;
 
@@ -67,16 +159,7 @@ int main(int argc, char **argv)
     printf("Loading fonts... ");
 
     TTF_Init();
-    TTF_Font *Regular = TTF_OpenFont("data/fonts/PTSans-Regular.ttf", 20);
-    TTF_Font *RegularS = TTF_OpenFont("data/fonts/PTSans-Regular.ttf", 17);
-    TTF_Font *Bold = TTF_OpenFont("data/fonts/PTSans-Bold.ttf", 20);
-    TTF_Font *Bold2 = TTF_OpenFont("data/fonts/PTSans-Bold.ttf", 24);
-    TTF_Font *Title1B = TTF_OpenFont("data/fonts/PTSans-Bold.ttf", 60);
-    TTF_Font *Title1 = TTF_OpenFont("data/fonts/PTSans-Regular.ttf", 60);
-    TTF_Font *Title2B = TTF_OpenFont("data/fonts/PTSans-Bold.ttf", 40);
-    TTF_Font *Title2 = TTF_OpenFont("data/fonts/PTSans-Regular.ttf", 40);
-    TTF_Font *Title3B = TTF_OpenFont("data/fonts/PTSans-Bold.ttf", 30);
-    TTF_Font *Title3 = TTF_OpenFont("data/fonts/PTSans-Regular.ttf", 30);
+    fonts F;
 
     SDL_Surface *TextSurface;
     printf("Successful\n");
@@ -113,7 +196,7 @@ int main(int argc, char **argv)
     {
         Door[Di] = LoadDoor();
     }
-    
+
     maptile MapTile[MaxTiles];
 
     for (int i = 0; i < MaxTiles; i++)
@@ -149,27 +232,17 @@ int main(int argc, char **argv)
     int RunSpeed = 4; //They're now adjustable, I still don't see why you need them to be as such,
                       // but here, 1,5 hours later, I present you ADJUSTABLE SPEEDS * Confetti *
 
-    SDL_Rect PlayerRect;
-    PlayerRect.x = (WindowWidth / 2) + (Player.PosX - CamPosX) - (3 * 16);
-    PlayerRect.y = (WindowHeight / 2) - 48;
-    PlayerRect.w = 32 * 3; // TODO: Scaling is an inherent problem that needs fixing.
-    PlayerRect.h = 32 * 3;
+    rects R;
 
-    SDL_Rect MapRect;
-    MapRect.h = Map.ActiveMap.h;
-    MapRect.w = Map.ActiveMap.w;
-    MapRect.x = ((WindowWidth - Map.ActiveMap.w) / 2) - CamPosX;
-    MapRect.y = Map.PosY;
+    R.PlayerRect.x = (WindowWidth / 2) + (Player.PosX - CamPosX) - (3 * 16);
+    R.PlayerRect.y = (WindowHeight / 2) - 48;
+    R.PlayerRect.w = 32 * 3; // TODO: Scaling is an inherent problem that needs fixing.
+    R.PlayerRect.h = 32 * 3;
 
-    SDL_Rect PlayerActiveRectangle;
-    SDL_Rect PlayerFartRectR;
-    SDL_Rect PlayerFartRectL;
-    SDL_Rect PlayerFartActiveRect;
-    SDL_Rect PlayerFartCloudRect[20];
-    SDL_Rect PlayerFartCloudActiveRect[20];
-    SDL_Rect DoorRect[MaxDoors];
-    SDL_Rect MapTileRect[MaxTiles];
-    SDL_Rect NPCRect;
+    R.MapRect.h = Map.ActiveMap.h;
+    R.MapRect.w = Map.ActiveMap.w;
+    R.MapRect.x = ((WindowWidth - Map.ActiveMap.w) / 2) - CamPosX;
+    R.MapRect.y = Map.PosY;
 
     bool Playing = false;
 
@@ -316,8 +389,7 @@ int main(int argc, char **argv)
         if (Playing == false)
         {
             Mix_PauseMusic();
-            MainMenu(Regular, RegularS, Bold, Bold2, Title1, Title2, Title1B, Title2B, Title3,
-                     Title3B, &TextSurface, &WindowSurface, &Window, &WindowWidth, &WindowHeight, &Playing,
+            MainMenu(F, &TextSurface, &WindowSurface, &Window, &WindowWidth, &WindowHeight, &Playing,
                      &MusicBool, &SoundBool);
         }
         if (GameIsRunning == false)
@@ -326,7 +398,7 @@ int main(int argc, char **argv)
         }
         if (ToUpdateMap)
         {
-            UpdateMap(&PlayerRect, &Map, Door, DoorRect, &CamPosX, &WindowWidth,
+            UpdateMap(&R, &Map, Door, &CamPosX, &WindowWidth,
                       &LevelInfo, &LevelInput, &LevelToken, LevelFileString);
             UpdateTiles(MapTile, LevelInfo);
             ToUpdateMap = false;
@@ -468,14 +540,14 @@ int main(int argc, char **argv)
         }
 
         //----------------------------Fill Screen---------------------------------------------------
-        int R = 50;
-        int G = 50;
-        int B = 50;
-        int A = 255;
+        int Red = 50;
+        int Green = 50;
+        int Blue = 50;
+        int Alpha = 255;
 
         // WINDOWS USES BGRA (that does not stand for bulgaria)
         // TODO: map it so that it works on multiple systems
-        SDL_FillRect(WindowSurface, 0, (A << 24) | (R << 16) | (G << 8) | (B));
+        SDL_FillRect(WindowSurface, 0, (Alpha << 24) | (Red << 16) | (Green << 8) | (Blue));
 
         float MapLimitR = Map.ActiveMap.w * 0.5f - 3 * 16;
         float MapLimitL = -Map.ActiveMap.w * 0.5f + 3 * 16;
@@ -499,8 +571,8 @@ int main(int argc, char **argv)
 
         FartUpdate(&Player, &PlayerFart, PlayerFartCloud, F_Key);
 
-        DoorsUpdate(Door, PlayerRect, DoorRect, Regular, TextSurface, WindowSurface, WindowWidth, WindowHeight, E_Key);
-        NPCUpdate(&Player, PlayerRect, &NPCRect, Regular, TextSurface, WindowSurface, WindowWidth, WindowHeight, E_Key);
+        DoorsUpdate(Door, &R, F.Regular, TextSurface, WindowSurface, WindowWidth, WindowHeight, E_Key);
+        NPCUpdate(&Player, &R, F.Regular, TextSurface, WindowSurface, WindowWidth, WindowHeight, E_Key);
 
         if (Player.Chatting == true)
         {
@@ -526,7 +598,7 @@ int main(int argc, char **argv)
 
                 RAM1 = currentRAM; // this is here to calculate RAM change after leaving Dialogue Mode to detect leaks.
 
-                DialogueMode(Regular, RegularS, Bold, Bold2, Title1, Title2, Title1B, Title2B, Title3, Title3B,
+                DialogueMode(F,
                              &TextSurface, &WindowSurface, &Window, &WindowWidth, &WindowHeight, &Player, BackgroundMusic, &MusicBool, &SoundBool);
                 ResetFades();
             }
@@ -535,21 +607,17 @@ int main(int argc, char **argv)
         //          IMPORTANT: make sure you update this function here and in rect.cpp
         //                     every time you add a new object! and define the rects
         //                     outside the loop.
-        LoadRects(&WindowWidth, &WindowHeight, CamPosX, &F_Key,
-                  &PlayerRect, &Player,
-                  &PlayerActiveRectangle,
-                  &MapRect, Map,
-                  &PlayerFartRectR, PlayerFart,
-                  &PlayerFartRectL,
-                  &PlayerFartActiveRect,
-                  PlayerFartCloudRect, PlayerFartCloud,
-                  PlayerFartCloudActiveRect,
-                  DoorRect, Door,
-                  &NPCRect, NPC,
-                  MapTileRect, MapTile);
+        LoadRects(&WindowWidth, &WindowHeight, CamPosX, &F_Key, &R,
+                  &Player,
+                  Map,
+                  PlayerFart,
+                  PlayerFartCloud,
+                  Door,
+                  NPC,
+                  MapTile);
         if (ToUpdateMapRects && UpdatedMap)
         {
-            UpdateMapRects(&Player, &PlayerRect, &Map, Door, DoorRect, &CamPosX, &WindowWidth);
+            UpdateMapRects(&R, &Player, &Map, Door, &CamPosX, &WindowWidth);
             //MapUpdate(&CamPosX, &Player);
             UpdatedMap = false;
         }
@@ -557,97 +625,7 @@ int main(int argc, char **argv)
         //-----------------------------Rendering-------------------------------------------------
         //          IMPORTANT: make sure you render the character last and the map first.
         //                     NPCs go before the player typically.
-
-        SDL_BlitScaled(Map.ActiveMap.Surface, 0, WindowSurface, &MapRect);
-
-        for (int i = 0; i < MaxTiles; i++)
-        {
-            if (MapTile[i].exists)
-            {
-                SDL_BlitScaled(MapTile[i].ActiveTexture->Surface, 0, WindowSurface, &MapTileRect[i]);
-            }
-        }
-
-        RenderTextCentered(Bold2, "This is a Game", 255, 255, 255, 0, -170, TextSurface, WindowSurface, WindowWidth, WindowHeight);
-        RenderText(Regular, "Press H to say hello", 255, 255, 255, 0, 0, TextSurface, WindowSurface, WindowWidth, WindowHeight);
-        RenderText(Regular, "Press F to pay respects", 255, 255, 255, 0, 25, TextSurface, WindowSurface, WindowWidth, WindowHeight);
-        RenderText(Regular, "Press Q to quit the game", 255, 255, 255, 0, 50, TextSurface, WindowSurface, WindowWidth, WindowHeight);
-        RenderText(Regular, "Press Esc to pause the game", 255, 255, 255, 0, 75, TextSurface, WindowSurface, WindowWidth, WindowHeight);
-
-        for (Di = 0; Di < MaxDoors; Di++)
-        {
-            if (Door[Di].exists)
-            {
-                SDL_BlitScaled(Door[Di].ActiveTexture->Surface, 0, WindowSurface, &DoorRect[Di]);
-            }
-        }
-
-        SDL_BlitScaled(NPC[0].LeaningLeft.Surface, 0, WindowSurface, &NPCRect); //TODO: update to fit NPC!
-
-        SDL_BlitScaled(Player.ActiveTexture->Surface, &PlayerActiveRectangle, WindowSurface, &PlayerRect);
-
-        if (PlayerFart.ToFart)
-        {
-            if (Player.Direction == RightDirection)
-            {
-                SDL_BlitScaled(PlayerFart.ActiveTexture->Surface,
-                               &PlayerFartActiveRect, WindowSurface, &PlayerFartRectR);
-            }
-            if (Player.Direction == LeftDirection)
-            {
-                SDL_BlitScaled(PlayerFart.ActiveTexture->Surface,
-                               &PlayerFartActiveRect, WindowSurface, &PlayerFartRectL);
-            }
-        }
-        for (FCi = 0; FCi < FClength; FCi++)
-        {
-            if (PlayerFartCloud[FCi].HasFarted)
-            {
-                SDL_BlitScaled(PlayerFartCloud[FCi].FartCloud.Surface, &PlayerFartCloudActiveRect[FCi],
-                               WindowSurface, &PlayerFartCloudRect[FCi]);
-            }
-        }
-        char FCcount[50];
-        sprintf(FCcount, "Fart Cloud count: %i", FClength);
-
-        if (FadeOut == true)
-        {
-            SDL_Surface *FadeSurface = SDL_CreateRGBSurface(0, WindowWidth, WindowHeight, 32, 0, 0, 0, 255);
-            SDL_SetSurfaceBlendMode(FadeSurface, SDL_BLENDMODE_BLEND);
-            SDL_SetSurfaceAlphaMod(FadeSurface, FadeOuti);
-            if (FadeOuti > 0 && (FadeOuti - 20) > 0)
-            {
-                FadeOuti = FadeOuti - 20;
-            }
-            if (FadeOuti == 0 || (FadeOuti - 20) < 0)
-            {
-                SDL_SetSurfaceAlphaMod(FadeSurface, FadeIni);
-                FadeOuti = 0;
-                FadeOut = false;
-            }
-            SDL_BlitSurface(FadeSurface, 0, WindowSurface, 0);
-            SDL_FreeSurface(FadeSurface);
-        }
-        if (FadeIn == true)
-        {
-
-            SDL_Surface *FadeSurface = SDL_CreateRGBSurface(0, WindowWidth, WindowHeight, 32, 0, 0, 0, 255);
-            SDL_SetSurfaceBlendMode(FadeSurface, SDL_BLENDMODE_BLEND);
-            SDL_SetSurfaceAlphaMod(FadeSurface, FadeIni);
-            if (FadeIni < 255 && (FadeIni + 20) < 255)
-            {
-                FadeIni = FadeIni + 20;
-            }
-            if (FadeIni == 255 || (FadeIni + 20) > 255)
-            {
-                FadeIni = 255;
-                SDL_SetSurfaceAlphaMod(FadeSurface, FadeIni);
-                FadeIn = false;
-                FadedIn = true;
-            }
-            SDL_BlitSurface(FadeSurface, 0, WindowSurface, 0);
-            SDL_FreeSurface(FadeSurface);
-        }
+        RenderAll(&R, F, &Player, &Map, MapTile, Door, NPC, PlayerFartCloud, &PlayerFart);
 
         /////////////////////////Printf section///////////////////////////////
 
@@ -658,7 +636,7 @@ int main(int argc, char **argv)
 
         //FPS and Resources------------------------------------------------------
         {
-            char NowFPS[10];
+            char NowFPS[10]; 
             int frameEnd = SDL_GetTicks();
             int frameTime = frameEnd - frameStart;
             if (frameTime < frameDelay)
@@ -709,26 +687,26 @@ int main(int argc, char **argv)
                 sprintf(RAMdiff, "leak: %.2fMB", RAMdifference);
                 if (on)
                 {
-                    RenderText(Bold, "Memory Leak Detected!", 255, 255, 0, WindowWidth - 325, 25, TextSurface, WindowSurface, WindowWidth, WindowHeight);
-                    RenderText(RegularS, RAMdiff, 255, 255, 255, WindowWidth - 100, 27, TextSurface, WindowSurface, WindowWidth, WindowHeight);
+                    RenderText(F.Bold, "Memory Leak Detected!", 255, 255, 0, WindowWidth - 325, 25, TextSurface, WindowSurface, WindowWidth, WindowHeight);
+                    RenderText(F.RegularS, RAMdiff, 255, 255, 255, WindowWidth - 100, 27, TextSurface, WindowSurface, WindowWidth, WindowHeight);
                 }
                 if (on == false)
                 {
-                    RenderText(Bold, "Memory Leak Detected!", 255, 0, 0, WindowWidth - 325, 25, TextSurface, WindowSurface, WindowWidth, WindowHeight);
-                    RenderText(RegularS, RAMdiff, 255, 255, 255, WindowWidth - 100, 27, TextSurface, WindowSurface, WindowWidth, WindowHeight);
+                    RenderText(F.Bold, "Memory Leak Detected!", 255, 0, 0, WindowWidth - 325, 25, TextSurface, WindowSurface, WindowWidth, WindowHeight);
+                    RenderText(F.RegularS, RAMdiff, 255, 255, 255, WindowWidth - 100, 27, TextSurface, WindowSurface, WindowWidth, WindowHeight);
                 }
                 count++;
             }
 
-            RenderText(RegularS, NowFPS, 170, 170, 255, WindowWidth - 60, 0, TextSurface, WindowSurface, WindowWidth, WindowHeight);
-            RenderText(RegularS, NowRAM, 255, 255, 150, WindowWidth - 300, 0, TextSurface, WindowSurface, WindowWidth, WindowHeight);
+            RenderText(F.RegularS, NowFPS, 170, 170, 255, WindowWidth - 60, 0, TextSurface, WindowSurface, WindowWidth, WindowHeight);
+            RenderText(F.RegularS, NowRAM, 255, 255, 150, WindowWidth - 300, 0, TextSurface, WindowSurface, WindowWidth, WindowHeight);
 
             char DebugPlayerPosX[30];
             sprintf(DebugPlayerPosX, "Player Pos X: %i", (int16_t)Player.PosX);
-            RenderText(RegularS, DebugPlayerPosX, 170, 170, 170, WindowWidth - 300, 50, TextSurface, WindowSurface, WindowWidth, WindowHeight);
+            RenderText(F.RegularS, DebugPlayerPosX, 170, 170, 170, WindowWidth - 300, 50, TextSurface, WindowSurface, WindowWidth, WindowHeight);
             char DebugCamPosX[30];
             sprintf(DebugCamPosX, "Camera Position X: %i", (int16_t)CamPosX);
-            RenderText(RegularS, DebugCamPosX, 170, 170, 170, WindowWidth - 300, 75, TextSurface, WindowSurface, WindowWidth, WindowHeight);
+            RenderText(F.RegularS, DebugCamPosX, 170, 170, 170, WindowWidth - 300, 75, TextSurface, WindowSurface, WindowWidth, WindowHeight);
         }
         //------------------------------------------------------
         SDL_UpdateWindowSurface(Window);

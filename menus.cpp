@@ -2,9 +2,7 @@
 #include "raggy.hpp"
 #include "source.cpp"
 
-void OptionsMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *Bold2,
-                 TTF_Font *Title1, TTF_Font *Title2, TTF_Font *Title1B, TTF_Font *Title2B,
-                 TTF_Font *Title3, TTF_Font *Title3B,
+void OptionsMenu(fonts F,
                  SDL_Surface **TextSurface,
                  SDL_Surface **WindowSurface,
                  SDL_Window **Window,
@@ -189,8 +187,8 @@ void OptionsMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font
 
         for (int i = 0; i < MaxOptions; i++)
         {
-            OptionSurface[i] = TTF_RenderText_Blended(Title2, OptionText[i], MenuOptionsColor);
-            HighlightedOptionSurface[i] = TTF_RenderText_Blended(Title2B, OptionText[i], MenuOptionsColor);
+            OptionSurface[i] = TTF_RenderText_Blended(F.Title2, OptionText[i], MenuOptionsColor);
+            HighlightedOptionSurface[i] = TTF_RenderText_Blended(F.Title2B, OptionText[i], MenuOptionsColor);
             OptionRect[i].h = OptionSurface[i]->h;
             OptionRect[i].w = OptionSurface[i]->w;
             OptionRect[i].x = (*WindowWidth - OptionSurface[i]->w) / 2;
@@ -204,8 +202,8 @@ void OptionsMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font
 
         for (int i = 0; i < 5; i++)
         {
-            ResolutionSurface[i] = TTF_RenderText_Blended(Title3, ResolutionText[i], ResolutionColor);
-            HighlightedResolutionSurface[i] = TTF_RenderText_Blended(Title3B, ResolutionText[i], ResolutionColor);
+            ResolutionSurface[i] = TTF_RenderText_Blended(F.Title3, ResolutionText[i], ResolutionColor);
+            HighlightedResolutionSurface[i] = TTF_RenderText_Blended(F.Title3B, ResolutionText[i], ResolutionColor);
             ResolutionRect[i].h = ResolutionSurface[i]->h;
             ResolutionRect[i].w = ResolutionSurface[i]->w;
             ResolutionRect[i].y = OptionRect[0].y + OptionSurface[0]->h;
@@ -224,8 +222,8 @@ void OptionsMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font
 
         for (int i = 0; i < MaxOnOff; i = i + 2)
         {
-            OnOffSurface[i] = TTF_RenderText_Blended(Title3, OnOffText[i], ResolutionColor);
-            OnOffSelectedSurface[i] = TTF_RenderText_Blended(Title3B, OnOffText[i], ResolutionColor);
+            OnOffSurface[i] = TTF_RenderText_Blended(F.Title3, OnOffText[i], ResolutionColor);
+            OnOffSelectedSurface[i] = TTF_RenderText_Blended(F.Title3B, OnOffText[i], ResolutionColor);
             OnOffRect[i].h = OnOffSurface[i]->h;
             OnOffRect[i].w = OnOffSurface[i]->w;
             OnOffRect[i].x = (*WindowWidth / 2) - 20 - OnOffSurface[i]->w;
@@ -234,8 +232,8 @@ void OptionsMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font
         OnOffRect[2].y = OnOffRect[3].y = OptionRect[2].y + OptionSurface[2]->h;
         for (int i = 1; i < MaxOnOff; i = i + 2)
         {
-            OnOffSurface[i] = TTF_RenderText_Blended(Title3, OnOffText[i], ResolutionColor);
-            OnOffSelectedSurface[i] = TTF_RenderText_Blended(Title3B, OnOffText[i], ResolutionColor);
+            OnOffSurface[i] = TTF_RenderText_Blended(F.Title3, OnOffText[i], ResolutionColor);
+            OnOffSelectedSurface[i] = TTF_RenderText_Blended(F.Title3B, OnOffText[i], ResolutionColor);
             OnOffRect[i].h = OnOffSurface[i]->h;
             OnOffRect[i].w = OnOffSurface[i]->w;
             OnOffRect[i].x = (*WindowWidth / 2) + 10;
@@ -480,9 +478,9 @@ void OptionsMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font
             }
         }
 
-        RenderText(Regular, "Press E to Apply", 255, 255, 255, 10, 0, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
-        RenderText(Regular, "Press Backspace to go back", 255, 255, 255, 10, 25, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
-        RenderText(Regular, "Press Enter to select", 255, 255, 255, 10, 50, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
+        RenderText(F.Regular, "Press E to Apply", 255, 255, 255, 10, 0, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
+        RenderText(F.Regular, "Press Backspace to go back", 255, 255, 255, 10, 25, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
+        RenderText(F.Regular, "Press Enter to select", 255, 255, 255, 10, 50, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
 
         //FPS and Resources------------------------------------------------------
         {
@@ -531,17 +529,17 @@ void OptionsMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font
                 }
                 if (on)
                 {
-                    RenderText(Bold, "Memory Leak Detected!", 255, 255, 0, *WindowWidth - 300, 25, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
+                    RenderText(F.Bold, "Memory Leak Detected!", 255, 255, 0, *WindowWidth - 300, 25, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
                 }
                 if (on == false)
                 {
-                    RenderText(Bold, "Memory Leak Detected!", 255, 0, 0, *WindowWidth - 300, 25, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
+                    RenderText(F.Bold, "Memory Leak Detected!", 255, 0, 0, *WindowWidth - 300, 25, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
                 }
                 count++;
             }
 
-            RenderText(RegularS, NowFPS, 170, 170, 255, *WindowWidth - 60, 0, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
-            RenderText(RegularS, NowRAM, 255, 255, 150, *WindowWidth - 300, 0, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
+            RenderText(F.RegularS, NowFPS, 170, 170, 255, *WindowWidth - 60, 0, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
+            RenderText(F.RegularS, NowRAM, 255, 255, 150, *WindowWidth - 300, 0, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
         } //------------------------------------------------------
         SDL_UpdateWindowSurface(*Window);
         for (int i = 0; i < MaxOptions; i++)
@@ -568,8 +566,7 @@ void OptionsMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void MainMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *Bold2, TTF_Font *Title1, TTF_Font *Title2, TTF_Font *Title1B, TTF_Font *Title2B,
-              TTF_Font *Title3, TTF_Font *Title3B,
+void MainMenu(fonts F,
               SDL_Surface **TextSurface,
               SDL_Surface **WindowSurface,
               SDL_Window **Window,
@@ -586,7 +583,7 @@ void MainMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *B
 
     SDL_Rect orPLAY;
     SDL_Color PlayColor = {255, 100, 100};
-    SDL_Surface *osPLAY = TTF_RenderText_Blended(Title1, "Play", PlayColor);
+    SDL_Surface *osPLAY = TTF_RenderText_Blended(F.Title1, "Play", PlayColor);
     orPLAY.w = osPLAY->w;
     orPLAY.h = osPLAY->h;
     orPLAY.x = (*WindowWidth - osPLAY->w) / 2;
@@ -595,7 +592,7 @@ void MainMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *B
 
     SDL_Rect orOPTIONS;
     SDL_Color MenuOptionsColor = {200, 200, 200};
-    SDL_Surface *osOPTIONS = TTF_RenderText_Blended(Title2, "Options", MenuOptionsColor);
+    SDL_Surface *osOPTIONS = TTF_RenderText_Blended(F.Title2, "Options", MenuOptionsColor);
     orOPTIONS.w = osOPTIONS->w;
     orOPTIONS.h = osOPTIONS->h;
     orOPTIONS.x = (*WindowWidth - osOPTIONS->w) / 2;
@@ -603,7 +600,7 @@ void MainMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *B
     bool OPTIONSselected = false;
 
     SDL_Rect orEXIT;
-    SDL_Surface *osEXIT = TTF_RenderText_Blended(Title2, "Exit", MenuOptionsColor);
+    SDL_Surface *osEXIT = TTF_RenderText_Blended(F.Title2, "Exit", MenuOptionsColor);
     orEXIT.w = osEXIT->w;
     orEXIT.h = osEXIT->h;
     orEXIT.x = (*WindowWidth - osEXIT->w) / 2;
@@ -719,7 +716,7 @@ void MainMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *B
         }
         if (OPTIONSselected && Return_Key)
         {
-            OptionsMenu(Regular, RegularS, Bold, Bold2, Title1, Title2, Title1B, Title2B, Title3, Title3B,
+            OptionsMenu( F,
                         TextSurface, WindowSurface, Window, WindowWidth, WindowHeight, Playing, MusicBool, SoundBool);
         }
         if (GameIsRunning == false)
@@ -729,11 +726,11 @@ void MainMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *B
 
         if (PLAYselected == false)
         {
-            osPLAY = TTF_RenderText_Blended(Title1, "Play", PlayColor);
+            osPLAY = TTF_RenderText_Blended(F.Title1, "Play", PlayColor);
         }
         if (PLAYselected == true)
         {
-            osPLAY = TTF_RenderText_Blended(Title1B, "Play", PlayColor);
+            osPLAY = TTF_RenderText_Blended(F.Title1B, "Play", PlayColor);
         }
         orPLAY.w = osPLAY->w;
         orPLAY.h = osPLAY->h;
@@ -742,11 +739,11 @@ void MainMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *B
 
         if (OPTIONSselected == false)
         {
-            osOPTIONS = TTF_RenderText_Blended(Title2, "Options", MenuOptionsColor);
+            osOPTIONS = TTF_RenderText_Blended(F.Title2, "Options", MenuOptionsColor);
         }
         if (OPTIONSselected == true)
         {
-            osOPTIONS = TTF_RenderText_Blended(Title2B, "Options", MenuOptionsColor);
+            osOPTIONS = TTF_RenderText_Blended(F.Title2B, "Options", MenuOptionsColor);
         }
         orOPTIONS.w = osOPTIONS->w;
         orOPTIONS.h = osOPTIONS->h;
@@ -755,11 +752,11 @@ void MainMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *B
 
         if (EXITselected == false)
         {
-            osEXIT = TTF_RenderText_Blended(Title2, "Exit", MenuOptionsColor);
+            osEXIT = TTF_RenderText_Blended(F.Title2, "Exit", MenuOptionsColor);
         }
         if (EXITselected == true)
         {
-            osEXIT = TTF_RenderText_Blended(Title2B, "Exit", MenuOptionsColor);
+            osEXIT = TTF_RenderText_Blended(F.Title2B, "Exit", MenuOptionsColor);
         }
         orEXIT.w = osEXIT->w;
         orEXIT.h = osEXIT->h;
@@ -776,7 +773,7 @@ void MainMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *B
         SDL_BlitSurface(osEXIT, 0, *WindowSurface, &orEXIT);
         SDL_BlitScaled(Logo.Surface, 0, *WindowSurface, &LogoRect);
 
-        RenderText(Regular, "Press Enter to select", 255, 255, 255, 10, 0, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
+        RenderText(F.Regular, "Press Enter to select", 255, 255, 255, 10, 0, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
 
         //FPS and Resources------------------------------------------------------
         {
@@ -834,7 +831,7 @@ void MainMenu(TTF_Font *Regular, TTF_Font *RegularS, TTF_Font *Bold, TTF_Font *B
                 count++;
             }*/
 
-            RenderText(RegularS, NowFPS, 170, 170, 255, *WindowWidth - 60, 0, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
+            RenderText(F.RegularS, NowFPS, 170, 170, 255, *WindowWidth - 60, 0, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
             //RenderText(RegularS, NowRAM, 255, 255, 150, *WindowWidth - 300, 0, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
         } //------------------------------------------------------
         SDL_UpdateWindowSurface(*Window);

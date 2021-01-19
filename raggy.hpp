@@ -16,7 +16,6 @@
 #include "psapi.h"
 //--------------------
 
-
 //-----------------array indeces---------------------------
 
 int Di = 0;
@@ -47,6 +46,8 @@ int CurrentMap = 0; // TODO: deal with this.
 bool ToUpdateMap = false;
 bool ToUpdateMapRects = false;
 
+int WindowWidth;
+int WindowHeight;
 
 void ResetFades()
 {
