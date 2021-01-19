@@ -4,100 +4,95 @@
 #include "dialogues.cpp"
 #include "menus.cpp"
 
-SDL_Surface *WindowSurface;
-SDL_Window *Window;
-
-void RenderAll(rects *R, fonts Fonts, player *Player, map *Map, maptile *MapTile, door *Door, npc *NPC, fartCloud *PlayerFartCloud, fart *PlayerFart)
+void PollEvents(SDL_Event *Event, keys *K)
 {
-    SDL_BlitScaled(Map->ActiveMap.Surface, 0, WindowSurface, &R->MapRect);
-
-    for (int i = 0; i < MaxTiles; i++)
+    while (SDL_PollEvent(Event)) //if pPollEvent returns 1 then we enter the while loop this
+                                  //means thatif we have more than one event, it gathers them all before running
     {
-        if (MapTile[i].exists)
+        if (Event->type == SDL_QUIT)
         {
-            SDL_BlitScaled(MapTile[i].ActiveTexture->Surface, 0, WindowSurface, &R->MapTileRect[i]);
+            GameIsRunning = false;
         }
-    }
+        if (Event->key.keysym.sym == SDLK_q)
+        {
+            GameIsRunning = false;
+        }
+        //only pressable once key:
+        if (Event->type == SDL_KEYDOWN)
+        {
+            if (Event->key.keysym.sym == SDLK_e && Event->key.repeat == false)
+            {
+                K->E_Key = true;
+            }
+            if (Event->key.keysym.sym == SDLK_f && Event->key.repeat == false)
+            {
+                 K->F_Key = true;
+            }
+            if (Event->key.keysym.sym == SDLK_TAB && Event->key.repeat == false)
+            {
+                 K->Tab_Key = true;
+            }
+            if (Event->key.keysym.sym == SDLK_SPACE && Event->key.repeat == false)
+            {
+                 K->Space_Key = true;
+            }
+            if (Event->key.keysym.sym == SDLK_F1 && Event->key.repeat == false)
+            {
+                 K->F1_Key = true;
+            }
+            if (Event->key.keysym.sym == SDLK_ESCAPE && Event->key.repeat == false)
+            {
+                 K->RightButton = false;
+                 K->LeftButton = false;
+                 K->UpButton = false;
+                 K->DownButton = false;
+                 K->Shift = false;
+                 K->F_Key = false;
+                 K->H_Key = false;
+                 K->E_Key = false;
+                 K->Tab_Key = false;
+                 K->Space_Key = false;
+                 Playing = false;
+                Mix_PauseMusic();
+            }
+        }
 
-    RenderTextCentered(Fonts.Bold2, "This is a Game", 255, 255, 255, 0, -170, Fonts.TextSurface, WindowSurface, WindowWidth, WindowHeight);
-    RenderText(Fonts.Regular, "Press H to say hello", 255, 255, 255, 0, 0, Fonts.TextSurface, WindowSurface, WindowWidth, WindowHeight);
-    RenderText(Fonts.Regular, "Press F to pay respects", 255, 255, 255, 0, 25, Fonts.TextSurface, WindowSurface, WindowWidth, WindowHeight);
-    RenderText(Fonts.Regular, "Press Q to quit the game", 255, 255, 255, 0, 50, Fonts.TextSurface, WindowSurface, WindowWidth, WindowHeight);
-    RenderText(Fonts.Regular, "Press Esc to pause the game", 255, 255, 255, 0, 75, Fonts.TextSurface, WindowSurface, WindowWidth, WindowHeight);
-
-    for (Di = 0; Di < MaxDoors; Di++)
-    {
-        if (Door[Di].exists)
+        //printf(E_Key ? "E = true\n" : "E = false\n");
+        //cool shit:
+         if (Event->type == SDL_KEYDOWN || Event->type == SDL_KEYUP)
         {
-            SDL_BlitScaled(Door[Di].ActiveTexture->Surface, 0, WindowSurface, &R->DoorRect[Di]);
+            bool KeyState = Event->type == SDL_KEYDOWN ? true : false;
+            // upButton for example will have the value of keystate
+            // which is true when button is down and when thats not the
+            // case it can only be up vecause thats the only two options
+            // given by the if statement
+            switch (Event->key.keysym.sym)
+            {
+            case SDLK_UP:
+                 K->UpButton = KeyState;
+                break;
+            case SDLK_DOWN:
+                 K->DownButton = KeyState;
+                break;
+            case SDLK_LEFT:
+                 K->LeftButton = KeyState;
+                break;
+            case SDLK_RIGHT:
+                 K->RightButton = KeyState;
+                break;
+            case SDLK_LSHIFT:
+                 K->Shift = KeyState;
+                break;
+            case SDLK_RSHIFT:
+                 K->Shift = KeyState;
+                break;
+            case SDLK_h:
+                 K->H_Key = KeyState;
+                break;
+            default:
+                break;
+            }
         }
-    }
-
-    SDL_BlitScaled(NPC[0].LeaningLeft.Surface, 0, WindowSurface, &R->NPCRect); //TODO: update to fit NPC!
-
-    SDL_BlitScaled(Player->ActiveTexture->Surface, &R->PlayerActiveRectangle, WindowSurface, &R->PlayerRect);
-
-    if (PlayerFart->ToFart)
-    {
-        if (Player->Direction == RightDirection)
-        {
-            SDL_BlitScaled(PlayerFart->ActiveTexture->Surface,
-                           &R->PlayerFartActiveRect, WindowSurface, &R->PlayerFartRectR);
-        }
-        if (Player->Direction == LeftDirection)
-        {
-            SDL_BlitScaled(PlayerFart->ActiveTexture->Surface,
-                           &R->PlayerFartActiveRect, WindowSurface, &R->PlayerFartRectL);
-        }
-    }
-    for (FCi = 0; FCi < FClength; FCi++)
-    {
-        if (PlayerFartCloud[FCi].HasFarted)
-        {
-            SDL_BlitScaled(PlayerFartCloud[FCi].FartCloud.Surface, &R->PlayerFartCloudActiveRect[FCi],
-                           WindowSurface, &R->PlayerFartCloudRect[FCi]);
-        }
-    }
-    char FCcount[50];
-    sprintf(FCcount, "Fart Cloud count: %i", FClength);
-
-    if (FadeOut == true)
-    {
-        SDL_Surface *FadeSurface = SDL_CreateRGBSurface(0, WindowWidth, WindowHeight, 32, 0, 0, 0, 255);
-        SDL_SetSurfaceBlendMode(FadeSurface, SDL_BLENDMODE_BLEND);
-        SDL_SetSurfaceAlphaMod(FadeSurface, FadeOuti);
-        if (FadeOuti > 0 && (FadeOuti - 20) > 0)
-        {
-            FadeOuti = FadeOuti - 20;
-        }
-        if (FadeOuti == 0 || (FadeOuti - 20) < 0)
-        {
-            SDL_SetSurfaceAlphaMod(FadeSurface, FadeIni);
-            FadeOuti = 0;
-            FadeOut = false;
-        }
-        SDL_BlitSurface(FadeSurface, 0, WindowSurface, 0);
-        SDL_FreeSurface(FadeSurface);
-    }
-    if (FadeIn == true)
-    {
-
-        SDL_Surface *FadeSurface = SDL_CreateRGBSurface(0, WindowWidth, WindowHeight, 32, 0, 0, 0, 255);
-        SDL_SetSurfaceBlendMode(FadeSurface, SDL_BLENDMODE_BLEND);
-        SDL_SetSurfaceAlphaMod(FadeSurface, FadeIni);
-        if (FadeIni < 255 && (FadeIni + 20) < 255)
-        {
-            FadeIni = FadeIni + 20;
-        }
-        if (FadeIni == 255 || (FadeIni + 20) > 255)
-        {
-            FadeIni = 255;
-            SDL_SetSurfaceAlphaMod(FadeSurface, FadeIni);
-            FadeIn = false;
-            FadedIn = true;
-        }
-        SDL_BlitSurface(FadeSurface, 0, WindowSurface, 0);
-        SDL_FreeSurface(FadeSurface);
     }
 }
 
@@ -155,7 +150,7 @@ int main(int argc, char **argv)
 
     float CamPosX = 0;
 
-    //load fonts------------------------
+    //load fonts---------------
     printf("Loading fonts... ");
 
     TTF_Init();
@@ -163,20 +158,9 @@ int main(int argc, char **argv)
 
     SDL_Surface *TextSurface;
     printf("Successful\n");
-    //----------------------------------
-    int frameIndex = 0;
 
     //------KEYS-------------
-    bool RightButton = false;
-    bool LeftButton = false;
-    bool UpButton = false;
-    bool DownButton = false;
-    bool Shift = false;
-    bool F_Key = false;
-    bool H_Key = false;
-    bool E_Key = false;
-    bool Tab_Key = false;
-    bool Space_Key = false;
+    keys K;
     //-----------------------
 
     //-------------------Load Objects--------------------------
@@ -243,8 +227,6 @@ int main(int argc, char **argv)
     R.MapRect.w = Map.ActiveMap.w;
     R.MapRect.x = ((WindowWidth - Map.ActiveMap.w) / 2) - CamPosX;
     R.MapRect.y = Map.PosY;
-
-    bool Playing = false;
 
     ResetFades();
 
@@ -378,6 +360,8 @@ int main(int argc, char **argv)
         InFile.close();
     }
 
+    debug D;
+
     bool UpdatedMap = false;
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -406,31 +390,12 @@ int main(int argc, char **argv)
         }
 
         //leave these here. they're necessary for the "pressable once" system.
-        E_Key = false;
-        F_Key = false;
+        K.E_Key = false;
+        K.F_Key = false;
+        K.F1_Key = false;
 
-        //-------------------Getting Resource usage---------------------------------------------------------------------
-        //
-        //                  ------- RAM -------
-        MEMORYSTATUSEX memInfo;
-        memInfo.dwLength = sizeof(MEMORYSTATUSEX);
-        GlobalMemoryStatusEx(&memInfo);
-        DWORDLONG totalVirtualMem = memInfo.ullTotalPageFile;
-        PROCESS_MEMORY_COUNTERS_EX pmc;
-        GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS *)&pmc, sizeof(pmc));
-        SIZE_T virtualMemUsedByMe = pmc.PrivateUsage;
-        DWORDLONG totalPhysMem = memInfo.ullTotalPhys;
-        float totalRAM = (float)(totalPhysMem / 1073741824.0f);
-        SIZE_T physMemUsedByMe = pmc.WorkingSetSize;
-        float currentRAM = (float)(physMemUsedByMe / 1073741824.0f * 1024.0f);
+        DebugPre(&D);
 
-        float RAM1, RAM2;
-
-        //--------------------------------------------------------------------------------------------------------------
-        //FPS------------------------------------------------------
-        const int FPS = 60;
-        const int frameDelay = 1000 / FPS;
-        Uint32 frameStart = SDL_GetTicks();
         //---------------------------------------------------------
         if (Mix_PlayingMusic() == 0)
         {
@@ -454,90 +419,7 @@ int main(int argc, char **argv)
         }
 
         SDL_Event Event;
-        while (SDL_PollEvent(&Event)) //if pPollEvent returns 1 then we enter the while loop this
-                                      //means thatif we have more than one event, it gathers them all before running
-        {
-            if (Event.type == SDL_QUIT)
-            {
-                GameIsRunning = false;
-            }
-            if (Event.key.keysym.sym == SDLK_q)
-            {
-                GameIsRunning = false;
-            }
-            //only pressable once key:
-            if (Event.type == SDL_KEYDOWN)
-            {
-                if (Event.key.keysym.sym == SDLK_e && Event.key.repeat == false)
-                {
-                    E_Key = true;
-                }
-                if (Event.key.keysym.sym == SDLK_f && Event.key.repeat == false)
-                {
-                    F_Key = true;
-                }
-                if (Event.key.keysym.sym == SDLK_TAB && Event.key.repeat == false)
-                {
-                    Tab_Key = true;
-                }
-                if (Event.key.keysym.sym == SDLK_SPACE && Event.key.repeat == false)
-                {
-                    Space_Key = true;
-                }
-                if (Event.key.keysym.sym == SDLK_ESCAPE && Event.key.repeat == false)
-                {
-                    RightButton = false;
-                    LeftButton = false;
-                    UpButton = false;
-                    DownButton = false;
-                    Shift = false;
-                    F_Key = false;
-                    H_Key = false;
-                    E_Key = false;
-                    Tab_Key = false;
-                    Space_Key = false;
-                    Playing = false;
-                    Mix_PauseMusic();
-                }
-            }
-
-            //printf(E_Key ? "E = true\n" : "E = false\n");
-            //cool shit:
-            if (Event.type == SDL_KEYDOWN || Event.type == SDL_KEYUP)
-            {
-                bool KeyState = Event.type == SDL_KEYDOWN ? true : false;
-                // upButton for example will have the value of keystate
-                // which is true when button is down and when thats not the
-                // case it can only be up vecause thats the only two options
-                // given by the if statement
-                switch (Event.key.keysym.sym)
-                {
-                case SDLK_UP:
-                    UpButton = KeyState;
-                    break;
-                case SDLK_DOWN:
-                    DownButton = KeyState;
-                    break;
-                case SDLK_LEFT:
-                    LeftButton = KeyState;
-                    break;
-                case SDLK_RIGHT:
-                    RightButton = KeyState;
-                    break;
-                case SDLK_LSHIFT:
-                    Shift = KeyState;
-                    break;
-                case SDLK_RSHIFT:
-                    Shift = KeyState;
-                    break;
-                case SDLK_h:
-                    H_Key = KeyState;
-                    break;
-                default:
-                    break;
-                }
-            }
-        }
+        PollEvents(&Event, &K);
 
         //----------------------------Fill Screen---------------------------------------------------
         int Red = 50;
@@ -564,15 +446,14 @@ int main(int argc, char **argv)
         MapLimitL = -limitcounter * 32 * 3 * 0.5f + 3 * 16;
 
         //-------------------------Game Update----------------------------------------------------------
-        PlayerUpdate(&Player, CamPosX, RightButton, LeftButton, UpButton,
-                     DownButton, Shift, MapLimitL, MapLimitR, WalkSpeed, RunSpeed);
-        PlayerSoundUpdate(Sound, F_Key, H_Key);
+        PlayerUpdate(&Player, CamPosX, &K, MapLimitL, MapLimitR, WalkSpeed, RunSpeed);
+        PlayerSoundUpdate(Sound, &K);
         MapUpdate(&CamPosX, &Player);
 
-        FartUpdate(&Player, &PlayerFart, PlayerFartCloud, F_Key);
+        FartUpdate(&Player, &PlayerFart, PlayerFartCloud, K.F_Key);
 
-        DoorsUpdate(Door, &R, F.Regular, TextSurface, WindowSurface, WindowWidth, WindowHeight, E_Key);
-        NPCUpdate(&Player, &R, F.Regular, TextSurface, WindowSurface, WindowWidth, WindowHeight, E_Key);
+        DoorsUpdate(Door, &R, F.Regular, TextSurface, WindowSurface, WindowWidth, WindowHeight, K.E_Key);
+        NPCUpdate(&Player, &R, F.Regular, TextSurface, WindowSurface, WindowWidth, WindowHeight, K.E_Key);
 
         if (Player.Chatting == true)
         {
@@ -583,20 +464,20 @@ int main(int argc, char **argv)
             if (FadedIn == true && FadeIn == false)
             {
                 //lets go of all already pressed buttons otherwise they dont reset
-                RightButton = false;
-                LeftButton = false;
-                UpButton = false;
-                DownButton = false;
-                Shift = false;
-                F_Key = false;
-                H_Key = false;
-                E_Key = false;
-                Tab_Key = false;
-                Space_Key = false;
+                K.RightButton = false;
+                K.LeftButton = false;
+                K.UpButton = false;
+                K.DownButton = false;
+                K.Shift = false;
+                K.F_Key = false;
+                K.H_Key = false;
+                K.E_Key = false;
+                K.Tab_Key = false;
+                K.Space_Key = false;
 
                 ResetFades();
 
-                RAM1 = currentRAM; // this is here to calculate RAM change after leaving Dialogue Mode to detect leaks.
+                D.RAM1 = D.currentRAM; // this is here to calculate RAM change after leaving Dialogue Mode to detect leaks.
 
                 DialogueMode(F,
                              &TextSurface, &WindowSurface, &Window, &WindowWidth, &WindowHeight, &Player, BackgroundMusic, &MusicBool, &SoundBool);
@@ -607,7 +488,7 @@ int main(int argc, char **argv)
         //          IMPORTANT: make sure you update this function here and in rect.cpp
         //                     every time you add a new object! and define the rects
         //                     outside the loop.
-        LoadRects(&WindowWidth, &WindowHeight, CamPosX, &F_Key, &R,
+        LoadRects(&WindowWidth, &WindowHeight, CamPosX, &K.F_Key, &R,
                   &Player,
                   Map,
                   PlayerFart,
@@ -635,78 +516,16 @@ int main(int argc, char **argv)
         //////////////////////////////////////////////////////////////////////
 
         //FPS and Resources------------------------------------------------------
+        FPSdelay(&D);
+        DebugPost(&D, &F, &K);
+
         {
-            char NowFPS[10]; 
-            int frameEnd = SDL_GetTicks();
-            int frameTime = frameEnd - frameStart;
-            if (frameTime < frameDelay)
-            {
-                SDL_Delay(frameDelay - frameTime);
-            }
-            int actualFrameEnd = SDL_GetTicks();
-            if (frameIndex++ % 10 == 0)
-            {
-                int CurrentFPS = (float)(1000.0f / (actualFrameEnd - frameStart));
-                sprintf(NowFPS, "FPS: %i", CurrentFPS);
-            }
-            char NowRAM[50];
-            sprintf(NowRAM, "RAM usage: %.2f MB/ %.1f GB", currentRAM, totalRAM);
-            //---------------------leak detector-------------------------------
-            if (frameIndex == 60)
-            {
-                RAM1 = currentRAM;
-            }
-            if (frameIndex % 60 == 0)
-            {
-                RAM2 = currentRAM;
-            }
-            float sensetivity = 0.5;
-            if (frameIndex > 120 && (RAM2 - RAM1) > sensetivity)
-            {
-                RAMleak = true;
-            }
-            if (frameIndex > 120 && (RAM2 - RAM1) < sensetivity)
-            {
-                RAMleak = false;
-            }
-            if (RAMleak)
-            {
-                bool on;
-                int count;
-                if (frameIndex % 60 == 0)
-                {
-                    on = true;
-                    count = 0;
-                }
-                if (count == 30)
-                {
-                    on = false;
-                }
-                char RAMdiff[50];
-                float RAMdifference = RAM2 - RAM1;
-                sprintf(RAMdiff, "leak: %.2fMB", RAMdifference);
-                if (on)
-                {
-                    RenderText(F.Bold, "Memory Leak Detected!", 255, 255, 0, WindowWidth - 325, 25, TextSurface, WindowSurface, WindowWidth, WindowHeight);
-                    RenderText(F.RegularS, RAMdiff, 255, 255, 255, WindowWidth - 100, 27, TextSurface, WindowSurface, WindowWidth, WindowHeight);
-                }
-                if (on == false)
-                {
-                    RenderText(F.Bold, "Memory Leak Detected!", 255, 0, 0, WindowWidth - 325, 25, TextSurface, WindowSurface, WindowWidth, WindowHeight);
-                    RenderText(F.RegularS, RAMdiff, 255, 255, 255, WindowWidth - 100, 27, TextSurface, WindowSurface, WindowWidth, WindowHeight);
-                }
-                count++;
-            }
-
-            RenderText(F.RegularS, NowFPS, 170, 170, 255, WindowWidth - 60, 0, TextSurface, WindowSurface, WindowWidth, WindowHeight);
-            RenderText(F.RegularS, NowRAM, 255, 255, 150, WindowWidth - 300, 0, TextSurface, WindowSurface, WindowWidth, WindowHeight);
-
             char DebugPlayerPosX[30];
             sprintf(DebugPlayerPosX, "Player Pos X: %i", (int16_t)Player.PosX);
-            RenderText(F.RegularS, DebugPlayerPosX, 170, 170, 170, WindowWidth - 300, 50, TextSurface, WindowSurface, WindowWidth, WindowHeight);
+            RenderText(F.RegularS, DebugPlayerPosX, 170, 170, 170, WindowWidth - 300, 50, F.TextSurface, WindowSurface, WindowWidth, WindowHeight);
             char DebugCamPosX[30];
             sprintf(DebugCamPosX, "Camera Position X: %i", (int16_t)CamPosX);
-            RenderText(F.RegularS, DebugCamPosX, 170, 170, 170, WindowWidth - 300, 75, TextSurface, WindowSurface, WindowWidth, WindowHeight);
+            RenderText(F.RegularS, DebugCamPosX, 170, 170, 170, WindowWidth - 300, 75, F.TextSurface, WindowSurface, WindowWidth, WindowHeight);
         }
         //------------------------------------------------------
         SDL_UpdateWindowSurface(Window);

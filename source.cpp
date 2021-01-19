@@ -34,6 +34,22 @@ struct rects
     SDL_Rect NPCRect;
 };
 
+struct keys
+{
+    bool RightButton = false;
+    bool LeftButton = false;
+    bool UpButton = false;
+    bool DownButton = false;
+    bool Shift = false;
+    bool F_Key = false;
+    bool H_Key = false;
+    bool E_Key = false;
+    bool Tab_Key = false;
+    bool Space_Key = false;
+    bool Return_Key = false;
+    bool F1_Key = false;
+};
+
 //--------SOUNDS-----------
 struct sounds
 {
@@ -68,8 +84,8 @@ struct fonts
     TTF_Font *Title2 = TTF_OpenFont("data/fonts/PTSans-Regular.ttf", 40);
     TTF_Font *Title3B = TTF_OpenFont("data/fonts/PTSans-Bold.ttf", 30);
     TTF_Font *Title3 = TTF_OpenFont("data/fonts/PTSans-Regular.ttf", 30);
-    SDL_Surface* TextSurface;
-} ;
+    SDL_Surface *TextSurface;
+};
 struct font
 {
     int r;
@@ -449,8 +465,7 @@ player LoadPlayer()
 };
 
 void PlayerUpdate(player *Player, float CamPosX,
-                  bool RightButton, bool LeftButton, bool UpButton,
-                  bool DownButton, bool Shift,
+                  keys *K,
                   float MapLimitL, float MapLimitR,
                   int WalkSpeed, int RunSpeed)
 {
@@ -467,19 +482,19 @@ void PlayerUpdate(player *Player, float CamPosX,
     }
 
     Player->Speed = WalkSpeed;
-    if (Shift)
+    if (K->Shift)
     {
         Player->Speed = RunSpeed;
     }
 
     //RIGHT
-    if (RightButton)
+    if (K->RightButton)
     {
         dx++;
     }
 
     //LEFT
-    if (LeftButton)
+    if (K->LeftButton)
     {
         dx--;
     }
@@ -492,7 +507,7 @@ void PlayerUpdate(player *Player, float CamPosX,
 
         Player->Direction = RightDirection;
         Player->ActiveTexture = &Player->RightAnimation;
-        if (Shift)
+        if (K->Shift)
         {
             Player->ActiveTexture = &Player->RightRunAnimation;
         }
@@ -503,7 +518,7 @@ void PlayerUpdate(player *Player, float CamPosX,
 
         Player->Direction = LeftDirection;
         Player->ActiveTexture = &Player->LeftAnimation;
-        if (Shift)
+        if (K->Shift)
         {
             Player->ActiveTexture = &Player->LeftRunAnimation;
         }
@@ -546,15 +561,15 @@ void PlayerUpdate(player *Player, float CamPosX,
     }
 }
 
-void PlayerSoundUpdate(sounds Sound, bool F_Key, bool H_Key)
+void PlayerSoundUpdate(sounds Sound, keys *K)
 {
     if (Mix_Playing(1) == 0)
     {
-        if (F_Key)
+        if (K->F_Key)
         {
             Mix_PlayChannel(1, Sound.Fart, 0);
         }
-        if (H_Key)
+        if (K->H_Key)
         {
             Mix_PlayChannel(1, Sound.Yo, 0);
         }
@@ -1032,4 +1047,235 @@ void UpdateTiles(maptile *MapTile, levelInfo LevelInfo)
         MapTile[i].ActiveTexture = &MapTile[i].Middle;
     }
     printf("Successful\n");
+}
+
+void RenderAll(rects *R, fonts Fonts, player *Player, map *Map, maptile *MapTile, door *Door, npc *NPC, fartCloud *PlayerFartCloud, fart *PlayerFart)
+{
+    SDL_BlitScaled(Map->ActiveMap.Surface, 0, WindowSurface, &R->MapRect);
+
+    for (int i = 0; i < MaxTiles; i++)
+    {
+        if (MapTile[i].exists)
+        {
+            SDL_BlitScaled(MapTile[i].ActiveTexture->Surface, 0, WindowSurface, &R->MapTileRect[i]);
+        }
+    }
+
+    RenderTextCentered(Fonts.Bold2, "This is a Game", 255, 255, 255, 0, -170, Fonts.TextSurface, WindowSurface, WindowWidth, WindowHeight);
+    RenderText(Fonts.Regular, "Press H to say hello", 255, 255, 255, 0, 0, Fonts.TextSurface, WindowSurface, WindowWidth, WindowHeight);
+    RenderText(Fonts.Regular, "Press F to pay respects", 255, 255, 255, 0, 25, Fonts.TextSurface, WindowSurface, WindowWidth, WindowHeight);
+    RenderText(Fonts.Regular, "Press Q to quit the game", 255, 255, 255, 0, 50, Fonts.TextSurface, WindowSurface, WindowWidth, WindowHeight);
+    RenderText(Fonts.Regular, "Press Esc to pause the game", 255, 255, 255, 0, 75, Fonts.TextSurface, WindowSurface, WindowWidth, WindowHeight);
+
+    for (Di = 0; Di < MaxDoors; Di++)
+    {
+        if (Door[Di].exists)
+        {
+            SDL_BlitScaled(Door[Di].ActiveTexture->Surface, 0, WindowSurface, &R->DoorRect[Di]);
+        }
+    }
+
+    SDL_BlitScaled(NPC[0].LeaningLeft.Surface, 0, WindowSurface, &R->NPCRect); //TODO: update to fit NPC!
+
+    SDL_BlitScaled(Player->ActiveTexture->Surface, &R->PlayerActiveRectangle, WindowSurface, &R->PlayerRect);
+
+    if (PlayerFart->ToFart)
+    {
+        if (Player->Direction == RightDirection)
+        {
+            SDL_BlitScaled(PlayerFart->ActiveTexture->Surface,
+                           &R->PlayerFartActiveRect, WindowSurface, &R->PlayerFartRectR);
+        }
+        if (Player->Direction == LeftDirection)
+        {
+            SDL_BlitScaled(PlayerFart->ActiveTexture->Surface,
+                           &R->PlayerFartActiveRect, WindowSurface, &R->PlayerFartRectL);
+        }
+    }
+    for (FCi = 0; FCi < FClength; FCi++)
+    {
+        if (PlayerFartCloud[FCi].HasFarted)
+        {
+            SDL_BlitScaled(PlayerFartCloud[FCi].FartCloud.Surface, &R->PlayerFartCloudActiveRect[FCi],
+                           WindowSurface, &R->PlayerFartCloudRect[FCi]);
+        }
+    }
+    char FCcount[50];
+    sprintf(FCcount, "Fart Cloud count: %i", FClength);
+
+    if (FadeOut == true)
+    {
+        SDL_Surface *FadeSurface = SDL_CreateRGBSurface(0, WindowWidth, WindowHeight, 32, 0, 0, 0, 255);
+        SDL_SetSurfaceBlendMode(FadeSurface, SDL_BLENDMODE_BLEND);
+        SDL_SetSurfaceAlphaMod(FadeSurface, FadeOuti);
+        if (FadeOuti > 0 && (FadeOuti - 20) > 0)
+        {
+            FadeOuti = FadeOuti - 20;
+        }
+        if (FadeOuti == 0 || (FadeOuti - 20) < 0)
+        {
+            SDL_SetSurfaceAlphaMod(FadeSurface, FadeIni);
+            FadeOuti = 0;
+            FadeOut = false;
+        }
+        SDL_BlitSurface(FadeSurface, 0, WindowSurface, 0);
+        SDL_FreeSurface(FadeSurface);
+    }
+    if (FadeIn == true)
+    {
+
+        SDL_Surface *FadeSurface = SDL_CreateRGBSurface(0, WindowWidth, WindowHeight, 32, 0, 0, 0, 255);
+        SDL_SetSurfaceBlendMode(FadeSurface, SDL_BLENDMODE_BLEND);
+        SDL_SetSurfaceAlphaMod(FadeSurface, FadeIni);
+        if (FadeIni < 255 && (FadeIni + 20) < 255)
+        {
+            FadeIni = FadeIni + 20;
+        }
+        if (FadeIni == 255 || (FadeIni + 20) > 255)
+        {
+            FadeIni = 255;
+            SDL_SetSurfaceAlphaMod(FadeSurface, FadeIni);
+            FadeIn = false;
+            FadedIn = true;
+        }
+        SDL_BlitSurface(FadeSurface, 0, WindowSurface, 0);
+        SDL_FreeSurface(FadeSurface);
+    }
+}
+
+struct debug
+{
+    Uint32 frameStart;
+    float RAM1, RAM2;
+    int frameIndex = 0;
+    float totalRAM, currentRAM;
+    int CurrentFPS;
+    int count;
+    bool on;
+    bool ShowDebug = false;
+};
+
+void DebugPre(debug *D)
+{
+    //-------------------Getting Resource usage---------------------------------------------------------------------
+    //
+    //                  ------- RAM -------
+    MEMORYSTATUSEX memInfo;
+    memInfo.dwLength = sizeof(MEMORYSTATUSEX);
+    GlobalMemoryStatusEx(&memInfo);
+    DWORDLONG totalVirtualMem = memInfo.ullTotalPageFile;
+    PROCESS_MEMORY_COUNTERS_EX pmc;
+    GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS *)&pmc, sizeof(pmc));
+    SIZE_T virtualMemUsedByMe = pmc.PrivateUsage;
+    DWORDLONG totalPhysMem = memInfo.ullTotalPhys;
+    D->totalRAM = (float)(totalPhysMem / 1073741824.0f);
+    SIZE_T physMemUsedByMe = pmc.WorkingSetSize;
+    D->currentRAM = (float)(physMemUsedByMe / 1073741824.0f * 1024.0f);
+
+    //--------------------------------------------------------------------------------------------------------------
+    //FPS------------------------------------------------------
+    const int FPS = 60;
+    const int frameDelay = 1000 / FPS;
+    D->frameStart = SDL_GetTicks();
+}
+
+void FPSdelay(debug *D)
+{
+    const int FPS = 60;
+    const int frameDelay = 1000 / FPS;
+    int frameEnd = SDL_GetTicks();
+    int frameTime = frameEnd - D->frameStart;
+    if (frameTime < frameDelay)
+    {
+        SDL_Delay(frameDelay - frameTime);
+    }
+}
+
+void DebugPost(debug *D, fonts *F, keys *K)
+{
+    if (K->F1_Key)
+    {
+        for (;;)
+        {
+            if (D->ShowDebug)
+            {
+                D->ShowDebug = false;
+                break;
+            }
+            if (!D->ShowDebug)
+            {
+                D->ShowDebug = true;
+                break;
+            }
+        }
+    }
+
+    const int FPS = 60;
+    const int frameDelay = 1000 / FPS;
+    char NowFPS[10];
+    int frameEnd = SDL_GetTicks();
+    int frameTime = frameEnd - D->frameStart;
+    int actualFrameEnd = SDL_GetTicks();
+    if (D->frameIndex++ % 10 == 0)
+    {
+        D->CurrentFPS = (float)(1000.0f / (actualFrameEnd - D->frameStart));
+    }
+    sprintf(NowFPS, "FPS: %i", D->CurrentFPS);
+    char NowRAM[50];
+    sprintf(NowRAM, "RAM usage: %.2f MB/ %.1f GB", D->currentRAM, D->totalRAM);
+    //---------------------leak detector-------------------------------
+    if (D->frameIndex == 60)
+    {
+        D->RAM1 = D->currentRAM;
+    }
+    if (D->frameIndex % 60 == 0)
+    {
+        D->RAM2 = D->currentRAM;
+    }
+    float sensetivity = 0.5;
+    if (D->frameIndex > 120 && (D->RAM2 - D->RAM1) > sensetivity)
+    {
+        RAMleak = true;
+    }
+    if (D->frameIndex > 120 && (D->RAM2 - D->RAM1) < sensetivity)
+    {
+        RAMleak = false;
+    }
+    if (RAMleak)
+    {
+        if (D->frameIndex % 60 == 0)
+        {
+            D->on = true;
+            D->count = 0;
+        }
+        if (D->count == 30)
+        {
+            D->on = false;
+        }
+        char RAMdiff[50];
+        float RAMdifference = D->RAM2 - D->RAM1;
+        sprintf(RAMdiff, "leak: %.2fMB", RAMdifference);
+        if (D->on)
+        {
+            if (D->ShowDebug)
+            {
+                RenderText(F->Bold, "Memory Leak Detected!", 255, 255, 0, WindowWidth - 325, 25, F->TextSurface, WindowSurface, WindowWidth, WindowHeight);
+                RenderText(F->RegularS, RAMdiff, 255, 255, 255, WindowWidth - 100, 27, F->TextSurface, WindowSurface, WindowWidth, WindowHeight);
+            }
+        }
+        if (D->on == false)
+        {
+            if (D->ShowDebug)
+            {
+                RenderText(F->Bold, "Memory Leak Detected!", 255, 0, 0, WindowWidth - 325, 25, F->TextSurface, WindowSurface, WindowWidth, WindowHeight);
+                RenderText(F->RegularS, RAMdiff, 255, 255, 255, WindowWidth - 100, 27, F->TextSurface, WindowSurface, WindowWidth, WindowHeight);
+            }
+        }
+        D->count++;
+    }
+    if (D->ShowDebug)
+    {
+        RenderText(F->RegularS, NowFPS, 170, 170, 255, WindowWidth - 60, 0, F->TextSurface, WindowSurface, WindowWidth, WindowHeight);
+        RenderText(F->RegularS, NowRAM, 255, 255, 150, WindowWidth - 300, 0, F->TextSurface, WindowSurface, WindowWidth, WindowHeight);
+    }
 }

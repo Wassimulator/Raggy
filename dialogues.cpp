@@ -4,6 +4,77 @@
 #include "Ahole.cpp"
 #include "menus.cpp"
 
+void PollEventsDialogue(SDL_Event *Event, keys *K, bool *DialogueRunning, player* Player)
+{
+    while (SDL_PollEvent(Event))
+    {
+        if (Event->type == SDL_QUIT)
+        {
+            GameIsRunning = false;
+            *DialogueRunning = false;
+        }
+        //only pressable once key:
+        if (Event->type == SDL_KEYDOWN)
+        {
+            if (Event->key.keysym.sym == SDLK_e && Event->key.repeat == false)
+            {
+                K->E_Key = true;
+            }
+            if (Event->key.keysym.sym == SDLK_f && Event->key.repeat == false)
+            {
+                K->F_Key = true;
+            }
+            if (Event->key.keysym.sym == SDLK_TAB && Event->key.repeat == false)
+            {
+                Player->Chatting = false;
+            }
+            if (Event->key.keysym.sym == SDLK_RETURN && Event->key.repeat == false)
+            {
+                K->Return_Key = true;
+            }
+            if (Event->key.keysym.sym == SDLK_DOWN && Event->key.repeat == false)
+            {
+                K->DownButton = true;
+            }
+            if (Event->key.keysym.sym == SDLK_UP && Event->key.repeat == false)
+            {
+                K->UpButton = true;
+            }
+            if (Event->key.keysym.sym == SDLK_ESCAPE && Event->key.repeat == false)
+            {
+                Playing = false;
+                Mix_PauseMusic();
+                Mix_Pause(2);
+            }
+        }
+
+        //cool shit:
+        if (Event->type == SDL_KEYDOWN || Event->type == SDL_KEYUP)
+        {
+            bool KeyState = Event->type == SDL_KEYDOWN ? true : false;
+            switch (Event->key.keysym.sym)
+            {
+            case SDLK_LEFT:
+                K->LeftButton = KeyState;
+                break;
+            case SDLK_RIGHT:
+                K->RightButton = KeyState;
+                break;
+            case SDLK_LSHIFT:
+                K->Shift = KeyState;
+                break;
+            case SDLK_RSHIFT:
+                K->Shift = KeyState;
+                break;
+            case SDLK_h:
+                K->H_Key = KeyState;
+                break;
+            default:
+                break;
+            }
+        }
+    }
+}
 void DialogueMode(fonts F,
                   SDL_Surface **TextSurface,
                   SDL_Surface **WindowSurface,
@@ -15,16 +86,6 @@ void DialogueMode(fonts F,
 
     int frameIndex = 0;
     bool DialogueRunning = true;
-
-    bool RightButton = false;
-    bool LeftButton = false;
-    bool UpButton = false;
-    bool DownButton = false;
-    bool Shift = false;
-    bool F_Key = false;
-    bool H_Key = false;
-    bool E_Key = false;
-    bool Return_Key = false;
 
     SDL_Rect HeaderRect;
     SDL_Rect ViewRect;
@@ -97,6 +158,8 @@ void DialogueMode(fonts F,
     ResetFades();
 
     string FileString;
+    debug D;
+    keys K;
 
     while (DialogueRunning)
     {
@@ -104,30 +167,14 @@ void DialogueMode(fonts F,
         {
             break;
         }
-        E_Key = false;
-        F_Key = false;
-        Return_Key = false;
-        DownButton = false;
-        UpButton = false;
+        K.E_Key = false;
+        K.F_Key = false;
+        K.Return_Key = false;
+        K.DownButton = false;
+        K.UpButton = false;
+        K.F1_Key = false;
         //-------------------Getting Resource usage---------------------------------------------------------------------
-        //
-        //                  ------- RAM -------
-        MEMORYSTATUSEX memInfo;
-        memInfo.dwLength = sizeof(MEMORYSTATUSEX);
-        GlobalMemoryStatusEx(&memInfo);
-        DWORDLONG totalVirtualMem = memInfo.ullTotalPageFile;
-        PROCESS_MEMORY_COUNTERS_EX pmc;
-        GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS *)&pmc, sizeof(pmc));
-        SIZE_T virtualMemUsedByMe = pmc.PrivateUsage;
-        DWORDLONG totalPhysMem = memInfo.ullTotalPhys;
-        float totalRAM = (float)(totalPhysMem / 1073741824.0f);
-        SIZE_T physMemUsedByMe = pmc.WorkingSetSize;
-        float currentRAM = (float)(physMemUsedByMe / 1073741824.0f * 1024.0f);
-        //--------------------------------------------------------------------------------------------------------------
-        //FPS------------------------------------------------------
-        const int FPS = 60;
-        const int frameDelay = 1000 / FPS;
-        Uint32 frameStart = SDL_GetTicks();
+        DebugPre(&D);
         //---------------------------------------------------------
 
         if (Playing == false)
@@ -157,78 +204,12 @@ void DialogueMode(fonts F,
             Mix_Volume(-1, 0);
         }
 
-        while (SDL_PollEvent(&Event))
-        {
-            if (Event.type == SDL_QUIT)
-            {
-                GameIsRunning = false;
-                DialogueRunning = false;
-            }
-            //only pressable once key:
-            if (Event.type == SDL_KEYDOWN)
-            {
-                if (Event.key.keysym.sym == SDLK_e && Event.key.repeat == false)
-                {
-                    E_Key = true;
-                }
-                if (Event.key.keysym.sym == SDLK_f && Event.key.repeat == false)
-                {
-                    F_Key = true;
-                }
-                if (Event.key.keysym.sym == SDLK_TAB && Event.key.repeat == false)
-                {
-                    Player->Chatting = false;
-                }
-                if (Event.key.keysym.sym == SDLK_RETURN && Event.key.repeat == false)
-                {
-                    Return_Key = true;
-                }
-                if (Event.key.keysym.sym == SDLK_DOWN && Event.key.repeat == false)
-                {
-                    DownButton = true;
-                }
-                if (Event.key.keysym.sym == SDLK_UP && Event.key.repeat == false)
-                {
-                    UpButton = true;
-                }
-                if (Event.key.keysym.sym == SDLK_ESCAPE && Event.key.repeat == false)
-                {
-                    Playing = false;
-                    Mix_PauseMusic();
-                    Mix_Pause(2);
-                }
-            }
+        PollEventsDialogue(&Event, &K, &DialogueRunning, Player);
 
-            //cool shit:
-            if (Event.type == SDL_KEYDOWN || Event.type == SDL_KEYUP)
-            {
-                bool KeyState = Event.type == SDL_KEYDOWN ? true : false;
-                switch (Event.key.keysym.sym)
-                {
-                case SDLK_LEFT:
-                    LeftButton = KeyState;
-                    break;
-                case SDLK_RIGHT:
-                    RightButton = KeyState;
-                    break;
-                case SDLK_LSHIFT:
-                    Shift = KeyState;
-                    break;
-                case SDLK_RSHIFT:
-                    Shift = KeyState;
-                    break;
-                case SDLK_h:
-                    H_Key = KeyState;
-                    break;
-                default:
-                    break;
-                }
-            }
-        }
         //--------------------------------------------------------------
         for (int i = 0; i < Dialogue.MaxOptions; i++)
         {
-            if (Dialogue.HighlightedOption[i] == true && Return_Key == true)
+            if (Dialogue.HighlightedOption[i] == true && K.Return_Key == true)
             {
                 Dialogue.SelectedOption[i] = true;
                 refresh = true;
@@ -238,7 +219,7 @@ void DialogueMode(fonts F,
         if (Player->ChattingNPC == true)
         {
             AholeMain(&AholeSLoaded, &AholeS, &Dialogue, Player, &Ahole,
-           &firstrun, &refresh, &isTalking, &FileString);
+                      &firstrun, &refresh, &isTalking, &FileString);
         }
         if (refresh)
         {
@@ -287,7 +268,7 @@ void DialogueMode(fonts F,
         {
             Dialogue.SelectedOption[i] = false;
         }
-        if (DownButton)
+        if (K.DownButton)
         {
             for (int i = 0; i < Dialogue.MaxOptions; i++)
             {
@@ -299,7 +280,7 @@ void DialogueMode(fonts F,
                 }
             }
         }
-        if (UpButton)
+        if (K.UpButton)
         {
             for (int i = 0; i < Dialogue.MaxOptions; i++)
             {
@@ -479,68 +460,8 @@ void DialogueMode(fonts F,
         }
 
         //FPS and Resources------------------------------------------------------
-        {
-            char NowFPS[10];
-            int frameEnd = SDL_GetTicks();
-            int frameTime = frameEnd - frameStart;
-            if (frameTime < frameDelay)
-            {
-                SDL_Delay(frameDelay - frameTime);
-            }
-            int actualFrameEnd = SDL_GetTicks();
-            if (frameIndex++ % 10 == 0)
-            {
-                int CurrentFPS = (float)(1000.0f / (actualFrameEnd - frameStart));
-                sprintf(NowFPS, "FPS: %i", CurrentFPS);
-            }
-            char NowRAM[50];
-            sprintf(NowRAM, "RAM usage: %.2f MB/ %.1f GB", currentRAM, totalRAM);
-            //---------------------leak detector-------------------------------
-            float RAM1, RAM2;
-            if (frameIndex == 60)
-            {
-                RAM1 = currentRAM;
-            }
-            if (frameIndex % 60 == 0)
-            {
-                RAM2 = currentRAM;
-            }
-            float sensetivity = 0.5;
-            if (frameIndex > 120 && (RAM2 - RAM1) > sensetivity)
-            {
-                RAMleak = true;
-            }
-            if (RAMleak)
-            {
-                bool on;
-                int count;
-                if (frameIndex % 60 == 0)
-                {
-                    on = true;
-                    count = 0;
-                }
-                if (count == 30)
-                {
-                    on = false;
-                }
-                if (on)
-                {
-                    RenderText(F.Bold, "Memory Leak Detected!", 255, 255, 0, *WindowWidth - 300, 25, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
-                }
-                if (on == false)
-                {
-                    RenderText(F.Bold, "Memory Leak Detected!", 255, 0, 0, *WindowWidth - 300, 25, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
-                }
-                count++;
-                if (count == 180)
-                {
-                    RAMleak = false;
-                }
-            }
-
-            RenderText(F.RegularS, NowFPS, 170, 170, 255, *WindowWidth - 60, 0, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
-            RenderText(F.RegularS, NowRAM, 255, 255, 150, *WindowWidth - 300, 0, *TextSurface, *WindowSurface, *WindowWidth, *WindowHeight);
-        } //------------------------------------------------------
+        FPSdelay(&D);
+        DebugPost(&D, &F, &K); //------------------------------------------------------
 
         SDL_UpdateWindowSurface(*Window);
 

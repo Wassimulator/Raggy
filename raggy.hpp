@@ -35,6 +35,7 @@ const int MaxTiles = 50;
 bool GameIsRunning = true;
 bool RAMleak = false;
 bool MainMenuRunning = true;
+bool Playing = false;
 
 bool FadeOut = true;
 int FadeOuti;
@@ -48,6 +49,8 @@ bool ToUpdateMapRects = false;
 
 int WindowWidth;
 int WindowHeight;
+SDL_Surface *WindowSurface;
+SDL_Window *Window;
 
 void ResetFades()
 {
