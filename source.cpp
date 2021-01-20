@@ -1279,3 +1279,95 @@ void DebugPost(debug *D, fonts *F, keys *K)
         RenderText(F->RegularS, NowRAM, 255, 255, 150, WindowWidth - 300, 0, F->TextSurface, WindowSurface, WindowWidth, WindowHeight);
     }
 }
+
+void PollEvents(SDL_Event *Event, keys *K)
+{
+    while (SDL_PollEvent(Event)) //if pPollEvent returns 1 then we enter the while loop this
+                                 //means thatif we have more than one event, it gathers them all before running
+    {
+        if (Event->type == SDL_QUIT)
+        {
+            GameIsRunning = false;
+        }
+        if (Event->key.keysym.sym == SDLK_q)
+        {
+            GameIsRunning = false;
+        }
+        //only pressable once key:
+        if (Event->type == SDL_KEYDOWN)
+        {
+            if (Event->key.keysym.sym == SDLK_e && Event->key.repeat == false)
+            {
+                K->E_Key = true;
+            }
+            if (Event->key.keysym.sym == SDLK_f && Event->key.repeat == false)
+            {
+                K->F_Key = true;
+            }
+            if (Event->key.keysym.sym == SDLK_TAB && Event->key.repeat == false)
+            {
+                K->Tab_Key = true;
+            }
+            if (Event->key.keysym.sym == SDLK_SPACE && Event->key.repeat == false)
+            {
+                K->Space_Key = true;
+            }
+            if (Event->key.keysym.sym == SDLK_F1 && Event->key.repeat == false)
+            {
+                K->F1_Key = true;
+            }
+            if (Event->key.keysym.sym == SDLK_ESCAPE && Event->key.repeat == false)
+            {
+                K->RightButton = false;
+                K->LeftButton = false;
+                K->UpButton = false;
+                K->DownButton = false;
+                K->Shift = false;
+                K->F_Key = false;
+                K->H_Key = false;
+                K->E_Key = false;
+                K->Tab_Key = false;
+                K->Space_Key = false;
+                Playing = false;
+                Mix_PauseMusic();
+            }
+        }
+
+        //printf(E_Key ? "E = true\n" : "E = false\n");
+        //cool shit:
+        if (Event->type == SDL_KEYDOWN || Event->type == SDL_KEYUP)
+        {
+            bool KeyState = Event->type == SDL_KEYDOWN ? true : false;
+            // upButton for example will have the value of keystate
+            // which is true when button is down and when thats not the
+            // case it can only be up vecause thats the only two options
+            // given by the if statement
+            switch (Event->key.keysym.sym)
+            {
+            case SDLK_UP:
+                K->UpButton = KeyState;
+                break;
+            case SDLK_DOWN:
+                K->DownButton = KeyState;
+                break;
+            case SDLK_LEFT:
+                K->LeftButton = KeyState;
+                break;
+            case SDLK_RIGHT:
+                K->RightButton = KeyState;
+                break;
+            case SDLK_LSHIFT:
+                K->Shift = KeyState;
+                break;
+            case SDLK_RSHIFT:
+                K->Shift = KeyState;
+                break;
+            case SDLK_h:
+                K->H_Key = KeyState;
+                break;
+            default:
+                break;
+            }
+        }
+    }
+}

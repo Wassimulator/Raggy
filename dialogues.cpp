@@ -4,6 +4,7 @@
 #include "Ahole.cpp"
 #include "menus.cpp"
 
+
 void PollEventsDialogue(SDL_Event *Event, keys *K, bool *DialogueRunning, player* Player)
 {
     while (SDL_PollEvent(Event))
